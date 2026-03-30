@@ -1293,6 +1293,7 @@
       currentConversation: null,
       currentMessages: [],
       realtimeChannel: null
+      attendanceRealtimeChannel: null
     };
 
     window.showPage = showPage;
@@ -1433,17 +1434,21 @@
       await setActiveTeam(active.id);
     }
 
-    async function setActiveTeam(teamId) {
-      const team = state.teams.find(t => t.id === teamId);
-      if (!team) return;
+  async function setActiveTeam(teamId) {
+  const team = state.teams.find(t => t.id === teamId);
+  if (!team) return;
 
-      unsubscribeMessagesRealtime();
+  unsubscribeMessagesRealtime();
+  unsubscribeAttendanceRealtime();
 
-      state.activeTeam = team;
-      localStorage.setItem('coachpro_active_team_id', team.id);
-      hydrateActiveTeam();
-      await loadTeamData(team.id);
-    }
+  state.activeTeam = team;
+  localStorage.setItem('coachpro_active_team_id', team.id);
+  hydrateActiveTeam();
+
+  subscribeToAttendanceRealtime(team.id);
+
+  await loadTeamData(team.id);
+}
 
     function hydrateActiveTeam() {
       const team = state.activeTeam;
@@ -1654,6 +1659,36 @@ async function loadSessions(teamId) {
         state.realtimeChannel = null;
       }
     }
+    function unsubscribeAttendanceRealtime() {
+  if (state.attendanceRealtimeChannel) {
+    supabase.removeChannel(state.attendanceRealtimeChannel);
+    state.attendanceRealtimeChannel = null;
+  }
+}
+
+function subscribeToAttendanceRealtime(teamId) {
+  unsubscribeAttendanceRealtime();
+
+  state.attendanceRealtimeChannel = supabase
+    .channel(`attendance:${teamId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'attendance'
+      },
+      async () => {
+        if (!state.activeTeam) return;
+
+        await loadSessions(state.activeTeam.id);
+        renderDashboard();
+      }
+    )
+    .subscribe((status) => {
+      console.log('Coach attendance realtime status:', status);
+    });
+}
 
     async function appendRealtimeMessage(newMessage) {
       if (!state.currentConversation) return;
@@ -2413,11 +2448,12 @@ async function deleteSession(id) {
       el.textContent = '';
     }
 
-    async function logout() {
-      unsubscribeMessagesRealtime();
-      await supabase.auth.signOut();
-      window.location.href = '/';
-    }
+async function logout() {
+  unsubscribeMessagesRealtime();
+  unsubscribeAttendanceRealtime();
+  await supabase.auth.signOut();
+  window.location.href = '/';
+}
 
     function getInitials(value) {
       return String(value || '')
