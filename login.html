@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoachPro — Connexion</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080C0A;--card:#141C16;--border:#1E2B20;--green:#3DFF7A;--green2:#00C853;--text:#EDF2EE;--muted:#5A7060;--red:#FF5252}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;position:relative;overflow:hidden}
+body::before{content:'';position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(61,255,122,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-60%);pointer-events:none}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:100%;max-width:420px;position:relative;z-index:1}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--green);text-align:center;letter-spacing:0.05em;margin-bottom:0.3rem}
+.subtitle{text-align:center;color:var(--muted);font-size:0.85rem;margin-bottom:2rem}
+.tabs{display:flex;background:#0F1511;border-radius:10px;padding:3px;margin-bottom:1.5rem}
+.tab{flex:1;text-align:center;padding:0.5rem;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:500;color:var(--muted);transition:all 0.2s}
+.tab.active{background:var(--green);color:#000;font-weight:700}
+.form-group{margin-bottom:1rem}
+.form-label{display:block;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem}
+.form-input{width:100%;background:#0F1511;border:1px solid var(--border);border-radius:10px;padding:0.7rem 0.9rem;color:var(--text);font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s}
+.form-input:focus{border-color:var(--green)}
+.form-input::placeholder{color:var(--muted)}
+.btn{width:100%;padding:0.85rem;border-radius:10px;font-family:'Outfit',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;border:none;background:var(--green);color:#000;transition:all 0.2s;margin-top:0.5rem}
+.btn:hover{background:#5DFFAA;box-shadow:0 0 30px rgba(61,255,122,0.3)}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.error{background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.2);color:var(--red);padding:0.6rem 0.9rem;border-radius:8px;font-size:0.82rem;margin-bottom:1rem;display:none}
+.success{background:rgba(61,255,122,0.1);border:1px solid rgba(61,255,122,0.2);color:var(--green);padding:0.6rem 0.9rem;border-radius:8px;font-size:0.82rem;margin-bottom:1rem;display:none}
+.divider{text-align:center;color:var(--muted);font-size:0.75rem;margin:1rem 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.divider::before{left:0}.divider::after{right:0}
+.footer-text{text-align:center;font-size:0.75rem;color:var(--muted);margin-top:1.5rem}
+.footer-text a{color:var(--green);text-decoration:none}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">CoachPro</div>
+  <div class="subtitle">La plateforme des coachs qui gagnent</div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('login')">Connexion</div>
+    <div class="tab" onclick="switchTab('signup')">Inscription</div>
+  </div>
+
+  <div id="error-msg" class="error"></div>
+  <div id="success-msg" class="success"></div>
+
+  <!-- LOGIN -->
+  <div id="form-login">
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="login-email" placeholder="coach@monclub.fr" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input class="form-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <button class="btn" onclick="login()" id="login-btn">Se connecter</button>
+    <div class="divider">ou</div>
+    <p style="text-align:center;font-size:0.8rem;color:var(--muted)">Pas encore de compte ? <a href="#" onclick="switchTab('signup')" style="color:var(--green)">S'inscrire gratuitement →</a></p>
+  </div>
+
+  <!-- SIGNUP -->
+  <div id="form-signup" style="display:none">
+    <div class="form-group">
+      <label class="form-label">Nom complet</label>
+      <input class="form-input" type="text" id="signup-name" placeholder="Mohamed Exemple" autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="signup-email" placeholder="coach@monclub.fr" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input class="form-input" type="password" id="signup-password" placeholder="Minimum 8 caractères" autocomplete="new-password">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nom de votre équipe</label>
+      <input class="form-input" type="text" id="signup-team" placeholder="FC Al-Nour">
+    </div>
+    <button class="btn" onclick="signup()" id="signup-btn">Créer mon compte gratuit</button>
+  </div>
+
+  <div class="footer-text">En vous inscrivant, vous acceptez nos <a href="#">CGU</a> et notre <a href="#">politique de confidentialité</a>.</div>
+</div>
+
+<script type="module">
+  import { signIn, signUp, getSession, createTeam } from './src/supabase.js'
+
+  // Rediriger si déjà connecté
+  getSession().then(session => {
+    if (session) window.location.href = './index.html'
+  })
+
+  window.switchTab = function(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+    document.querySelector(`.tab:${tab==='login'?'first':'last'}-child`).classList.add('active')
+    document.getElementById('form-login').style.display = tab==='login' ? 'block' : 'none'
+    document.getElementById('form-signup').style.display = tab==='signup' ? 'block' : 'none'
+    hideMessages()
+  }
+
+  window.login = async function() {
+    const email = document.getElementById('login-email').value.trim()
+    const password = document.getElementById('login-password').value
+    if (!email || !password) return showError('Remplissez tous les champs.')
+    const btn = document.getElementById('login-btn')
+    btn.innerHTML = '<span class="spinner"></span>Connexion...'
+    btn.disabled = true
+    try {
+      await signIn(email, password)
+      window.location.href = './index.html'
+    } catch(e) {
+      showError('Email ou mot de passe incorrect.')
+      btn.innerHTML = 'Se connecter'
+      btn.disabled = false
+    }
+  }
+
+  window.signup = async function() {
+    const name = document.getElementById('signup-name').value.trim()
+    const email = document.getElementById('signup-email').value.trim()
+    const password = document.getElementById('signup-password').value
+    const teamName = document.getElementById('signup-team').value.trim()
+    if (!name || !email || !password || !teamName) return showError('Remplissez tous les champs.')
+    if (password.length < 8) return showError('Le mot de passe doit faire au moins 8 caractères.')
+    const btn = document.getElementById('signup-btn')
+    btn.innerHTML = '<span class="spinner"></span>Création...'
+    btn.disabled = true
+    try {
+      const { user } = await signUp(email, password, name)
+      // Créer l'équipe automatiquement
+      if (user) await createTeam({ name: teamName, category: 'Senior A', season: '2025/2026' })
+      showSuccess('✅ Compte créé ! Vérifiez votre email pour confirmer.')
+      btn.innerHTML = 'Créer mon compte gratuit'
+      btn.disabled = false
+    } catch(e) {
+      showError(e.message || 'Erreur lors de l\'inscription.')
+      btn.innerHTML = 'Créer mon compte gratuit'
+      btn.disabled = false
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg')
+    el.textContent = '⚠️ ' + msg
+    el.style.display = 'block'
+    document.getElementById('success-msg').style.display = 'none'
+  }
+
+  function showSuccess(msg) {
+    const el = document.getElementById('success-msg')
+    el.textContent = msg
+    el.style.display = 'block'
+    document.getElementById('error-msg').style.display = 'none'
+  }
+
+  function hideMessages() {
+    document.getElementById('error-msg').style.display = 'none'
+    document.getElementById('success-msg').style.display = 'none'
+  }
+</script>
+</body>
+</html>
