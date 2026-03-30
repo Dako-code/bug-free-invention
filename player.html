@@ -1171,7 +1171,10 @@ async function loadPlayerAttendanceMap(sessionIds) {
     .eq('player_profile_id', state.sessionUser.id)
     .in('session_id', sessionIds);
 
-  if (error) throw error;
+  if (error) {
+    console.error('Attendance load error:', error);
+    return new Map();
+  }
 
   return new Map((data || []).map(row => [row.session_id, row.status]));
 }
