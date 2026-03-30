@@ -2254,45 +2254,47 @@ if (elConceded) elConceded.textContent = totalConceded;
     .filter(item => item.assists > 0)
     .slice(0, 5);
 
-  if (topScorersList) {
-   topScorersList.innerHTML = topScorers.length
-  ? `<div class="top-list">
-      ${topScorers.map((item, index) => {
-        const rankClass =
-          index === 0 ? 'first' :
-          index === 1 ? 'second' :
-          index === 2 ? 'third' : '';
+ if (topScorersList) {
+  topScorersList.innerHTML = topScorers.length
+    ? `<div class="top-list">
+        ${topScorers.map((item, index) => {
+          const rankClass =
+            index === 0 ? 'first' :
+            index === 1 ? 'second' :
+            index === 2 ? 'third' : '';
 
-        return `
-          <div class="top-row ${rankClass}">
-            <div class="top-rank">#${index + 1}</div>
-            <div class="top-player">${escapeHtml(item.member.player?.full_name || 'Joueur')}</div>
-            <div class="top-value">${item.goals}</div>
-          </div>
-        `;
-      }).join('')}
-    </div>`
-  : `<div class="empty-note">Aucun buteur.</div>`;
+          return `
+            <div class="top-row ${rankClass}">
+              <div class="top-rank">#${index + 1}</div>
+              <div class="top-player">${escapeHtml(item.member.player?.full_name || 'Joueur')}</div>
+              <div class="top-value">${item.goals}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>`
+    : `<div class="empty-note">Aucun buteur.</div>`;
+}
   }
+if (topAssistersList) {
+  topAssistersList.innerHTML = topAssisters.length
+    ? `<div class="top-list">
+        ${topAssisters.map((item, index) => {
+          const rankClass =
+            index === 0 ? 'first' :
+            index === 1 ? 'second' :
+            index === 2 ? 'third' : '';
 
- topAssistersList.innerHTML = topAssisters.length
-  ? `<div class="top-list">
-      ${topAssisters.map((item, index) => {
-        const rankClass =
-          index === 0 ? 'first' :
-          index === 1 ? 'second' :
-          index === 2 ? 'third' : '';
-
-        return `
-          <div class="top-row ${rankClass}">
-            <div class="top-rank">#${index + 1}</div>
-            <div class="top-player">${escapeHtml(item.member.player?.full_name || 'Joueur')}</div>
-            <div class="top-value">${item.assists}</div>
-          </div>
-        `;
-      }).join('')}
-    </div>`
-  : `<div class="empty-note">Aucun passeur.</div>`;
+          return `
+            <div class="top-row ${rankClass}">
+              <div class="top-rank">#${index + 1}</div>
+              <div class="top-player">${escapeHtml(item.member.player?.full_name || 'Joueur')}</div>
+              <div class="top-value">${item.assists}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>`
+    : `<div class="empty-note">Aucun passeur.</div>`;
+}
   }
 }
 
