@@ -1182,7 +1182,9 @@
     <div class="modal-overlay" id="session-modal-overlay" onclick="if(event.target===this)closeSessionModal()">
       <div class="modal">
         <button class="modal-close" onclick="closeSessionModal()">✕</button>
-        <div class="modal-title">Nouvelle session</div>
+        <div class="modal-title" id="session-modal-title">Nouvelle session</div>
+
+        <input type="hidden" id="session-edit-id">
 
         <div id="session-modal-notice" class="notice"></div>
 
@@ -1232,7 +1234,7 @@
 
         <div class="modal-footer">
           <button class="btn btn-ghost" onclick="closeSessionModal()">Annuler</button>
-          <button class="btn btn-primary" onclick="createSession()">Créer</button>
+          <button class="btn btn-primary" id="session-save-btn" onclick="saveSession()">Créer</button>
         </div>
       </div>
     </div>
@@ -1305,8 +1307,10 @@
     window.closeEditPlayerModal = closeEditPlayerModal;
     window.savePlayerEdit = savePlayerEdit;
     window.openCreateSessionModal = openCreateSessionModal;
+    window.openEditSessionModal = openEditSessionModal;
     window.closeSessionModal = closeSessionModal;
-    window.createSession = createSession;
+    window.saveSession = saveSession;
+    window.deleteSession = deleteSession;
     window.topbarAction = topbarAction;
     window.selectTeam = selectTeam;
     window.openNewConversationModal = openNewConversationModal;
@@ -1785,9 +1789,22 @@ async function loadSessions(teamId) {
 
         return `
           <div class="list-item">
-            <div class="list-title">${escapeHtml(item.title)}</div>
-            <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
-            <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
+            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap">
+              <div>
+                <div class="list-title">${escapeHtml(item.title)}</div>
+                <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
+                <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
+              </div>
+
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                <button class="btn btn-ghost" onclick="openEditSessionModal('${item.id}')">
+                  Modifier
+                </button>
+                <button class="btn btn-ghost" onclick="deleteSession('${item.id}')">
+                  Supprimer
+                </button>
+              </div>
+            </div>
 
             <div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap">
               <span class="badge badge-green">Présents : ${present.length}</span>
@@ -1985,26 +2002,44 @@ async function loadSessions(teamId) {
         alert("Crée d'abord une équipe.");
         return;
       }
- function openEditSessionModal(id) {
-
-  const session = state.sessions.find(s => s.id === id);
-
-  const dt = new Date(session.scheduled_at);
-
-  document.getElementById('session-edit-id').value = id;
-
-  document.getElementById('session-title').value = session.title;
-  document.getElementById('session-type').value = session.type;
-  document.getElementById('session-duration').value = session.duration_minutes || 90;
-  document.getElementById('session-date').value = dt.toISOString().slice(0,10);
-  document.getElementById('session-time').value = dt.toTimeString().slice(0,5);
-  document.getElementById('session-location').value = session.location || '';
-  document.getElementById('session-notes').value = session.notes || '';
-
-  document.getElementById('session-modal-overlay').classList.add('open');
-}
 
       clearNotice('session-modal-notice');
+
+      document.getElementById('session-edit-id').value = '';
+      document.getElementById('session-modal-title').textContent = 'Nouvelle session';
+      document.getElementById('session-save-btn').textContent = 'Créer';
+
+      document.getElementById('session-title').value = '';
+      document.getElementById('session-type').value = 'training';
+      document.getElementById('session-duration').value = '90';
+      document.getElementById('session-date').value = '';
+      document.getElementById('session-time').value = '';
+      document.getElementById('session-location').value = '';
+      document.getElementById('session-notes').value = '';
+
+      document.getElementById('session-modal-overlay').classList.add('open');
+    }
+
+    function openEditSessionModal(id) {
+      const session = state.sessions.find(s => s.id === id);
+      if (!session) return;
+
+      clearNotice('session-modal-notice');
+
+      const dt = new Date(session.scheduled_at);
+
+      document.getElementById('session-edit-id').value = id;
+      document.getElementById('session-modal-title').textContent = 'Modifier la session';
+      document.getElementById('session-save-btn').textContent = 'Enregistrer';
+
+      document.getElementById('session-title').value = session.title || '';
+      document.getElementById('session-type').value = session.type || 'training';
+      document.getElementById('session-duration').value = session.duration_minutes ?? 90;
+      document.getElementById('session-date').value = dt.toISOString().slice(0,10);
+      document.getElementById('session-time').value = dt.toTimeString().slice(0,5);
+      document.getElementById('session-location').value = session.location || '';
+      document.getElementById('session-notes').value = session.notes || '';
+
       document.getElementById('session-modal-overlay').classList.add('open');
     }
 
@@ -2238,6 +2273,7 @@ async function saveSession() {
 
   closeSessionModal();
   await loadSessions(state.activeTeam.id);
+  renderDashboard();
 }
 async function deleteSession(id) {
 
@@ -2247,6 +2283,7 @@ async function deleteSession(id) {
   await supabase.from('sessions').delete().eq('id', id);
 
   await loadSessions(state.activeTeam.id);
+  renderDashboard();
 }
 
     async function createConversation() {
