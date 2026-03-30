@@ -1497,18 +1497,54 @@
       populateConversationPlayerSelect();
     }
 
-    async function loadSessions(teamId) {
-      const { data, error } = await supabase
-        .from('sessions')
-        .select('*')
-        .eq('team_id', teamId)
-        .order('scheduled_at', { ascending: true });
+async function loadSessions(teamId) {
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('*')
+    .eq('team_id', teamId)
+    .order('scheduled_at', { ascending: true });
 
-      if (error) throw error;
+  if (error) throw error;
 
-      state.sessions = data || [];
-      renderSessions();
+  const sessions = data || [];
+
+  if (!sessions.length) {
+    state.sessions = [];
+    renderSessions();
+    return;
+  }
+
+  const { data: attendanceRows, error: attendanceError } = await supabase
+    .from('attendance')
+    .select(`
+      session_id,
+      status,
+      player_profile_id,
+      player:profiles!attendance_player_profile_id_fkey (
+        full_name
+      )
+    `)
+    .in('session_id', sessions.map(s => s.id));
+
+  if (attendanceError) throw attendanceError;
+
+  const attendanceBySession = new Map();
+
+  for (const row of (attendanceRows || [])) {
+    if (!attendanceBySession.has(row.session_id)) {
+      attendanceBySession.set(row.session_id, []);
     }
+
+    attendanceBySession.get(row.session_id).push(row);
+  }
+
+  state.sessions = sessions.map(session => ({
+    ...session,
+    attendance: attendanceBySession.get(session.id) || []
+  }));
+
+  renderSessions();
+}
 
     async function loadPayments(teamId) {
       const { data, error } = await supabase
@@ -1731,19 +1767,46 @@
       `).join('');
     }
 
-    function renderSessions() {
-      const list = document.getElementById('sessions-list');
+ function renderSessions() {
+  const list = document.getElementById('sessions-list');
 
-      list.innerHTML = state.sessions.length
-        ? state.sessions.map(item => `
-            <div class="list-item">
-              <div class="list-title">${escapeHtml(item.title)}</div>
-              <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
-              <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
+  list.innerHTML = state.sessions.length
+    ? state.sessions.map(item => {
+        const attendance = item.attendance || [];
+
+        const present = attendance.filter(a => a.status === 'present');
+        const absent = attendance.filter(a => a.status === 'absent');
+        const late = attendance.filter(a => a.status === 'late');
+
+        const respondedIds = new Set(attendance.map(a => a.player_profile_id));
+        const pending = state.teamMembers.filter(
+          member => !respondedIds.has(member.player_profile_id)
+        );
+
+        return `
+          <div class="list-item">
+            <div class="list-title">${escapeHtml(item.title)}</div>
+            <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
+            <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
+
+            <div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap">
+              <span class="badge badge-green">Présents : ${present.length}</span>
+              <span class="badge badge-red">Absents : ${absent.length}</span>
+              <span class="badge badge-orange">Retards : ${late.length}</span>
+              <span class="badge badge-blue">Sans réponse : ${pending.length}</span>
             </div>
-          `).join('')
-        : `<div class="empty-note">Aucune session.</div>`;
-    }
+
+            <div style="margin-top:.8rem;font-size:.78rem;color:var(--muted2)">
+              <div><strong>Présents :</strong> ${present.length ? present.map(a => escapeHtml(a.player?.full_name || 'Joueur')).join(', ') : '—'}</div>
+              <div><strong>Absents :</strong> ${absent.length ? absent.map(a => escapeHtml(a.player?.full_name || 'Joueur')).join(', ') : '—'}</div>
+              <div><strong>En retard :</strong> ${late.length ? late.map(a => escapeHtml(a.player?.full_name || 'Joueur')).join(', ') : '—'}</div>
+              <div><strong>Sans réponse :</strong> ${pending.length ? pending.map(m => escapeHtml(m.player?.full_name || 'Joueur')).join(', ') : '—'}</div>
+            </div>
+          </div>
+        `;
+      }).join('')
+    : `<div class="empty-note">Aucune session.</div>`;
+}
 
     function renderStats() {
       const totalGoals = state.stats.reduce((s, r) => s + Number(r.goals || 0), 0);
