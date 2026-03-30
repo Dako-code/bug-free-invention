@@ -1596,61 +1596,82 @@ const state = {
     window.openMatchModal = openMatchModal;
     window.closeMatchModal = closeMatchModal;
     window.saveMatch = saveMatch;
+    
+boot();
 
-
-    init();
-    supabase.auth.onAuthStateChange((event, session) => {
+supabase.auth.onAuthStateChange(async (event, session) => {
   if (session?.user) {
     console.log('SESSION RESTORED');
+    await init();
   }
 });
+
+async function waitForSession(attempts = 10, delayMs = 400) {
+  for (let i = 0; i < attempts; i++) {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session?.user) {
+      return session;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, delayMs));
+  }
+
+  return null;
+}
+
+async function boot() {
+  await init();
+}
     
-    async function init() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
+async function init() {
+  try {
+    const session = await waitForSession();
 
-        if (!session?.user) {
-          window.location.href = '/';
-          return;
-        }
+    if (!session?.user) {
+      console.warn('Aucune session récupérée après attente.');
+      window.location.href = '/';
+      return;
+    }
 
-        state.sessionUser = session.user;
-        state.profile = await fetchProfile(session.user.id);
+    state.sessionUser = session.user;
+    state.profile = await fetchProfile(session.user.id);
 
-if (!state.profile) {
-  throw new Error('Profil coach introuvable.');
-}
+    if (!state.profile) {
+      throw new Error('Profil coach introuvable.');
+    }
 
-if (state.profile.role !== 'coach') {
-  window.location.href = '/player.html';
-  return;
-}
+    if (state.profile.role !== 'coach') {
+      window.location.href = '/player.html';
+      return;
+    }
 
-hydrateProfile();
+    hydrateProfile();
 
-if (state.profile.is_owner) {
-  state.subscription = { plan: 'owner', status: 'active' };
-} else {
-  state.subscription = await fetchSubscription(session.user.id);
-  const allowed = ['active', 'trialing'];
+    if (state.profile.is_owner) {
+      state.subscription = { plan: 'owner', status: 'active' };
+    } else {
+      state.subscription = await fetchSubscription(session.user.id);
+      const allowed = ['active', 'trialing'];
 
-  if (!state.subscription || !allowed.includes(state.subscription.status)) {
-    console.warn('Coach non-owner sans abonnement actif détecté.');
-    alert("Ton abonnement coach n'est pas actif.");
-    await logout();
-    return;
+      if (!state.subscription || !allowed.includes(state.subscription.status)) {
+        console.warn('Coach non-owner sans abonnement actif détecté.');
+        alert("Ton abonnement coach n'est pas actif.");
+        await logout();
+        return;
+      }
+    }
+
+    hydrateSubscription();
+    await loadTeams();
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message || 'Impossible de charger le dashboard coach.');
+    window.location.href = '/';
   }
 }
 
-        hydrateSubscription();
-        await loadTeams();
-
-      } catch (error) {
-        console.error(error);
-        alert(error.message || 'Impossible de charger le dashboard coach.');
-        window.location.href = '/';
-      }
-    }
 
 async function fetchProfile(userId, attempts = 8, delayMs = 400) {
   for (let i = 0; i < attempts; i++) {
@@ -3498,7 +3519,6 @@ async function logout() {
     </div>
   </div>
 </div>
-
 <div class="modal-overlay" id="match-view-modal-overlay" onclick="if(event.target===this)closeMatchViewModal()">
   <div class="modal">
     <button class="modal-close" onclick="closeMatchViewModal()">✕</button>
@@ -3507,6 +3527,12 @@ async function logout() {
     <div id="match-view-content">
       <div class="empty-note">Aucune donnée.</div>
     </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeMatchViewModal()">Fermer</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
