@@ -887,6 +887,77 @@
     flex-direction: column;
   }
     }
+    /* ===== TOP STATS TABLE (BUTEURS / PASSEURS) ===== */
+
+.top-list {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+/* Ligne du tableau */
+.top-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 80px;
+  align-items: center;
+  padding: .7rem .9rem;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  transition: 0.2s;
+}
+
+/* Hover */
+.top-row:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+/* Rang */
+.top-rank {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* Joueur */
+.top-player {
+  font-weight: 600;
+}
+
+/* Valeur (buts / passes) */
+.top-value {
+  text-align: right;
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* 🥇 PREMIER (mise en avant) */
+.top-row.first {
+  background: linear-gradient(135deg, rgba(61,255,122,0.15), rgba(61,255,122,0.05));
+  border: 1px solid rgba(61,255,122,0.4);
+  box-shadow: 0 0 15px rgba(61,255,122,0.2);
+  transform: scale(1.02);
+}
+
+.top-row.first .top-rank {
+  color: var(--green);
+}
+
+.top-row.first .top-player {
+  font-size: 1.05rem;
+}
+
+.top-row.first .top-value {
+  font-size: 1.1rem;
+}
+
+/* 🥈 🥉 (optionnel léger style) */
+.top-row.second {
+  opacity: 0.9;
+}
+
+.top-row.third {
+  opacity: 0.85;
+}
   </style>
 </head>
 <body>
