@@ -1985,6 +1985,24 @@ async function loadSessions(teamId) {
         alert("Crée d'abord une équipe.");
         return;
       }
+ function openEditSessionModal(id) {
+
+  const session = state.sessions.find(s => s.id === id);
+
+  const dt = new Date(session.scheduled_at);
+
+  document.getElementById('session-edit-id').value = id;
+
+  document.getElementById('session-title').value = session.title;
+  document.getElementById('session-type').value = session.type;
+  document.getElementById('session-duration').value = session.duration_minutes || 90;
+  document.getElementById('session-date').value = dt.toISOString().slice(0,10);
+  document.getElementById('session-time').value = dt.toTimeString().slice(0,5);
+  document.getElementById('session-location').value = session.location || '';
+  document.getElementById('session-notes').value = session.notes || '';
+
+  document.getElementById('session-modal-overlay').classList.add('open');
+}
 
       clearNotice('session-modal-notice');
       document.getElementById('session-modal-overlay').classList.add('open');
@@ -2170,56 +2188,66 @@ async function loadSessions(teamId) {
       }
     }
 
-    async function createSession() {
-      const title = document.getElementById('session-title').value.trim();
-      const type = document.getElementById('session-type').value;
-      const duration = Number(document.getElementById('session-duration').value || 90);
-      const date = document.getElementById('session-date').value;
-      const time = document.getElementById('session-time').value;
-      const location = document.getElementById('session-location').value.trim();
-      const notes = document.getElementById('session-notes').value.trim();
+async function saveSession() {
 
-      if (!title || !date || !time) {
-        showNotice('session-modal-notice', 'error', 'Le titre, la date et l’heure sont obligatoires.');
-        return;
-      }
+  const id = document.getElementById('session-edit-id').value;
 
-      try {
-        const scheduledAt = new Date(`${date}T${time}:00`).toISOString();
+  const title = document.getElementById('session-title').value.trim();
+  const type = document.getElementById('session-type').value;
+  const duration = Number(document.getElementById('session-duration').value || 90);
+  const date = document.getElementById('session-date').value;
+  const time = document.getElementById('session-time').value;
+  const location = document.getElementById('session-location').value.trim();
+  const notes = document.getElementById('session-notes').value.trim();
 
-        const { error } = await supabase
-          .from('sessions')
-          .insert({
-            team_id: state.activeTeam.id,
-            created_by: state.sessionUser.id,
-            title,
-            type,
-            scheduled_at: scheduledAt,
-            duration_minutes: duration,
-            location,
-            notes
-          });
+  if (!title || !date || !time) {
+    alert("Champs obligatoires manquants");
+    return;
+  }
 
-        if (error) throw error;
+  const scheduled_at = new Date(`${date}T${time}`).toISOString();
 
-        showNotice('session-modal-notice', 'success', 'Session créée avec succès.');
+  if (id) {
+    await supabase
+      .from('sessions')
+      .update({
+        title,
+        type,
+        scheduled_at,
+        duration_minutes: duration,
+        location,
+        notes
+      })
+      .eq('id', id);
 
-        document.getElementById('session-title').value = '';
-        document.getElementById('session-type').value = 'training';
-        document.getElementById('session-duration').value = '90';
-        document.getElementById('session-date').value = '';
-        document.getElementById('session-time').value = '';
-        document.getElementById('session-location').value = '';
-        document.getElementById('session-notes').value = '';
+  } else {
 
-        await loadSessions(state.activeTeam.id);
-        renderDashboard();
+    await supabase
+      .from('sessions')
+      .insert({
+        team_id: state.activeTeam.id,
+        created_by: state.sessionUser.id,
+        title,
+        type,
+        scheduled_at,
+        duration_minutes: duration,
+        location,
+        notes
+      });
+  }
 
-      } catch (error) {
-        console.error(error);
-        showNotice('session-modal-notice', 'error', error.message || 'Impossible de créer la session.');
-      }
-    }
+  closeSessionModal();
+  await loadSessions(state.activeTeam.id);
+}
+async function deleteSession(id) {
+
+  if (!confirm("Supprimer cette session ?")) return;
+
+  await supabase.from('attendance').delete().eq('session_id', id);
+  await supabase.from('sessions').delete().eq('id', id);
+
+  await loadSessions(state.activeTeam.id);
+}
 
     async function createConversation() {
       const typeValue = document.getElementById('conversation-type').value;
