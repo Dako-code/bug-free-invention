@@ -3113,51 +3113,6 @@ async function logout() {
     return;
   }
 
-  list.innerHTML = state.matchReports.map(report => {
-    const statsRows = report.match_player_stats || [];
-
-    const scorers = statsRows.filter(row => Number(row.goals || 0) > 0);
-    const assisters = statsRows.filter(row => Number(row.assists || 0) > 0);
-    const conceded = statsRows.filter(row => Number(row.goals_conceded || 0) > 0);
-    const motm = statsRows.find(row => row.is_man_of_the_match);
-
-    const findMember = (teamMemberId) => {
-      return state.teamMembers.find(m => m.id === teamMemberId);
-    };
-
-    const findMemberName = (teamMemberId) => {
-      return findMember(teamMemberId)?.player?.full_name || 'Joueur';
-    };
-
-    const totalGoals = scorers.reduce((sum, row) => sum + Number(row.goals || 0), 0);
-    const totalAssists = assisters.reduce((sum, row) => sum + Number(row.assists || 0), 0);
-    const totalConceded = conceded.reduce((sum, row) => sum + Number(row.goals_conceded || 0), 0);
-
-    const renderRows = (rows, valueKey, emptyText) => {
-      if (!rows.length) {
-        return `<div class="match-empty">${emptyText}</div>`;
-      }
-
-      return rows
-        .sort((a, b) => Number(b[valueKey] || 0) - Number(a[valueKey] || 0))
-        .map(row => `
-          <div class="match-stat-row">
-            <div>
-              <div style="display:flex;align-items:center;gap:.7rem">
-  <div class="avatar" style="background:rgba(61,255,122,.12);color:var(--green)">
-    ${getInitials(findMemberName(row.team_member_id))}
-  </div>
-  <div>
-    <div class="match-player-name">${escapeHtml(findMemberName(row.team_member_id))}</div>
-  </div>
-</div>
-            </div>
-            <div class="match-stat-badge">${Number(row[valueKey] || 0)}</div>
-          </div>
-        `)
-        .join('');
-    };
-
     return `
       <div class="match-card">
         <div class="match-top">
