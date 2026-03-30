@@ -862,7 +862,24 @@
           </div>
         </div>
       </div>
+<div class="page" id="page-matches">
+  <div class="section-header">
+    <div>
+      <div class="page-title">Matchs</div>
+      <div class="page-desc">Matchs renseignés avec statistiques et résumé</div>
+    </div>
+  </div>
 
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Historique des matchs</span>
+    </div>
+
+    <div class="list" id="matches-list">
+      <div class="empty-note">Aucun match renseigné.</div>
+    </div>
+  </div>
+</div>
       <div class="page" id="page-sessions">
         <div class="section-header">
           <div>
@@ -1294,7 +1311,8 @@
       currentConversation: null,
       currentMessages: [],
       realtimeChannel: null,
-      attendanceRealtimeChannel: null
+      attendanceRealtimeChannel: null,
+      matchReports: [],
     };
 
     window.showPage = showPage;
@@ -1484,6 +1502,7 @@
       await Promise.all([
         loadTeamMembers(teamId),
         loadSessions(teamId),
+        loadMatchReports(teamId),
         loadPayments(teamId),
         loadConversations(teamId)
       ]);
@@ -1815,9 +1834,17 @@ function subscribeToAttendanceRealtime(teamId) {
 
  function renderSessions() {
   const list = document.getElementById('sessions-list');
+  const reportedMatchSessionIds = new Set(
+  state.matchReports.map(report => report.session_id)
+);
 
-  list.innerHTML = state.sessions.length
-    ? state.sessions.map(item => {
+const visibleSessions = state.sessions.filter(item => {
+  if (item.type !== 'match') return true;
+  return !reportedMatchSessionIds.has(item.id);
+});
+
+  list.innerHTML = visibleSessions.length
+  ? visibleSessions.map(item => {
         const attendance = item.attendance || [];
 
         const present = attendance.filter(a => a.status === 'present');
@@ -1876,7 +1903,7 @@ function subscribeToAttendanceRealtime(teamId) {
           </div>
         `;
       }).join('')
-    : `<div class="empty-note">Aucune session.</div>`;
+    : `<div class="empty-note">Aucune session à afficher.</div>`;
 }
 
     function renderStats() {
@@ -1992,7 +2019,8 @@ function subscribeToAttendanceRealtime(teamId) {
         stats: 'Statistiques',
         messages: 'Messages',
         payments: 'Paiements',
-        settings: 'Paramètres'
+        settings: 'Paramètres',
+        matches: 'Matchs',
       };
 
       document.getElementById('topbar-title').textContent = titles[id] || 'Dashboard';
@@ -2496,9 +2524,12 @@ const rows = state.teamMembers.map(member => ({
     if (upsertError) throw upsertError;
 
     showNotice('match-modal-notice', 'success', 'Match enregistré avec succès.');
+    await loadMatchReports(state.activeTeam.id);
+    await loadSessions(state.activeTeam.id);
 
     setTimeout(() => {
       closeMatchModal();
+      
     }, 500);
 
   } catch (error) {
@@ -2820,6 +2851,28 @@ async function logout() {
   await supabase.auth.signOut();
   window.location.href = '/';
 }
+    async function loadMatchReports(teamId) {
+  const { data, error } = await supabase
+    .from('match_reports')
+    .select(`
+      *,
+      match_player_stats (
+        id,
+        team_member_id,
+        goals,
+        assists,
+        goals_conceded,
+        is_man_of_the_match
+      )
+    `)
+    .eq('team_id', teamId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  state.matchReports = data || [];
+  renderMatches();
+}
 
     function getInitials(value) {
       return String(value || '')
@@ -2891,6 +2944,83 @@ async function logout() {
     function conversationFallback(conv) {
       return conv.type === 'team' ? 'Général' : 'Conversation';
     }
+    function renderMatches() {
+  const list = document.getElementById('matches-list');
+
+  if (!list) return;
+
+  if (!state.matchReports.length) {
+    list.innerHTML = `<div class="empty-note">Aucun match renseigné.</div>`;
+    return;
+  }
+
+  list.innerHTML = state.matchReports.map(report => {
+    const statsRows = report.match_player_stats || [];
+
+    const scorers = statsRows.filter(row => Number(row.goals || 0) > 0);
+    const assisters = statsRows.filter(row => Number(row.assists || 0) > 0);
+    const conceded = statsRows.filter(row => Number(row.goals_conceded || 0) > 0);
+    const motm = statsRows.find(row => row.is_man_of_the_match);
+
+    const findMemberName = (teamMemberId) => {
+      const member = state.teamMembers.find(m => m.id === teamMemberId);
+      return member?.player?.full_name || 'Joueur';
+    };
+
+    return `
+      <div class="list-item">
+        <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap">
+          <div>
+            <div class="list-title">${escapeHtml(state.activeTeam?.name || 'Mon équipe')} ${report.score_for} - ${report.score_against} ${escapeHtml(report.opponent)}</div>
+            <div class="list-sub">Match renseigné</div>
+            <div class="list-sub">Homme du match : ${escapeHtml(motm ? findMemberName(motm.team_member_id) : '—')}</div>
+          </div>
+
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button class="btn btn-ghost" onclick="openMatchModal('${report.session_id}')">
+              Modifier
+            </button>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:1rem">
+          <div>
+            <div class="list-title">Buteurs</div>
+            <div class="list-sub" style="margin-top:.4rem">
+              ${
+                scorers.length
+                  ? scorers.map(row => `${escapeHtml(findMemberName(row.team_member_id))} (${row.goals})`).join(', ')
+                  : 'Aucun'
+              }
+            </div>
+          </div>
+
+          <div>
+            <div class="list-title">Passeurs décisifs</div>
+            <div class="list-sub" style="margin-top:.4rem">
+              ${
+                assisters.length
+                  ? assisters.map(row => `${escapeHtml(findMemberName(row.team_member_id))} (${row.assists})`).join(', ')
+                  : 'Aucun'
+              }
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:1rem">
+          <div class="list-title">Buts encaissés</div>
+          <div class="list-sub" style="margin-top:.4rem">
+            ${
+              conceded.length
+                ? conceded.map(row => `${escapeHtml(findMemberName(row.team_member_id))} (${row.goals_conceded})`).join(', ')
+                : 'Aucun'
+            }
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
   </script>
   <div class="modal-overlay" id="match-view-modal-overlay" onclick="if(event.target===this)closeMatchViewModal()">
   <div class="modal">
