@@ -17,7 +17,7 @@
     },
     {
       "src": "/app",
-      "dest": "/public/index.html"
+      "dest": "/index.html"
     },
     {
       "src": "/(.*)",
