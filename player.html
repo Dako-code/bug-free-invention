@@ -573,6 +573,34 @@ nav {
   color: var(--muted);
 }
 
+.join-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1rem;
+}
+
+.form-input {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--green);
+}
+
+.form-input::placeholder {
+  color: var(--muted);
+}
+
 @media (max-width: 1100px) {
   .grid-4 {
     grid-template-columns: repeat(2, 1fr);
@@ -884,8 +912,13 @@ const SUPABASE_URL = 'https://jjythzsnubqevzjzrzio.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqeXRoenNudWJxZXZ6anpyemlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTg3MDksImV4cCI6MjA5MDQzNDcwOX0.oINviaV_LTZEoOOlRLYU2V2yeFTQhdUHjjRdaHyu5mo';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const state = {
+  sessionUser: null
+};
+
 window.showPage = showPage;
 window.logout = logout;
+window.joinTeamFromDashboard = joinTeamFromDashboard;
 
 init();
 
@@ -898,12 +931,12 @@ async function init() {
       return;
     }
 
-    const userId = session.user.id;
+    state.sessionUser = session.user;
 
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', userId)
+      .eq('id', session.user.id)
       .maybeSingle();
 
     if (profileError) {
@@ -920,7 +953,7 @@ async function init() {
     }
 
     hydrateProfile(profile);
-    await loadPlayerData(userId);
+    await loadPlayerData(session.user.id);
 
   } catch (error) {
     console.error(error);
@@ -939,19 +972,7 @@ function hydrateProfile(profile) {
 async function loadPlayerData(userId) {
   const { data: membership, error: membershipError } = await supabase
     .from('team_members')
-    .select(`
-      id,
-      jersey_number,
-      position,
-      status,
-      team:teams (
-        id,
-        name,
-        category,
-        season,
-        coach_id
-      )
-    `)
+    .select('*')
     .eq('player_profile_id', userId)
     .limit(1)
     .maybeSingle();
@@ -965,9 +986,20 @@ async function loadPlayerData(userId) {
     return;
   }
 
-  fillMembership(membership);
+  const { data: team, error: teamError } = await supabase
+    .from('teams')
+    .select('*')
+    .eq('id', membership.team_id)
+    .maybeSingle();
+
+  if (teamError) {
+    console.error(teamError);
+  }
+
+  fillMembership(membership, team);
+
   await Promise.all([
-    loadUpcomingSessions(membership.team.id),
+    loadUpcomingSessions(membership.team_id),
     loadStats(membership.id),
     loadMessages(userId),
     loadPayments(userId)
@@ -977,15 +1009,62 @@ async function loadPlayerData(userId) {
 function fillNoTeamState() {
   document.getElementById('team-name').textContent = 'Aucune équipe';
   document.getElementById('team-meta').textContent = 'Rejoins une équipe avec un code';
+  document.getElementById('team-avatar').textContent = '??';
   document.getElementById('player-position-pill').textContent = 'Poste : —';
   document.getElementById('profile-number').textContent = '—';
   document.getElementById('profile-position').textContent = '—';
   document.getElementById('profile-status').textContent = '—';
+
+  document.getElementById('next-session-box').innerHTML = `
+    <div class="join-box">
+      <div style="font-size:0.9rem;font-weight:700;margin-bottom:0.6rem">Rejoindre une équipe</div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:1rem">
+        Demande le code équipe à ton coach puis saisis-le ici.
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0.8rem">
+        <input
+          id="join-team-code"
+          class="form-input"
+          type="text"
+          placeholder="Ex: FCALNO-7A3F"
+        />
+
+        <select id="join-team-position" class="form-input">
+          <option value="MID">Milieu</option>
+          <option value="GK">Gardien</option>
+          <option value="DEF">Défenseur</option>
+          <option value="ATT">Attaquant</option>
+        </select>
+
+        <button class="btn btn-primary" onclick="joinTeamFromDashboard()">
+          Rejoindre l’équipe
+        </button>
+      </div>
+
+      <div id="join-team-message" style="margin-top:0.9rem;font-size:0.78rem;color:var(--muted)"></div>
+    </div>
+  `;
+
+  document.getElementById('schedule-list').innerHTML = `<div class="empty-note">Aucun rendez-vous trouvé.</div>`;
+  document.getElementById('messages-preview').innerHTML = `<div class="empty-note">Aucun message à afficher pour le moment.</div>`;
+  document.getElementById('messages-list').innerHTML = `<div class="empty-note">Aucun message pour le moment.</div>`;
+  document.getElementById('payments-list').innerHTML = `<div class="empty-note">Aucun paiement enregistré pour le moment.</div>`;
+  document.getElementById('stat-goals').textContent = '--';
+  document.getElementById('stat-assists').textContent = '--';
+  document.getElementById('stat-attendance').textContent = '--%';
+  document.getElementById('stat-rating').textContent = '--';
+  document.getElementById('perf-goals').textContent = '--';
+  document.getElementById('perf-assists').textContent = '--';
+  document.getElementById('perf-matches').textContent = '--';
+  document.getElementById('perf-minutes').textContent = '--';
+  document.getElementById('perf-attendance-label').textContent = '--%';
+  document.getElementById('perf-attendance-fill').style.width = '0%';
+  document.getElementById('perf-rating-label').textContent = '--';
+  document.getElementById('perf-rating-fill').style.width = '0%';
 }
 
-function fillMembership(membership) {
-  const team = membership.team;
-
+function fillMembership(membership, team) {
   document.getElementById('team-name').textContent = team?.name || 'Mon équipe';
   document.getElementById('team-meta').textContent = `${team?.category || '—'} · ${team?.season || '—'}`;
   document.getElementById('team-avatar').textContent = getInitials(team?.name || 'TE');
@@ -994,6 +1073,44 @@ function fillMembership(membership) {
   document.getElementById('profile-number').textContent = membership.jersey_number ?? '—';
   document.getElementById('profile-position').textContent = translatePosition(membership.position);
   document.getElementById('profile-status').textContent = translateStatus(membership.status);
+}
+
+async function joinTeamFromDashboard() {
+  const codeInput = document.getElementById('join-team-code');
+  const positionInput = document.getElementById('join-team-position');
+  const messageBox = document.getElementById('join-team-message');
+
+  const teamCode = codeInput?.value?.trim()?.toUpperCase();
+  const position = positionInput?.value || 'MID';
+
+  if (!teamCode) {
+    messageBox.textContent = 'Entre un code équipe.';
+    messageBox.style.color = 'var(--red)';
+    return;
+  }
+
+  messageBox.textContent = 'Association en cours...';
+  messageBox.style.color = 'var(--muted2)';
+
+  try {
+    const { error } = await supabase.rpc('join_team_by_code', {
+      input_team_code: teamCode,
+      input_position: position
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    messageBox.textContent = 'Équipe rejointe avec succès.';
+    messageBox.style.color = 'var(--green)';
+
+    await loadPlayerData(state.sessionUser.id);
+  } catch (error) {
+    console.error(error);
+    messageBox.textContent = error.message || "Impossible de rejoindre l'équipe.";
+    messageBox.style.color = 'var(--red)';
+  }
 }
 
 async function loadUpcomingSessions(teamId) {
