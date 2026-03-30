@@ -901,7 +901,7 @@
       currentMessages: [],
       realtimeChannel: null
     };
-
+    window.respondToSession = respondToSession;
     window.showPage = showPage;
     window.logout = logout;
     window.joinTeamFromDashboard = joinTeamFromDashboard;
@@ -1091,28 +1091,151 @@
       }
     }
 
-    async function loadUpcomingSessions(teamId) {
-      const nowIso = new Date().toISOString();
+  async function loadUpcomingSessions(teamId) {
+  const nowIso = new Date().toISOString();
 
-      const { data: sessions, error } = await supabase
-        .from('sessions')
-        .select('*')
-        .eq('team_id', teamId)
-        .gte('scheduled_at', nowIso)
-        .order('scheduled_at', { ascending: true })
-        .limit(5);
+  const { data: sessions, error } = await supabase
+    .from('sessions')
+    .select('*')
+    .eq('team_id', teamId)
+    .gte('scheduled_at', nowIso)
+    .order('scheduled_at', { ascending: true })
+    .limit(20);
 
-      if (error) throw error;
+  if (error) throw error;
 
-      const nextSessionBox = document.getElementById('next-session-box');
-      const scheduleList = document.getElementById('schedule-list');
+  const nextSessionBox = document.getElementById('next-session-box');
+  const scheduleList = document.getElementById('schedule-list');
 
-      if (!sessions || !sessions.length) {
-        nextSessionBox.innerHTML = `<div class="empty-note">Aucun rendez-vous à venir.</div>`;
-        scheduleList.innerHTML = `<div class="empty-note">Aucun rendez-vous à venir.</div>`;
-        return;
-      }
+  if (!sessions || !sessions.length) {
+    nextSessionBox.innerHTML = `<div class="empty-note">Aucun rendez-vous à venir.</div>`;
+    scheduleList.innerHTML = `<div class="empty-note">Aucun rendez-vous à venir.</div>`;
+    return;
+  }
 
+  const attendanceMap = await loadPlayerAttendanceMap(sessions.map(s => s.id));
+  const first = sessions[0];
+  const firstStatus = attendanceMap.get(first.id);
+
+  nextSessionBox.innerHTML = `
+    <div class="list-item">
+      <div class="list-title">${escapeHtml(first.title)}</div>
+      <div class="list-sub">${translateSessionType(first.type)} · ${formatDateTime(first.scheduled_at)}</div>
+      <div class="list-sub">${escapeHtml(first.location || 'Lieu non précisé')}</div>
+      <div style="margin-top:.6rem">
+        <span class="badge ${attendanceBadgeClass(firstStatus)}">
+          ${attendanceLabel(firstStatus)}
+        </span>
+      </div>
+    </div>
+  `;
+
+  scheduleList.innerHTML = sessions.map(session => {
+    const status = attendanceMap.get(session.id);
+
+    return `
+      <div class="list-item">
+        <div class="list-title">${escapeHtml(session.title)}</div>
+        <div class="list-sub">${translateSessionType(session.type)} · ${formatDateTime(session.scheduled_at)}</div>
+        <div class="list-sub">${escapeHtml(session.location || 'Lieu non précisé')}</div>
+
+        <div style="margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-primary" onclick="respondToSession('${session.id}', 'present')">
+            Je viens
+          </button>
+
+          <button class="btn btn-ghost" onclick="respondToSession('${session.id}', 'absent')">
+            Je ne viens pas
+          </button>
+
+          <button class="btn btn-ghost" onclick="respondToSession('${session.id}', 'late')">
+            En retard
+          </button>
+
+          <span class="badge ${attendanceBadgeClass(status)}">
+            ${attendanceLabel(status)}
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+async function loadPlayerAttendanceMap(sessionIds) {
+  if (!sessionIds.length) {
+    return new Map();
+  }
+
+  const { data, error } = await supabase
+    .from('attendance')
+    .select('session_id, status')
+    .eq('player_profile_id', state.sessionUser.id)
+    .in('session_id', sessionIds);
+
+  if (error) throw error;
+
+  return new Map((data || []).map(row => [row.session_id, row.status]));
+}
+
+async function respondToSession(sessionId, status) {
+  try {
+    const { data: existing, error: existingError } = await supabase
+      .from('attendance')
+      .select('id')
+      .eq('session_id', sessionId)
+      .eq('player_profile_id', state.sessionUser.id)
+      .maybeSingle();
+
+    if (existingError) throw existingError;
+
+    if (existing) {
+      const { error: updateError } = await supabase
+        .from('attendance')
+        .update({
+          status,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existing.id);
+
+      if (updateError) throw updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('attendance')
+        .insert({
+          session_id: sessionId,
+          player_profile_id: state.sessionUser.id,
+          status
+        });
+
+      if (insertError) throw insertError;
+    }
+
+    await loadUpcomingSessions(state.membership.team_id);
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "Impossible d'enregistrer la réponse.");
+  }
+}
+
+function attendanceLabel(status) {
+  const map = {
+    present: 'Je viens',
+    absent: 'Je ne viens pas',
+    late: 'Je serai en retard'
+  };
+
+  return map[status] || 'Pas de réponse';
+}
+
+function attendanceBadgeClass(status) {
+  const map = {
+    present: 'badge-green',
+    absent: 'badge-red',
+    late: 'badge-orange'
+  };
+
+  return map[status] || 'badge-blue';
+}
       const first = sessions[0];
 
       nextSessionBox.innerHTML = `
