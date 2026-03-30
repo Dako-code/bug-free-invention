@@ -2476,15 +2476,15 @@ async function saveMatch() {
       finalReportId = insertedReport.id;
       document.getElementById('match-report-id').value = finalReportId;
     }
-
-    const rows = state.teamMembers.map(member => ({
-      match_report_id: finalReportId,
-      team_member_id: member.id,
-      goals: Number(document.getElementById(`match-goals-${member.id}`)?.value || 0),
-      assists: Number(document.getElementById(`match-assists-${member.id}`)?.value || 0),
-      goals_conceded: Number(document.getElementById(`match-conceded-${member.id}`)?.value || 0),
-      is_man_of_the_match: String(manOfTheMatchId) === String(member.id)
-    }));
+const rows = state.teamMembers.map(member => ({
+  match_report_id: finalReportId,
+  session_id: sessionId,
+  team_member_id: member.id,
+  goals: Number(document.getElementById(`match-goals-${member.id}`)?.value || 0),
+  assists: Number(document.getElementById(`match-assists-${member.id}`)?.value || 0),
+  goals_conceded: Number(document.getElementById(`match-conceded-${member.id}`)?.value || 0),
+  is_man_of_the_match: String(manOfTheMatchId) === String(member.id)
+}));
 
     const { error: upsertError } = await supabase
       .from('match_player_stats')
