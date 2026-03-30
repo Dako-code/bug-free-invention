@@ -2285,7 +2285,159 @@ async function deleteSession(id) {
   await loadSessions(state.activeTeam.id);
   renderDashboard();
 }
+function closeMatchViewModal() {
+  document.getElementById('match-view-modal-overlay').classList.remove('open');
+}
 
+async function openMatchViewModal(sessionId) {
+  try {
+    const { data: report, error: reportError } = await supabase
+      .from('match_reports')
+      .select(`
+        *,
+        man_of_the_match:team_members!match_reports_man_of_the_match_team_member_id_fkey (
+          id,
+          player:profiles!team_members_player_profile_id_fkey (
+            full_name
+          )
+        )
+      `)
+      .eq('session_id', sessionId)
+      .maybeSingle();
+
+    if (reportError) throw reportError;
+
+    if (!report) {
+      document.getElementById('match-view-content').innerHTML = `
+        <div class="empty-note">Aucun rapport de match enregistré pour cette session.</div>
+      `;
+      document.getElementById('match-view-modal-overlay').classList.add('open');
+      return;
+    }
+
+    const { data: stats, error: statsError } = await supabase
+      .from('match_player_stats')
+      .select(`
+        *,
+        team_member:team_members!match_player_stats_team_member_id_fkey (
+          id,
+          position,
+          player:profiles!team_members_player_profile_id_fkey (
+            full_name
+          )
+        )
+      `)
+      .eq('match_report_id', report.id);
+
+    if (statsError) throw statsError;
+
+    const rows = stats || [];
+
+    const scorers = rows.filter(r => Number(r.goals || 0) > 0);
+    const assisters = rows.filter(r => Number(r.assists || 0) > 0);
+    const conceded = rows.filter(r => Number(r.goals_conceded || 0) > 0);
+
+    const scorersHtml = scorers.length
+      ? scorers.map(r => `
+          <div class="list-item">
+            <div class="list-title">${escapeHtml(r.team_member?.player?.full_name || 'Joueur')}</div>
+            <div class="list-sub">${r.goals} but(s)</div>
+          </div>
+        `).join('')
+      : `<div class="empty-note">Aucun buteur.</div>`;
+
+    const assistersHtml = assisters.length
+      ? assisters.map(r => `
+          <div class="list-item">
+            <div class="list-title">${escapeHtml(r.team_member?.player?.full_name || 'Joueur')}</div>
+            <div class="list-sub">${r.assists} passe(s) décisive(s)</div>
+          </div>
+        `).join('')
+      : `<div class="empty-note">Aucun passeur décisif.</div>`;
+
+    const concededHtml = conceded.length
+      ? conceded.map(r => `
+          <div class="list-item">
+            <div class="list-title">${escapeHtml(r.team_member?.player?.full_name || 'Joueur')}</div>
+            <div class="list-sub">${r.goals_conceded} but(s) encaissé(s)</div>
+          </div>
+        `).join('')
+      : `<div class="empty-note">Aucun but encaissé enregistré.</div>`;
+
+    const motmName = report.man_of_the_match?.player?.full_name || '—';
+
+    document.getElementById('match-view-content').innerHTML = `
+      <div class="grid-2" style="margin-bottom:1rem">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Résultat</span>
+          </div>
+          <div class="list">
+            <div class="list-item">
+              <div class="list-title">${escapeHtml(state.activeTeam?.name || 'Mon équipe')} ${report.score_for} - ${report.score_against} ${escapeHtml(report.opponent)}</div>
+              <div class="list-sub">Homme du match : ${escapeHtml(motmName)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Résumé rapide</span>
+          </div>
+          <div class="list">
+            <div class="list-item">
+              <div class="list-title">Adversaire</div>
+              <div class="list-sub">${escapeHtml(report.opponent)}</div>
+            </div>
+            <div class="list-item">
+              <div class="list-title">Score</div>
+              <div class="list-sub">${report.score_for} - ${report.score_against}</div>
+            </div>
+            <div class="list-item">
+              <div class="list-title">Homme du match</div>
+              <div class="list-sub">${escapeHtml(motmName)}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Buteurs</span>
+          </div>
+          <div class="list">
+            ${scorersHtml}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Passeurs décisifs</span>
+          </div>
+          <div class="list">
+            ${assistersHtml}
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1rem">
+        <div class="card-header">
+          <span class="card-title">Gardien / buts encaissés</span>
+        </div>
+        <div class="list">
+          ${concededHtml}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('match-view-modal-overlay').classList.add('open');
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message || 'Impossible de charger le résumé du match.');
+  }
+}
     async function createConversation() {
       const typeValue = document.getElementById('conversation-type').value;
       const titleInput = document.getElementById('conversation-title').value.trim();
