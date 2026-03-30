@@ -1236,25 +1236,6 @@ function attendanceBadgeClass(status) {
 
   return map[status] || 'badge-blue';
 }
-      const first = sessions[0];
-
-      nextSessionBox.innerHTML = `
-        <div class="list-item">
-          <div class="list-title">${escapeHtml(first.title)}</div>
-          <div class="list-sub">${translateSessionType(first.type)} · ${formatDateTime(first.scheduled_at)}</div>
-          <div class="list-sub">${escapeHtml(first.location || 'Lieu non précisé')}</div>
-        </div>
-      `;
-
-      scheduleList.innerHTML = sessions.map(session => `
-        <div class="list-item">
-          <div class="list-title">${escapeHtml(session.title)}</div>
-          <div class="list-sub">${translateSessionType(session.type)} · ${formatDateTime(session.scheduled_at)}</div>
-          <div class="list-sub">${escapeHtml(session.location || 'Lieu non précisé')}</div>
-        </div>
-      `).join('');
-    }
-
     async function loadStats(teamMemberId) {
       const { data, error } = await supabase
         .from('player_stats')
