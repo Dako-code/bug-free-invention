@@ -1323,6 +1323,10 @@
     window.openGeneralChat = openGeneralChat;
     window.openMatchViewModal = openMatchViewModal;
     window.closeMatchViewModal = closeMatchViewModal;
+    window.openMatchModal = openMatchModal;
+    window.closeMatchModal = closeMatchModal;
+    window.saveMatch = saveMatch;
+
 
     init();
 
@@ -1833,8 +1837,12 @@ function subscribeToAttendanceRealtime(teamId) {
                 <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
               </div>
 
-              <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+             <div style="display:flex;gap:.5rem;flex-wrap:wrap">
   ${item.type === 'match' ? `
+    <button class="btn btn-primary" onclick="openMatchModal('${item.id}')">
+      Renseigner match
+    </button>
+
     <button class="btn btn-ghost" onclick="openMatchViewModal('${item.id}')">
       Voir le match
     </button>
@@ -2689,6 +2697,87 @@ async function logout() {
     }
   </script>
   <div class="modal-overlay" id="match-view-modal-overlay" onclick="if(event.target===this)closeMatchViewModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeMatchViewModal()">✕</button>
+    <div class="modal-title">Résumé du match</div>
+
+    <div id="match-view-content">
+      <div class="empty-note">Aucune donnée.</div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeMatchViewModal()">Fermer</button>
+    </div>
+  </div>
+</div>
+  <div class="modal-overlay" id="match-modal-overlay" onclick="if(event.target===this)closeMatchModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeMatchModal()">✕</button>
+    <div class="modal-title" id="match-modal-title">Renseigner le match</div>
+
+    <input type="hidden" id="match-session-id">
+    <input type="hidden" id="match-report-id">
+
+    <div id="match-modal-notice" class="notice"></div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Adversaire</label>
+        <input class="form-input" id="match-opponent" placeholder="Nom de l’adversaire">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Homme du match</label>
+        <select class="form-select" id="match-man-of-the-match">
+          <option value="">—</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Score équipe</label>
+        <input class="form-input" id="match-score-for" type="number" min="0" value="0">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Score adversaire</label>
+        <input class="form-input" id="match-score-against" type="number" min="0" value="0">
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <div class="card-header">
+        <span class="card-title">Statistiques des joueurs</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Joueur</th>
+              <th>Buts</th>
+              <th>Passes</th>
+              <th>Buts encaissés</th>
+            </tr>
+          </thead>
+          <tbody id="match-players-stats-body">
+            <tr>
+              <td colspan="4" class="empty-note">Aucun joueur.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeMatchModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveMatch()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="match-view-modal-overlay" onclick="if(event.target===this)closeMatchViewModal()">
   <div class="modal">
     <button class="modal-close" onclick="closeMatchViewModal()">✕</button>
     <div class="modal-title">Résumé du match</div>
