@@ -948,28 +948,31 @@
           <div class="page-desc" id="dashboard-subtitle">Charge tes équipes, joueurs et messages en temps réel.</div>
         </div>
 
-        <div class="grid-4" style="margin-bottom:1.5rem">
-          <div class="stat-card">
-            <div class="stat-label">Effectif total</div>
-            <div class="stat-value" id="stat-total-players">0</div>
-            <div class="stat-sub">Équipe active</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Sessions à venir</div>
-            <div class="stat-value" id="stat-upcoming-sessions">0</div>
-            <div class="stat-sub">Planifiées</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Paiements en attente</div>
-            <div class="stat-value" id="stat-pending-payments">0</div>
-            <div class="stat-sub">Non réglés</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Conversations</div>
-            <div class="stat-value" id="stat-recent-messages">0</div>
-            <div class="stat-sub">Fils actifs</div>
-          </div>
-        </div>
+       <div class="grid-4" style="margin-bottom:1.5rem">
+  <div class="stat-card">
+    <div class="stat-label">Buts cumulés</div>
+    <div class="stat-value" id="stats-goals">0</div>
+    <div class="stat-sub">Matchs renseignés</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-label">Passes cumulées</div>
+    <div class="stat-value" id="stats-assists">0</div>
+    <div class="stat-sub">Matchs renseignés</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-label">Matchs cumulés</div>
+    <div class="stat-value" id="stats-matches">0</div>
+    <div class="stat-sub">Total des joueurs</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-label">Buts encaissés</div>
+    <div class="stat-value" id="stats-minutes">0</div>
+    <div class="stat-sub">Gardien / équipe</div>
+  </div>
+</div>
 
         <div class="grid-2">
           <div class="card">
@@ -1087,33 +1090,51 @@
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Détail par joueur</span>
-          </div>
+       <div class="card" style="margin-bottom:1.5rem">
+  <div class="card-header">
+    <span class="card-title">Détail par joueur</span>
+  </div>
 
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Joueur</th>
-                  <th>Buts</th>
-                  <th>Passes</th>
-                  <th>Matchs</th>
-                  <th>Minutes</th>
-                  <th>Note</th>
-                </tr>
-              </thead>
-              <tbody id="stats-table-body">
-                <tr>
-                  <td colspan="6" class="empty-note">Aucune statistique.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Joueur</th>
+          <th>Buts</th>
+          <th>Passes</th>
+          <th>Buts encaissés</th>
+          <th>Matchs</th>
+          <th>Homme du match</th>
+          <th>Poste</th>
+        </tr>
+      </thead>
+      <tbody id="stats-table-body">
+        <tr>
+          <td colspan="7" class="empty-note">Aucune statistique.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Meilleurs buteurs</span>
+    </div>
+    <div class="list" id="top-scorers-list">
+      <div class="empty-note">Aucun buteur.</div>
+    </div>
+  </div>
 
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Meilleurs passeurs</span>
+    </div>
+    <div class="list" id="top-assisters-list">
+      <div class="empty-note">Aucun passeur.</div>
+    </div>
+  </div>
+</div>
       <div class="page" id="page-messages">
         <div class="section-header">
           <div>
@@ -1757,34 +1778,58 @@ async function loadSessions(teamId) {
       renderPayments();
     }
 
-    async function loadStatsForTeam() {
-      if (!state.teamMembers.length) {
-        state.stats = [];
-        renderStats();
-        return;
-      }
+   async function loadStatsForTeam() {
+  if (!state.teamMembers.length) {
+    state.stats = [];
+    renderStats();
+    return;
+  }
 
-      const ids = state.teamMembers.map(m => m.id);
+  const teamMemberIds = state.teamMembers.map(member => member.id);
 
-      const { data, error } = await supabase
-        .from('player_stats')
-        .select('*')
-        .in('team_member_id', ids)
-        .order('updated_at', { ascending: false });
+  const { data: matchStats, error: matchStatsError } = await supabase
+    .from('match_player_stats')
+    .select(`
+      team_member_id,
+      goals,
+      assists,
+      goals_conceded,
+      is_man_of_the_match
+    `)
+    .in('team_member_id', teamMemberIds);
 
-      if (error) throw error;
+  if (matchStatsError) throw matchStatsError;
 
-      const latest = new Map();
+  const aggregated = new Map();
 
-      for (const row of (data || [])) {
-        if (!latest.has(row.team_member_id)) {
-          latest.set(row.team_member_id, row);
-        }
-      }
+  for (const member of state.teamMembers) {
+    aggregated.set(member.id, {
+      team_member_id: member.id,
+      goals: 0,
+      assists: 0,
+      goals_conceded: 0,
+      matches_played: 0,
+      man_of_the_match_count: 0
+    });
+  }
 
-      state.stats = Array.from(latest.values());
-      renderStats();
+  for (const row of (matchStats || [])) {
+    const current = aggregated.get(row.team_member_id);
+    if (!current) continue;
+
+    current.goals += Number(row.goals || 0);
+    current.assists += Number(row.assists || 0);
+    current.goals_conceded += Number(row.goals_conceded || 0);
+    current.matches_played += 1;
+
+    if (row.is_man_of_the_match) {
+      current.man_of_the_match_count += 1;
     }
+  }
+
+  state.stats = Array.from(aggregated.values());
+  renderStats();
+}
 
     async function loadConversations(teamId) {
       const { data, error } = await supabase
@@ -2064,41 +2109,96 @@ const visibleSessions = state.sessions.filter(item => {
     : `<div class="empty-note">Aucune session à afficher.</div>`;
 }
 
-    function renderStats() {
-      const totalGoals = state.stats.reduce((s, r) => s + Number(r.goals || 0), 0);
-      const totalAssists = state.stats.reduce((s, r) => s + Number(r.assists || 0), 0);
-      const totalMatches = state.stats.reduce((s, r) => s + Number(r.matches_played || 0), 0);
-      const totalMinutes = state.stats.reduce((s, r) => s + Number(r.minutes_played || 0), 0);
+function renderStats() {
+  const totalGoals = state.stats.reduce((sum, row) => sum + Number(row.goals || 0), 0);
+  const totalAssists = state.stats.reduce((sum, row) => sum + Number(row.assists || 0), 0);
+  const totalMatches = state.stats.reduce((sum, row) => sum + Number(row.matches_played || 0), 0);
+  const totalConceded = state.stats.reduce((sum, row) => sum + Number(row.goals_conceded || 0), 0);
 
-      document.getElementById('stats-goals').textContent = totalGoals;
-      document.getElementById('stats-assists').textContent = totalAssists;
-      document.getElementById('stats-matches').textContent = totalMatches;
-      document.getElementById('stats-minutes').textContent = totalMinutes;
+  document.getElementById('stats-goals').textContent = totalGoals;
+  document.getElementById('stats-assists').textContent = totalAssists;
+  document.getElementById('stats-matches').textContent = totalMatches;
+  document.getElementById('stats-minutes').textContent = totalConceded;
 
-      const tbody = document.getElementById('stats-table-body');
+  const tbody = document.getElementById('stats-table-body');
+  const topScorersList = document.getElementById('top-scorers-list');
+  const topAssistersList = document.getElementById('top-assisters-list');
 
-      if (!state.stats.length) {
-        tbody.innerHTML = `<tr><td colspan="6" class="empty-note">Aucune statistique.</td></tr>`;
-        return;
-      }
+  if (!state.stats.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty-note">Aucune statistique.</td></tr>`;
 
-      const byMember = new Map(state.stats.map(r => [r.team_member_id, r]));
-
-      tbody.innerHTML = state.teamMembers.map(member => {
-        const row = byMember.get(member.id);
-
-        return `
-          <tr>
-            <td>${escapeHtml(member.player?.full_name || 'Joueur')}</td>
-            <td>${row?.goals ?? 0}</td>
-            <td>${row?.assists ?? 0}</td>
-            <td>${row?.matches_played ?? 0}</td>
-            <td>${row?.minutes_played ?? 0}</td>
-            <td>${row?.avg_rating ?? '—'}</td>
-          </tr>
-        `;
-      }).join('');
+    if (topScorersList) {
+      topScorersList.innerHTML = `<div class="empty-note">Aucun buteur.</div>`;
     }
+
+    if (topAssistersList) {
+      topAssistersList.innerHTML = `<div class="empty-note">Aucun passeur.</div>`;
+    }
+
+    return;
+  }
+
+  const statsByMember = new Map(state.stats.map(row => [row.team_member_id, row]));
+
+  const enrichedPlayers = state.teamMembers.map(member => {
+    const row = statsByMember.get(member.id) || {
+      goals: 0,
+      assists: 0,
+      goals_conceded: 0,
+      matches_played: 0,
+      man_of_the_match_count: 0
+    };
+
+    return {
+      member,
+      ...row
+    };
+  });
+
+  tbody.innerHTML = enrichedPlayers.map(item => `
+    <tr>
+      <td>${escapeHtml(item.member.player?.full_name || 'Joueur')}</td>
+      <td>${item.goals}</td>
+      <td>${item.assists}</td>
+      <td>${item.goals_conceded}</td>
+      <td>${item.matches_played}</td>
+      <td>${item.man_of_the_match_count}</td>
+      <td>${translatePosition(item.member.position)}</td>
+    </tr>
+  `).join('');
+
+  const topScorers = [...enrichedPlayers]
+    .sort((a, b) => b.goals - a.goals)
+    .filter(item => item.goals > 0)
+    .slice(0, 5);
+
+  const topAssisters = [...enrichedPlayers]
+    .sort((a, b) => b.assists - a.assists)
+    .filter(item => item.assists > 0)
+    .slice(0, 5);
+
+  if (topScorersList) {
+    topScorersList.innerHTML = topScorers.length
+      ? topScorers.map((item, index) => `
+          <div class="list-item">
+            <div class="list-title">#${index + 1} ${escapeHtml(item.member.player?.full_name || 'Joueur')}</div>
+            <div class="list-sub">${item.goals} but(s)</div>
+          </div>
+        `).join('')
+      : `<div class="empty-note">Aucun buteur.</div>`;
+  }
+
+  if (topAssistersList) {
+    topAssistersList.innerHTML = topAssisters.length
+      ? topAssisters.map((item, index) => `
+          <div class="list-item">
+            <div class="list-title">#${index + 1} ${escapeHtml(item.member.player?.full_name || 'Joueur')}</div>
+            <div class="list-sub">${item.assists} passe(s) décisive(s)</div>
+          </div>
+        `).join('')
+      : `<div class="empty-note">Aucun passeur.</div>`;
+  }
+}
 
     function renderPayments() {
       const tbody = document.getElementById('payments-table-body');
