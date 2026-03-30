@@ -732,7 +732,6 @@ async function createInitialTeam(userId, teamName, category, season) {
     throw subError;
   }
 }
-
 async function tryJoinPendingTeam() {
   const pendingTeamCode = localStorage.getItem('pending_team_code');
   const pendingPosition = localStorage.getItem('pending_player_position') || 'MID';
@@ -748,7 +747,7 @@ async function tryJoinPendingTeam() {
 
   if (error) {
     console.error('join_team_by_code failed:', error);
-    throw new Error("Connexion réussie, mais l'association à l'équipe a échoué. Vérifie le code équipe.");
+    throw new Error(error.message || "L'association à l'équipe a échoué.");
   }
 
   localStorage.removeItem('pending_team_code');
