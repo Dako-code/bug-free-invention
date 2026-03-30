@@ -5,868 +5,219 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CoachPro — Dashboard Coach</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
 :root {
-  --bg: #080C0A;
-  --surface: #0F1511;
-  --card: #141C16;
-  --card2: #192010;
-  --border: #1E2B20;
-  --border2: #243028;
-  --green: #3DFF7A;
-  --green2: #00C853;
-  --green-dim: rgba(61,255,122,0.08);
-  --text: #EDF2EE;
-  --muted: #5A7060;
-  --muted2: #8AAB8F;
-  --red: #FF5252;
-  --orange: #FF9100;
-  --blue: #40C4FF;
-  --purple: #CE93D8;
-  --yellow: #FFD740;
-  --r: 10px;
-  --r2: 14px;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html { height: 100%; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Outfit', sans-serif;
-  font-size: 15px;
-  height: 100%;
-  display: flex;
-  overflow: hidden;
-}
-
-/* SIDEBAR */
-.sidebar {
-  width: 240px;
-  min-width: 240px;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.sidebar-logo {
-  padding: 1.4rem 1.2rem 1rem;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.logo-text {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.6rem;
-  letter-spacing: 0.05em;
-  color: var(--green);
-  line-height: 1;
-}
-
-.logo-sub {
-  font-size: 0.65rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-.sidebar-team {
-  padding: 0.8rem 1rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.team-selector {
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-radius: var(--r);
-  padding: 0.65rem 0.8rem;
-  display: flex;
-  gap: 0.7rem;
-  align-items: center;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.team-selector:hover {
-  border-color: var(--green);
-}
-
-.team-avatar {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg,#1a4a2a,#0d3020);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--green);
-  font-weight: 700;
-  font-size: 0.76rem;
-  flex-shrink: 0;
-}
-
-.team-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.team-name {
-  font-size: 0.82rem;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.team-cat {
-  font-size: 0.68rem;
-  color: var(--muted);
-  letter-spacing: 0.04em;
-}
-
-.team-chevron {
-  color: var(--muted);
-  font-size: 0.7rem;
-}
-
-nav {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0.6rem 0;
-}
-
-.nav-section {
-  padding: 0.5rem 1rem 0.2rem;
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.55rem 1rem;
-  cursor: pointer;
-  color: var(--muted2);
-  font-size: 0.85rem;
-  font-weight: 500;
-  border-left: 3px solid transparent;
-  transition: all 0.15s;
-}
-
-.nav-item:hover {
-  color: var(--text);
-  background: var(--green-dim);
-}
-
-.nav-item.active {
-  color: var(--green);
-  border-left-color: var(--green);
-  background: var(--green-dim);
-}
-
-.nav-icon {
-  font-size: 1rem;
-  width: 18px;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.sidebar-bottom {
-  padding: 0.8rem;
-  border-top: 1px solid var(--border);
-}
-
-.user-card {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem;
-  border-radius: var(--r);
-}
-
-.user-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--green2), #004D20);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.user-name {
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.user-role {
-  font-size: 0.68rem;
-  color: var(--muted);
-}
-
-/* MAIN */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.topbar {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 0 1.5rem;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  flex-shrink: 0;
-}
-
-.topbar-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.4rem;
-  letter-spacing: 0.05em;
-}
-
-.topbar-spacer {
-  flex: 1;
-}
-
-.topbar-pill {
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-radius: 999px;
-  padding: 0.35rem 0.8rem;
-  font-size: 0.75rem;
-  color: var(--muted2);
-}
-
-.btn {
-  padding: 0.45rem 1rem;
-  border-radius: var(--r);
-  font-family: 'Outfit', sans-serif;
-  font-weight: 600;
-  font-size: 0.82rem;
-  cursor: pointer;
-  border: none;
-  transition: all 0.15s;
-}
-
-.btn-primary {
-  background: var(--green);
-  color: #000;
-}
-
-.btn-primary:hover {
-  background: #5DFFAA;
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--muted2);
-  border: 1px solid var(--border2);
-}
-
-.btn-ghost:hover {
-  border-color: var(--green);
-  color: var(--green);
-}
-
-.btn-danger {
-  background: rgba(255,82,82,0.1);
-  color: var(--red);
-  border: 1px solid rgba(255,82,82,0.2);
-}
-
-.btn-danger:hover {
-  background: rgba(255,82,82,0.16);
-}
-
-/* CONTENT */
-.content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.5rem 1.8rem;
-}
-
-.page {
-  display: none;
-}
-
-.page.active {
-  display: block;
-}
-
-.page-header {
-  margin-bottom: 1.5rem;
-}
-
-.page-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2rem;
-  letter-spacing: 0.03em;
-  line-height: 1;
-}
-
-.page-desc {
-  font-size: 0.83rem;
-  color: var(--muted);
-  margin-top: 4px;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.2rem;
-}
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 1.2rem;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.card-title {
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted2);
-}
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.2rem;
-}
-
-.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
-
-.grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-}
-
-.stat-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 1.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.stat-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.stat-value {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.5rem;
-  line-height: 1;
-}
-
-.stat-sub {
-  font-size: 0.75rem;
-  color: var(--muted2);
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.2rem 0.55rem;
-  border-radius: 100px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-
-.badge-green {
-  background: rgba(61,255,122,0.12);
-  color: var(--green);
-}
-
-.badge-red {
-  background: rgba(255,82,82,0.12);
-  color: var(--red);
-}
-
-.badge-orange {
-  background: rgba(255,145,0,0.12);
-  color: var(--orange);
-}
-
-.badge-blue {
-  background: rgba(64,196,255,0.12);
-  color: var(--blue);
-}
-
-.badge-purple {
-  background: rgba(206,147,216,0.12);
-  color: var(--purple);
-}
-
-.badge-yellow {
-  background: rgba(255,215,64,0.12);
-  color: var(--yellow);
-}
-
-.badge-muted {
-  background: var(--border);
-  color: var(--muted2);
-}
-
-.table-wrap {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0.6rem 0.8rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-
-td {
-  padding: 0.75rem 0.8rem;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.84rem;
-  vertical-align: middle;
-}
-
-tr:last-child td {
-  border-bottom: none;
-}
-
-.avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.75rem;
-  flex-shrink: 0;
-}
-
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-
-.list-item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 0.85rem;
-}
-
-.list-title {
-  font-size: 0.84rem;
-  font-weight: 600;
-}
-
-.list-sub {
-  font-size: 0.74rem;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-.msg-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.msg-item {
-  padding: 0.85rem;
-  border-radius: var(--r);
-  background: var(--surface);
-  border: 1px solid var(--border);
-}
-
-.msg-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.msg-name {
-  font-size: 0.84rem;
-  font-weight: 700;
-}
-
-.msg-time {
-  font-size: 0.7rem;
-  color: var(--muted);
-}
-
-.msg-preview {
-  font-size: 0.77rem;
-  color: var(--muted2);
-  margin-top: 0.35rem;
-}
-
-.empty-note {
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.progress-bar {
-  height: 6px;
-  background: var(--border);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--green2), var(--green));
-}
-
-/* MODAL */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.modal-overlay.open {
-  display: flex;
-}
-
-.modal {
-  background: var(--card);
-  border: 1px solid var(--border2);
-  border-radius: var(--r2);
-  padding: 1.6rem;
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-}
-
-.modal-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.6rem;
-  margin-bottom: 0.35rem;
-}
-
-.modal-close {
-  position: absolute;
-  top: 0.9rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-.modal-footer {
-  display: flex;
-  gap: 0.6rem;
-  justify-content: flex-end;
-  margin-top: 1.2rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.form-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted2);
-}
-
-.form-input,
-.form-select,
-.form-textarea {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: var(--r);
-  padding: 0.7rem 0.85rem;
-  color: var(--text);
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.85rem;
-  outline: none;
-  width: 100%;
-}
-
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-  border-color: var(--green);
-}
-
-.notice {
-  margin-bottom: 1rem;
-  padding: 0.8rem 0.9rem;
-  border-radius: var(--r);
-  font-size: 0.82rem;
-  display: none;
-}
-
-.notice.error {
-  display: block;
-  background: rgba(255,82,82,0.1);
-  border: 1px solid rgba(255,82,82,0.2);
-  color: var(--red);
-}
-
-.notice.success {
-  display: block;
-  background: rgba(61,255,122,0.1);
-  border: 1px solid rgba(61,255,122,0.2);
-  color: var(--green);
-}
-
-@media (max-width: 1100px) {
-  .grid-4 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .grid-2 {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 820px) {
-  body {
-    flex-direction: column;
-    overflow: auto;
-  }
-
-  .sidebar {
-    width: 100%;
-    min-width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .main {
-    width: 100%;
-  }
-
-  .grid-4,
-  .grid-3,
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-}
+  --bg:#080C0A;
+  --surface:#0F1511;
+  --card:#141C16;
+  --border:#1E2B20;
+  --border2:#243028;
+  --green:#3DFF7A;
+  --green2:#00C853;
+  --green-dim:rgba(61,255,122,.08);
+  --text:#EDF2EE;
+  --muted:#5A7060;
+  --muted2:#8AAB8F;
+  --red:#FF5252;
+  --orange:#FF9100;
+  --blue:#40C4FF;
+  --r:10px;
+  --r2:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;display:flex;overflow:hidden}
+.sidebar{width:240px;min-width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-logo{padding:1.4rem 1.2rem 1rem;border-bottom:1px solid var(--border)}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.05em;color:var(--green);line-height:1}
+.logo-sub{font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.sidebar-team{padding:.8rem 1rem;border-bottom:1px solid var(--border)}
+.team-selector{background:var(--card);border:1px solid var(--border2);border-radius:var(--r);padding:.65rem .8rem;display:flex;gap:.7rem;align-items:center;cursor:pointer;transition:border-color .2s}
+.team-selector:hover{border-color:var(--green)}
+.team-avatar{width:32px;height:32px;background:linear-gradient(135deg,#1a4a2a,#0d3020);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--green);font-weight:700;font-size:.76rem;flex-shrink:0}
+.team-info{flex:1;min-width:0}
+.team-name{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team-cat{font-size:.68rem;color:var(--muted)}
+nav{flex:1;overflow-y:auto;padding:.6rem 0}
+.nav-section{padding:.5rem 1rem .2rem;font-size:.62rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.nav-item{display:flex;align-items:center;gap:.7rem;padding:.55rem 1rem;cursor:pointer;color:var(--muted2);font-size:.85rem;font-weight:500;border-left:3px solid transparent;transition:all .15s}
+.nav-item:hover{color:var(--text);background:var(--green-dim)}
+.nav-item.active{color:var(--green);border-left-color:var(--green);background:var(--green-dim)}
+.nav-icon{font-size:1rem;width:18px;text-align:center;flex-shrink:0}
+.sidebar-bottom{padding:.8rem;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:.6rem;padding:.6rem}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--green2),#004D20);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:#fff;flex-shrink:0}
+.user-name{font-size:.82rem;font-weight:600}
+.user-role{font-size:.68rem;color:var(--muted)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;height:56px;display:flex;align-items:center;gap:.8rem;flex-shrink:0}
+.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.05em}
+.topbar-spacer{flex:1}
+.topbar-pill{background:var(--card);border:1px solid var(--border2);border-radius:999px;padding:.35rem .8rem;font-size:.75rem;color:var(--muted2)}
+.btn{padding:.45rem 1rem;border-radius:var(--r);font-family:'Outfit',sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--green);color:#000}
+.btn-primary:hover{background:#5DFFAA}
+.btn-ghost{background:transparent;color:var(--muted2);border:1px solid var(--border2)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green)}
+.content{flex:1;overflow-y:auto;padding:1.5rem 1.8rem}
+.page{display:none}
+.page.active{display:block}
+.page-header{margin-bottom:1.5rem}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.03em;line-height:1}
+.page-desc{font-size:.83rem;color:var(--muted);margin-top:4px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.card-title{font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;display:flex;flex-direction:column;gap:.35rem}
+.stat-label{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stat-value{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;line-height:1}
+.stat-sub{font-size:.75rem;color:var(--muted2)}
+.badge{display:inline-flex;align-items:center;padding:.2rem .55rem;border-radius:100px;font-size:.68rem;font-weight:600;letter-spacing:.05em}
+.badge-green{background:rgba(61,255,122,.12);color:var(--green)}
+.badge-red{background:rgba(255,82,82,.12);color:var(--red)}
+.badge-orange{background:rgba(255,145,0,.12);color:var(--orange)}
+.badge-blue{background:rgba(64,196,255,.12);color:var(--blue)}
+.badge-muted{background:var(--border);color:var(--muted2)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:.75rem .8rem;border-bottom:1px solid var(--border);font-size:.84rem;vertical-align:middle}
+.avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0}
+.list{display:flex;flex-direction:column;gap:.7rem}
+.list-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.85rem}
+.list-title{font-size:.84rem;font-weight:600}
+.list-sub{font-size:.74rem;color:var(--muted);margin-top:2px}
+.msg-list{display:flex;flex-direction:column;gap:.6rem}
+.msg-item{padding:.85rem;border-radius:var(--r);background:var(--surface);border:1px solid var(--border)}
+.msg-header{display:flex;justify-content:space-between;gap:1rem}
+.msg-name{font-size:.84rem;font-weight:700}
+.msg-time{font-size:.7rem;color:var(--muted)}
+.msg-preview{font-size:.77rem;color:var(--muted2);margin-top:.35rem}
+.empty-note{font-size:.8rem;color:var(--muted)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:var(--r2);padding:1.6rem;width:100%;max-width:620px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;margin-bottom:.35rem}
+.modal-close{position:absolute;top:.9rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer}
+.modal-footer{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border)}
+.form-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-label{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2)}
+.form-input,.form-select,.form-textarea{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:.7rem .85rem;color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem;outline:none;width:100%}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--green)}
+.notice{margin-bottom:1rem;padding:.8rem .9rem;border-radius:var(--r);font-size:.82rem;display:none}
+.notice.error{display:block;background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.2);color:var(--red)}
+.notice.success{display:block;background:rgba(61,255,122,.1);border:1px solid rgba(61,255,122,.2);color:var(--green)}
+.chat-layout{display:grid;grid-template-columns:280px 1fr;gap:1rem}
+.chat-sidebar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:.8rem;display:flex;flex-direction:column;gap:.6rem;max-height:70vh;overflow:auto}
+.chat-thread{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1rem;display:flex;flex-direction:column;min-height:70vh}
+.conv-item{padding:.75rem;border-radius:var(--r);background:var(--card);border:1px solid var(--border);cursor:pointer}
+.conv-item.active{border-color:var(--green);background:var(--green-dim)}
+.messages-area{flex:1;overflow:auto;display:flex;flex-direction:column;gap:.7rem;padding:.5rem 0}
+.bubble{max-width:75%;padding:.7rem .9rem;border-radius:14px;background:var(--surface);border:1px solid var(--border)}
+.bubble.me{align-self:flex-end;background:rgba(61,255,122,.12);border-color:rgba(61,255,122,.25)}
+.bubble-top{font-size:.72rem;color:var(--muted);margin-bottom:.25rem}
+.send-row{display:flex;gap:.6rem;margin-top:1rem}
+.send-row input{flex:1}
+@media (max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-2,.chat-layout{grid-template-columns:1fr}}
+@media (max-width:820px){body{flex-direction:column;overflow:auto}.sidebar{width:100%;min-width:100%;border-right:none;border-bottom:1px solid var(--border)}.main{width:100%}.grid-4,.form-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-text">CoachPro</div>
-    <div class="logo-sub">Team Management</div>
+<aside class=\"sidebar\">
+  <div class=\"sidebar-logo\">
+    <div class=\"logo-text\">CoachPro</div>
+    <div class=\"logo-sub\">Team Management</div>
   </div>
 
-  <div class="sidebar-team">
-    <div class="team-selector" onclick="openTeamModal()">
-      <div class="team-avatar" id="sidebar-team-avatar">TM</div>
-      <div class="team-info">
-        <div class="team-name" id="sidebar-team-name">Aucune équipe</div>
-        <div class="team-cat" id="sidebar-team-cat">Crée une équipe pour commencer</div>
+  <div class=\"sidebar-team\">
+    <div class=\"team-selector\" onclick=\"openTeamModal()\">
+      <div class=\"team-avatar\" id=\"sidebar-team-avatar\">TM</div>
+      <div class=\"team-info\">
+        <div class=\"team-name\" id=\"sidebar-team-name\">Aucune équipe</div>
+        <div class=\"team-cat\" id=\"sidebar-team-cat\">Crée une équipe pour commencer</div>
       </div>
-      <div class="team-chevron">⌄</div>
+      <div>⌄</div>
     </div>
   </div>
 
   <nav>
-    <div class="nav-section">Principal</div>
-    <div class="nav-item active" onclick="showPage('dashboard', this)">
-      <span class="nav-icon">⚡</span>Dashboard
-    </div>
-    <div class="nav-item" onclick="showPage('roster', this)">
-      <span class="nav-icon">👥</span>Effectif
-    </div>
-    <div class="nav-item" onclick="showPage('sessions', this)">
-      <span class="nav-icon">⚽</span>Sessions
-    </div>
-    <div class="nav-item" onclick="showPage('stats', this)">
-      <span class="nav-icon">📊</span>Statistiques
-    </div>
-
-    <div class="nav-section">Organisation</div>
-    <div class="nav-item" onclick="showPage('messages', this)">
-      <span class="nav-icon">💬</span>Messages
-    </div>
-    <div class="nav-item" onclick="showPage('payments', this)">
-      <span class="nav-icon">💳</span>Paiements
-    </div>
-
-    <div class="nav-section">Club</div>
-    <div class="nav-item" onclick="showPage('settings', this)">
-      <span class="nav-icon">⚙️</span>Paramètres
-    </div>
+    <div class=\"nav-section\">Principal</div>
+    <div class=\"nav-item active\" onclick=\"showPage('dashboard', this)\"><span class=\"nav-icon\">⚡</span>Dashboard</div>
+    <div class=\"nav-item\" onclick=\"showPage('roster', this)\"><span class=\"nav-icon\">👥</span>Effectif</div>
+    <div class=\"nav-item\" onclick=\"showPage('sessions', this)\"><span class=\"nav-icon\">⚽</span>Sessions</div>
+    <div class=\"nav-item\" onclick=\"showPage('stats', this)\"><span class=\"nav-icon\">📊</span>Statistiques</div>
+    <div class=\"nav-section\">Organisation</div>
+    <div class=\"nav-item\" onclick=\"showPage('messages', this)\"><span class=\"nav-icon\">💬</span>Messages</div>
+    <div class=\"nav-item\" onclick=\"showPage('payments', this)\"><span class=\"nav-icon\">💳</span>Paiements</div>
+    <div class=\"nav-section\">Club</div>
+    <div class=\"nav-item\" onclick=\"showPage('settings', this)\"><span class=\"nav-icon\">⚙️</span>Paramètres</div>
   </nav>
 
-  <div class="sidebar-bottom">
-    <div class="user-card">
-      <div class="user-avatar" id="user-avatar">C</div>
+  <div class=\"sidebar-bottom\">
+    <div class=\"user-card\">
+      <div class=\"user-avatar\" id=\"user-avatar\">C</div>
       <div>
-        <div class="user-name" id="user-name">Coach</div>
-        <div class="user-role">Entraîneur</div>
+        <div class=\"user-name\" id=\"user-name\">Coach</div>
+        <div class=\"user-role\">Entraîneur</div>
       </div>
     </div>
   </div>
 </aside>
 
-<div class="main">
-  <div class="topbar">
-    <div class="topbar-title" id="topbar-title">Dashboard</div>
-    <div class="topbar-spacer"></div>
-    <div class="topbar-pill" id="subscription-pill">Plan coach</div>
-    <button class="btn btn-ghost" onclick="logout()">Déconnexion</button>
-    <button class="btn btn-primary" id="topbar-action" onclick="topbarAction()">+ Ajouter</button>
+<div class=\"main\">
+  <div class=\"topbar\">
+    <div class=\"topbar-title\" id=\"topbar-title\">Dashboard</div>
+    <div class=\"topbar-spacer\"></div>
+    <div class=\"topbar-pill\" id=\"subscription-pill\">Plan coach</div>
+    <button class=\"btn btn-ghost\" onclick=\"logout()\">Déconnexion</button>
+    <button class=\"btn btn-primary\" onclick=\"topbarAction()\">+ Ajouter</button>
   </div>
 
-  <div class="content">
-
-    <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-header">
-        <div class="page-title">Bon retour, Coach 👋</div>
-        <div class="page-desc" id="dashboard-subtitle">Charge tes équipes, tes joueurs et tes sessions en temps réel.</div>
+  <div class=\"content\">
+    <div class=\"page active\" id=\"page-dashboard\">
+      <div class=\"page-header\">
+        <div class=\"page-title\">Bon retour, Coach 👋</div>
+        <div class=\"page-desc\" id=\"dashboard-subtitle\">Charge tes équipes, joueurs et messages en temps réel.</div>
       </div>
 
-      <div class="grid-4" style="margin-bottom:1.5rem">
-        <div class="stat-card">
-          <div class="stat-label">Effectif total</div>
-          <div class="stat-value" id="stat-total-players">0</div>
-          <div class="stat-sub">Joueurs dans l’équipe active</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Sessions à venir</div>
-          <div class="stat-value" id="stat-upcoming-sessions">0</div>
-          <div class="stat-sub">Matchs, entraînements et réunions</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Paiements en attente</div>
-          <div class="stat-value" id="stat-pending-payments">0</div>
-          <div class="stat-sub">Paiements non réglés</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Messages récents</div>
-          <div class="stat-value" id="stat-recent-messages">0</div>
-          <div class="stat-sub">Derniers messages de l’équipe</div>
-        </div>
+      <div class=\"grid-4\" style=\"margin-bottom:1.5rem\">
+        <div class=\"stat-card\"><div class=\"stat-label\">Effectif total</div><div class=\"stat-value\" id=\"stat-total-players\">0</div><div class=\"stat-sub\">Équipe active</div></div>
+        <div class=\"stat-card\"><div class=\"stat-label\">Sessions à venir</div><div class=\"stat-value\" id=\"stat-upcoming-sessions\">0</div><div class=\"stat-sub\">Planifiées</div></div>
+        <div class=\"stat-card\"><div class=\"stat-label\">Paiements en attente</div><div class=\"stat-value\" id=\"stat-pending-payments\">0</div><div class=\"stat-sub\">Non réglés</div></div>
+        <div class=\"stat-card\"><div class=\"stat-label\">Messages</div><div class=\"stat-value\" id=\"stat-recent-messages\">0</div><div class=\"stat-sub\">Conversations actives</div></div>
       </div>
 
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Prochaines sessions</span>
-          </div>
-          <div class="list" id="dashboard-sessions-list">
-            <div class="empty-note">Aucune session à venir.</div>
-          </div>
+      <div class=\"grid-2\">
+        <div class=\"card\">
+          <div class=\"card-header\"><span class=\"card-title\">Prochaines sessions</span></div>
+          <div class=\"list\" id=\"dashboard-sessions-list\"><div class=\"empty-note\">Aucune session à venir.</div></div>
         </div>
-
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Derniers paiements</span>
-          </div>
-          <div class="list" id="dashboard-payments-list">
-            <div class="empty-note">Aucun paiement pour le moment.</div>
-          </div>
+        <div class=\"card\">
+          <div class=\"card-header\"><span class=\"card-title\">Derniers paiements</span></div>
+          <div class=\"list\" id=\"dashboard-payments-list\"><div class=\"empty-note\">Aucun paiement.</div></div>
         </div>
       </div>
     </div>
 
-    <!-- ROSTER -->
-    <div class="page" id="page-roster">
-      <div class="section-header">
+    <div class=\"page\" id=\"page-roster\">
+      <div class=\"section-header\">
         <div>
-          <div class="page-title">Effectif</div>
-          <div class="page-desc" id="roster-subtitle">Joueurs rattachés à l’équipe active</div>
+          <div class=\"page-title\">Effectif</div>
+          <div class=\"page-desc\">Joueurs rattachés à l’équipe active</div>
         </div>
-        <button class="btn btn-primary" onclick="openCreatePlayerModal()">+ Ajouter un joueur</button>
+        <button class=\"btn btn-primary\" onclick=\"openCreatePlayerModal()\">+ Ajouter un joueur</button>
       </div>
 
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Liste des joueurs</span>
-          <span class="badge badge-blue" id="team-code-badge">Code équipe : —</span>
+      <div class=\"card\">
+        <div class=\"card-header\">
+          <span class=\"card-title\">Liste des joueurs</span>
+          <span class=\"badge badge-blue\" id=\"team-code-badge\">Code équipe : —</span>
         </div>
-
-        <div class="table-wrap">
+        <div class=\"table-wrap\">
           <table>
             <thead>
               <tr>
@@ -874,70 +225,47 @@ tr:last-child td {
                 <th>Poste</th>
                 <th>Numéro</th>
                 <th>Statut</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="roster-table-body">
-              <tr>
-                <td colspan="4" class="empty-note">Aucun joueur.</td>
-              </tr>
+            <tbody id=\"roster-table-body\">
+              <tr><td colspan=\"5\" class=\"empty-note\">Aucun joueur.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- SESSIONS -->
-    <div class="page" id="page-sessions">
-      <div class="section-header">
+    <div class=\"page\" id=\"page-sessions\">
+      <div class=\"section-header\">
         <div>
-          <div class="page-title">Sessions</div>
-          <div class="page-desc">Entraînements, matchs, réunions et tournois</div>
+          <div class=\"page-title\">Sessions</div>
+          <div class=\"page-desc\">Entraînements, matchs et réunions</div>
         </div>
-        <button class="btn btn-primary" onclick="openCreateSessionModal()">+ Nouvelle session</button>
+        <button class=\"btn btn-primary\" onclick=\"openCreateSessionModal()\">+ Nouvelle session</button>
       </div>
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Planning de l’équipe</span>
-        </div>
-
-        <div class="list" id="sessions-list">
-          <div class="empty-note">Aucune session enregistrée.</div>
-        </div>
+      <div class=\"card\">
+        <div class=\"card-header\"><span class=\"card-title\">Planning</span></div>
+        <div class=\"list\" id=\"sessions-list\"><div class=\"empty-note\">Aucune session.</div></div>
       </div>
     </div>
 
-    <!-- STATS -->
-    <div class="page" id="page-stats">
-      <div class="page-header">
-        <div class="page-title">Statistiques</div>
-        <div class="page-desc">Statistiques agrégées de l’équipe active</div>
+    <div class=\"page\" id=\"page-stats\">
+      <div class=\"page-header\">
+        <div class=\"page-title\">Statistiques</div>
+        <div class=\"page-desc\">Statistiques agrégées de l’équipe</div>
       </div>
 
-      <div class="grid-3" id="stats-cards">
-        <div class="stat-card">
-          <div class="stat-label">Buts cumulés</div>
-          <div class="stat-value" id="stats-goals">0</div>
-          <div class="stat-sub">Saison active</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Passes cumulées</div>
-          <div class="stat-value" id="stats-assists">0</div>
-          <div class="stat-sub">Saison active</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Matchs cumulés</div>
-          <div class="stat-value" id="stats-matches">0</div>
-          <div class="stat-sub">Somme des matchs joués</div>
-        </div>
+      <div class=\"grid-4\" style=\"margin-bottom:1.5rem\">
+        <div class=\"stat-card\"><div class=\"stat-label\">Buts cumulés</div><div class=\"stat-value\" id=\"stats-goals\">0</div><div class=\"stat-sub\">Saison</div></div>
+        <div class=\"stat-card\"><div class=\"stat-label\">Passes cumulées</div><div class=\"stat-value\" id=\"stats-assists\">0</div><div class=\"stat-sub\">Saison</div></div>
+        <div class=\"stat-card\"><div class=\"stat-label\">Matchs cumulés</div><div class=\"stat-value\" id=\"stats-matches\">0</div><div class=\"stat-sub\">Somme</div></div>
+        <div class=\"stat-card\"><div class=\"stat-label\">Minutes cumulées</div><div class=\"stat-value\" id=\"stats-minutes\">0</div><div class=\"stat-sub\">Somme</div></div>
       </div>
 
-      <div class="card" style="margin-top:1.5rem">
-        <div class="card-header">
-          <span class="card-title">Détail par joueur</span>
-        </div>
-
-        <div class="table-wrap">
+      <div class=\"card\">
+        <div class=\"card-header\"><span class=\"card-title\">Détail par joueur</span></div>
+        <div class=\"table-wrap\">
           <table>
             <thead>
               <tr>
@@ -946,54 +274,57 @@ tr:last-child td {
                 <th>Passes</th>
                 <th>Matchs</th>
                 <th>Minutes</th>
-                <th>Note moy.</th>
+                <th>Note</th>
               </tr>
             </thead>
-            <tbody id="stats-table-body">
-              <tr>
-                <td colspan="6" class="empty-note">Aucune statistique disponible.</td>
-              </tr>
+            <tbody id=\"stats-table-body\">
+              <tr><td colspan=\"6\" class=\"empty-note\">Aucune statistique.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- MESSAGES -->
-    <div class="page" id="page-messages">
-      <div class="section-header">
+    <div class=\"page\" id=\"page-messages\">
+      <div class=\"section-header\">
         <div>
-          <div class="page-title">Messages</div>
-          <div class="page-desc">Messagerie de l’équipe active</div>
+          <div class=\"page-title\">Messages</div>
+          <div class=\"page-desc\">Coach ↔ joueurs + chat général</div>
+        </div>
+        <div style=\"display:flex;gap:.6rem\">
+          <button class=\"btn btn-ghost\" onclick=\"openNewConversationModal()\">+ Conversation</button>
+          <button class=\"btn btn-primary\" onclick=\"openGeneralChat()\">Chat général</button>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Derniers messages</span>
-        </div>
-
-        <div class="msg-list" id="messages-list">
-          <div class="empty-note">Aucun message pour le moment.</div>
+      <div class=\"chat-layout\">
+        <div class=\"chat-sidebar\" id=\"conversation-list\"></div>
+        <div class=\"chat-thread\">
+          <div style=\"display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)\">
+            <div>
+              <div style=\"font-weight:700\" id=\"current-conversation-title\">Sélectionne une conversation</div>
+              <div style=\"font-size:.75rem;color:var(--muted)\" id=\"current-conversation-sub\">Aucun fil actif</div>
+            </div>
+          </div>
+          <div class=\"messages-area\" id=\"messages-area\">
+            <div class=\"empty-note\">Choisis une conversation dans la colonne de gauche.</div>
+          </div>
+          <div class=\"send-row\">
+            <input class=\"form-input\" id=\"message-input\" placeholder=\"Votre message...\" />
+            <button class=\"btn btn-primary\" onclick=\"sendMessage()\">Envoyer</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- PAYMENTS -->
-    <div class="page" id="page-payments">
-      <div class="section-header">
-        <div>
-          <div class="page-title">Paiements</div>
-          <div class="page-desc">Cotisations et paiements liés à l’équipe active</div>
-        </div>
+    <div class=\"page\" id=\"page-payments\">
+      <div class=\"page-header\">
+        <div class=\"page-title\">Paiements</div>
+        <div class=\"page-desc\">Cotisations de l’équipe active</div>
       </div>
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">État des paiements</span>
-        </div>
-
-        <div class="table-wrap">
+      <div class=\"card\">
+        <div class=\"card-header\"><span class=\"card-title\">État des paiements</span></div>
+        <div class=\"table-wrap\">
           <table>
             <thead>
               <tr>
@@ -1004,411 +335,360 @@ tr:last-child td {
                 <th>Statut</th>
               </tr>
             </thead>
-            <tbody id="payments-table-body">
-              <tr>
-                <td colspan="5" class="empty-note">Aucun paiement enregistré.</td>
-              </tr>
+            <tbody id=\"payments-table-body\">
+              <tr><td colspan=\"5\" class=\"empty-note\">Aucun paiement.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- SETTINGS -->
-    <div class="page" id="page-settings">
-      <div class="page-header">
-        <div class="page-title">Paramètres</div>
-        <div class="page-desc">Ton compte coach et l’équipe active</div>
+    <div class=\"page\" id=\"page-settings\">
+      <div class=\"page-header\">
+        <div class=\"page-title\">Paramètres</div>
+        <div class=\"page-desc\">Compte coach et équipe active</div>
       </div>
 
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Profil coach</span>
-          </div>
-
-          <div class="list">
-            <div class="list-item">
-              <div class="list-title" id="settings-coach-name">—</div>
-              <div class="list-sub" id="settings-coach-email">—</div>
+      <div class=\"grid-2\">
+        <div class=\"card\">
+          <div class=\"card-header\"><span class=\"card-title\">Profil coach</span></div>
+          <div class=\"list\">
+            <div class=\"list-item\">
+              <div class=\"list-title\" id=\"settings-coach-name\">—</div>
+              <div class=\"list-sub\" id=\"settings-coach-email\">—</div>
             </div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Équipe active</span>
-          </div>
-
-          <div class="list">
-            <div class="list-item">
-              <div class="list-title" id="settings-team-name">—</div>
-              <div class="list-sub" id="settings-team-meta">—</div>
+        <div class=\"card\">
+          <div class=\"card-header\"><span class=\"card-title\">Équipe active</span></div>
+          <div class=\"list\">
+            <div class=\"list-item\">
+              <div class=\"list-title\" id=\"settings-team-name\">—</div>
+              <div class=\"list-sub\" id=\"settings-team-meta\">—</div>
             </div>
-            <div class="list-item">
-              <div class="list-title">Code équipe</div>
-              <div class="list-sub" id="settings-team-code">—</div>
+            <div class=\"list-item\">
+              <div class=\"list-title\">Code équipe</div>
+              <div class=\"list-sub\" id=\"settings-team-code\">—</div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- TEAM MODAL -->
-<div class="modal-overlay" id="team-modal-overlay" onclick="if(event.target===this)closeTeamModal()">
-  <div class="modal">
-    <button class="modal-close" onclick="closeTeamModal()">✕</button>
-    <div class="modal-title">Mes équipes</div>
-    <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem">
-      Choisis l’équipe active ou crée une nouvelle catégorie/équipe.
-    </p>
-
-    <div id="team-modal-notice" class="notice"></div>
-
-    <div class="list" id="teams-modal-list" style="margin-bottom:1rem">
-      <div class="empty-note">Aucune équipe.</div>
-    </div>
-
-    <div style="border-top:1px solid var(--border);padding-top:1rem;margin-top:0.5rem">
-      <div class="form-group">
-        <label class="form-label">Nom du club / équipe</label>
-        <input class="form-input" id="create-team-name" placeholder="FC Al-Nour">
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Catégorie</label>
-          <input class="form-input" id="create-team-category" placeholder="U21 / Senior A / U15">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Saison</label>
-          <input class="form-input" id="create-team-season" placeholder="2025/2026">
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeTeamModal()">Fermer</button>
-        <button class="btn btn-primary" onclick="createTeam()">Créer l’équipe</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- CREATE PLAYER MODAL -->
-<div class="modal-overlay" id="player-modal-overlay" onclick="if(event.target===this)closePlayerModal()">
-  <div class="modal">
-    <button class="modal-close" onclick="closePlayerModal()">✕</button>
-    <div class="modal-title">Créer un joueur</div>
-    <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem">
-      Cela crée un vrai compte joueur connecté, puis l’associe à l’équipe active.
-    </p>
-
-    <div id="player-modal-notice" class="notice"></div>
-
-    <div class="form-group">
-      <label class="form-label">Nom complet</label>
-      <input class="form-input" id="player-full-name" placeholder="Karim Belhadj">
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input class="form-input" id="player-email" placeholder="joueur@email.com">
+<div class=\"modal-overlay\" id=\"team-modal-overlay\" onclick=\"if(event.target===this)closeTeamModal()\">
+  <div class=\"modal\">
+    <button class=\"modal-close\" onclick=\"closeTeamModal()\">✕</button>
+    <div class=\"modal-title\">Mes équipes</div>
+    <p style=\"color:var(--muted);font-size:.82rem;margin-bottom:1rem\">Choisis l’équipe active ou crée une nouvelle équipe/catégorie.</p>
+    <div id=\"team-modal-notice\" class=\"notice\"></div>
+    <div class=\"list\" id=\"teams-modal-list\" style=\"margin-bottom:1rem\"><div class=\"empty-note\">Aucune équipe.</div></div>
+    <div style=\"border-top:1px solid var(--border);padding-top:1rem\">
+      <div class=\"form-group\">
+        <label class=\"form-label\">Nom du club / équipe</label>
+        <input class=\"form-input\" id=\"create-team-name\" placeholder=\"FC Al-Nour\">
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Mot de passe</label>
-        <input class="form-input" id="player-password" type="password" placeholder="Minimum 8 caractères">
+      <div class=\"form-row\">
+        <div class=\"form-group\">
+          <label class=\"form-label\">Catégorie</label>
+          <input class=\"form-input\" id=\"create-team-category\" placeholder=\"U21 / Senior A / U15\">
+        </div>
+        <div class=\"form-group\">
+          <label class=\"form-label\">Saison</label>
+          <input class=\"form-input\" id=\"create-team-season\" placeholder=\"2025/2026\">
+        </div>
+      </div>
+      <div class=\"modal-footer\">
+        <button class=\"btn btn-ghost\" onclick=\"closeTeamModal()\">Fermer</button>
+        <button class=\"btn btn-primary\" onclick=\"createTeam()\">Créer l’équipe</button>
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Poste</label>
-        <select class="form-select" id="player-position">
-          <option value="GK">Gardien</option>
-          <option value="DEF">Défenseur</option>
-          <option value="MID">Milieu</option>
-          <option value="ATT">Attaquant</option>
+<div class=\"modal-overlay\" id=\"player-modal-overlay\" onclick=\"if(event.target===this)closePlayerModal()\">
+  <div class=\"modal\">
+    <button class=\"modal-close\" onclick=\"closePlayerModal()\">✕</button>
+    <div class=\"modal-title\">Créer un joueur</div>
+    <p style=\"color:var(--muted);font-size:.82rem;margin-bottom:1rem\">Créer un vrai compte joueur puis l’associer à l’équipe active.</p>
+    <div id=\"player-modal-notice\" class=\"notice\"></div>
+    <div class=\"form-group\"><label class=\"form-label\">Nom complet</label><input class=\"form-input\" id=\"player-full-name\" placeholder=\"Karim Belhadj\"></div>
+    <div class=\"form-row\">
+      <div class=\"form-group\"><label class=\"form-label\">Email</label><input class=\"form-input\" id=\"player-email\" placeholder=\"joueur@email.com\"></div>
+      <div class=\"form-group\"><label class=\"form-label\">Mot de passe</label><input class=\"form-input\" id=\"player-password\" type=\"password\" placeholder=\"Minimum 8 caractères\"></div>
+    </div>
+    <div class=\"form-row\">
+      <div class=\"form-group\">
+        <label class=\"form-label\">Poste</label>
+        <select class=\"form-select\" id=\"player-position\">
+          <option value=\"GK\">Gardien</option>
+          <option value=\"DEF\">Défenseur</option>
+          <option value=\"MID\">Milieu</option>
+          <option value=\"ATT\">Attaquant</option>
         </select>
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Numéro</label>
-        <input class="form-input" id="player-number" type="number" placeholder="10">
-      </div>
+      <div class=\"form-group\"><label class=\"form-label\">Numéro</label><input class=\"form-input\" id=\"player-number\" type=\"number\" placeholder=\"10\"></div>
     </div>
-
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closePlayerModal()">Annuler</button>
-      <button class="btn btn-primary" onclick="createPlayer()">Créer le joueur</button>
+    <div class=\"modal-footer\">
+      <button class=\"btn btn-ghost\" onclick=\"closePlayerModal()\">Annuler</button>
+      <button class=\"btn btn-primary\" onclick=\"createPlayer()\">Créer le joueur</button>
     </div>
   </div>
 </div>
 
-<!-- CREATE SESSION MODAL -->
-<div class="modal-overlay" id="session-modal-overlay" onclick="if(event.target===this)closeSessionModal()">
-  <div class="modal">
-    <button class="modal-close" onclick="closeSessionModal()">✕</button>
-    <div class="modal-title">Nouvelle session</div>
-    <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem">
-      Crée un entraînement, un match, une réunion ou un tournoi.
-    </p>
-
-    <div id="session-modal-notice" class="notice"></div>
-
-    <div class="form-group">
-      <label class="form-label">Titre</label>
-      <input class="form-input" id="session-title" placeholder="Préparation match">
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Type</label>
-        <select class="form-select" id="session-type">
-          <option value="training">Entraînement</option>
-          <option value="match">Match</option>
-          <option value="meeting">Réunion</option>
-          <option value="tournament">Tournoi</option>
+<div class=\"modal-overlay\" id=\"edit-player-modal-overlay\" onclick=\"if(event.target===this)closeEditPlayerModal()\">
+  <div class=\"modal\">
+    <button class=\"modal-close\" onclick=\"closeEditPlayerModal()\">✕</button>
+    <div class=\"modal-title\">Modifier le joueur</div>
+    <div id=\"edit-player-modal-notice\" class=\"notice\"></div>
+    <input type=\"hidden\" id=\"edit-player-member-id\">
+    <div class=\"form-group\"><label class=\"form-label\">Joueur</label><input class=\"form-input\" id=\"edit-player-name\" disabled></div>
+    <div class=\"form-row\">
+      <div class=\"form-group\">
+        <label class=\"form-label\">Poste</label>
+        <select class=\"form-select\" id=\"edit-player-position\">
+          <option value=\"GK\">Gardien</option>
+          <option value=\"DEF\">Défenseur</option>
+          <option value=\"MID\">Milieu</option>
+          <option value=\"ATT\">Attaquant</option>
         </select>
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Durée (minutes)</label>
-        <input class="form-input" id="session-duration" type="number" placeholder="90" value="90">
-      </div>
+      <div class=\"form-group\"><label class=\"form-label\">Numéro</label><input class=\"form-input\" id=\"edit-player-number\" type=\"number\"></div>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Date</label>
-        <input class="form-input" id="session-date" type="date">
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Heure</label>
-        <input class="form-input" id="session-time" type="time">
-      </div>
+    <div class=\"form-group\">
+      <label class=\"form-label\">Statut</label>
+      <select class=\"form-select\" id=\"edit-player-status\">
+        <option value=\"active\">Actif</option>
+        <option value=\"injured\">Blessé</option>
+        <option value=\"inactive\">Inactif</option>
+        <option value=\"new\">Nouveau</option>
+      </select>
     </div>
-
-    <div class="form-group">
-      <label class="form-label">Lieu</label>
-      <input class="form-input" id="session-location" placeholder="Stade municipal">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Notes</label>
-      <textarea class="form-textarea" id="session-notes" rows="4" placeholder="Objectifs, contenu, consignes..."></textarea>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeSessionModal()">Annuler</button>
-      <button class="btn btn-primary" onclick="createSession()">Créer la session</button>
+    <div class=\"modal-footer\">
+      <button class=\"btn btn-ghost\" onclick=\"closeEditPlayerModal()\">Annuler</button>
+      <button class=\"btn btn-primary\" onclick=\"savePlayerEdit()\">Enregistrer</button>
     </div>
   </div>
 </div>
 
-<script type="module">
+<div class=\"modal-overlay\" id=\"session-modal-overlay\" onclick=\"if(event.target===this)closeSessionModal()\">
+  <div class=\"modal\">
+    <button class=\"modal-close\" onclick=\"closeSessionModal()\">✕</button>
+    <div class=\"modal-title\">Nouvelle session</div>
+    <div id=\"session-modal-notice\" class=\"notice\"></div>
+    <div class=\"form-group\"><label class=\"form-label\">Titre</label><input class=\"form-input\" id=\"session-title\" placeholder=\"Préparation match\"></div>
+    <div class=\"form-row\">
+      <div class=\"form-group\">
+        <label class=\"form-label\">Type</label>
+        <select class=\"form-select\" id=\"session-type\">
+          <option value=\"training\">Entraînement</option>
+          <option value=\"match\">Match</option>
+          <option value=\"meeting\">Réunion</option>
+          <option value=\"tournament\">Tournoi</option>
+        </select>
+      </div>
+      <div class=\"form-group\"><label class=\"form-label\">Durée</label><input class=\"form-input\" id=\"session-duration\" type=\"number\" value=\"90\"></div>
+    </div>
+    <div class=\"form-row\">
+      <div class=\"form-group\"><label class=\"form-label\">Date</label><input class=\"form-input\" id=\"session-date\" type=\"date\"></div>
+      <div class=\"form-group\"><label class=\"form-label\">Heure</label><input class=\"form-input\" id=\"session-time\" type=\"time\"></div>
+    </div>
+    <div class=\"form-group\"><label class=\"form-label\">Lieu</label><input class=\"form-input\" id=\"session-location\" placeholder=\"Stade municipal\"></div>
+    <div class=\"form-group\"><label class=\"form-label\">Notes</label><textarea class=\"form-textarea\" id=\"session-notes\" rows=\"4\"></textarea></div>
+    <div class=\"modal-footer\">
+      <button class=\"btn btn-ghost\" onclick=\"closeSessionModal()\">Annuler</button>
+      <button class=\"btn btn-primary\" onclick=\"createSession()\">Créer</button>
+    </div>
+  </div>
+</div>
+
+<div class=\"modal-overlay\" id=\"conversation-modal-overlay\" onclick=\"if(event.target===this)closeConversationModal()\">
+  <div class=\"modal\">
+    <button class=\"modal-close\" onclick=\"closeConversationModal()\">✕</button>
+    <div class=\"modal-title\">Nouvelle conversation</div>
+    <div id=\"conversation-modal-notice\" class=\"notice\"></div>
+    <div class=\"form-group\">
+      <label class=\"form-label\">Type</label>
+      <select class=\"form-select\" id=\"conversation-type\" onchange=\"toggleConversationFields()\">
+        <option value=\"general\">Chat général</option>
+        <option value=\"direct\">Coach ↔ Joueur</option>
+      </select>
+    </div>
+    <div class=\"form-group\" id=\"conversation-player-group\" style=\"display:none\">
+      <label class=\"form-label\">Joueur</label>
+      <select class=\"form-select\" id=\"conversation-player-select\"></select>
+    </div>
+    <div class=\"form-group\">
+      <label class=\"form-label\">Titre</label>
+      <input class=\"form-input\" id=\"conversation-title\" placeholder=\"Général équipe / Karim Belhadj\">
+    </div>
+    <div class=\"modal-footer\">
+      <button class=\"btn btn-ghost\" onclick=\"closeConversationModal()\">Annuler</button>
+      <button class=\"btn btn-primary\" onclick=\"createConversation()\">Créer</button>
+    </div>
+  </div>
+</div>
+
+<script type=\"module\">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const SUPABASE_URL = 'https://jjythzsnubqevzjzrzio.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqeXRoenNudWJxZXZ6anpyemlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTg3MDksImV4cCI6MjA5MDQzNDcwOX0.oINviaV_LTZEoOOlRLYU2V2yeFTQhdUHjjRdaHyu5mo';
+const SUPABASE_ANON_KEY = 'REMPLACE_ICI_PAR_TA_CLE_ANON';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const state = {
+  sessionUser:null,
+  profile:null,
+  subscription:null,
+  teams:[],
+  activeTeam:null,
+  teamMembers:[],
+  sessions:[],
+  stats:[],
+  payments:[],
+  conversations:[],
+  currentConversation:null,
+  currentMessages:[]
+};
 
 window.showPage = showPage;
 window.logout = logout;
 window.openTeamModal = openTeamModal;
 window.closeTeamModal = closeTeamModal;
+window.createTeam = createTeam;
 window.openCreatePlayerModal = openCreatePlayerModal;
 window.closePlayerModal = closePlayerModal;
+window.createPlayer = createPlayer;
+window.openEditPlayerModal = openEditPlayerModal;
+window.closeEditPlayerModal = closeEditPlayerModal;
+window.savePlayerEdit = savePlayerEdit;
 window.openCreateSessionModal = openCreateSessionModal;
 window.closeSessionModal = closeSessionModal;
-window.createTeam = createTeam;
-window.createPlayer = createPlayer;
 window.createSession = createSession;
 window.topbarAction = topbarAction;
 window.selectTeam = selectTeam;
-
-const state = {
-  sessionUser: null,
-  profile: null,
-  subscription: null,
-  teams: [],
-  activeTeam: null,
-  teamMembers: [],
-  sessions: [],
-  stats: [],
-  messages: [],
-  payments: []
-};
+window.openNewConversationModal = openNewConversationModal;
+window.closeConversationModal = closeConversationModal;
+window.toggleConversationFields = toggleConversationFields;
+window.createConversation = createConversation;
+window.openConversation = openConversation;
+window.sendMessage = sendMessage;
+window.openGeneralChat = openGeneralChat;
 
 init();
 
-async function init() {
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session?.user) {
-      window.location.href = '/';
-      return;
-    }
-
+async function init(){
+  try{
+    const { data:{ session } } = await supabase.auth.getSession();
+    if(!session?.user){ window.location.href='/'; return; }
     state.sessionUser = session.user;
 
-    const profile = await fetchProfile(session.user.id);
+    state.profile = await fetchProfile(session.user.id);
+    if(!state.profile) throw new Error('Profil coach introuvable.');
+    if(state.profile.role !== 'coach'){ window.location.href='/player.html'; return; }
 
-    if (!profile) {
-      throw new Error('Profil coach introuvable.');
-    }
-
-    if (profile.role !== 'coach') {
-      window.location.href = '/player.html';
-      return;
-    }
-
-    state.profile = profile;
     hydrateProfile();
 
-    if (!profile.is_owner) {
-      const subscription = await fetchSubscription(session.user.id);
-      state.subscription = subscription;
-
-      const allowed = ['active', 'trialing'];
-      if (!subscription || !allowed.includes(subscription.status)) {
-        alert("Ton abonnement coach n'est pas actif. Pour l'instant, l'accès coach est bloqué.");
+    if(!state.profile.is_owner){
+      state.subscription = await fetchSubscription(session.user.id);
+      const allowed = ['active','trialing'];
+      if(!state.subscription || !allowed.includes(state.subscription.status)){
+        alert(\"Ton abonnement coach n'est pas actif.\");
         await logout();
         return;
       }
     } else {
-      state.subscription = { plan: 'owner', status: 'active' };
+      state.subscription = { plan:'owner', status:'active' };
     }
 
     hydrateSubscription();
     await loadTeams();
-
-  } catch (error) {
+  }catch(error){
     console.error(error);
     alert(error.message || 'Impossible de charger le dashboard coach.');
-    window.location.href = '/';
+    window.location.href='/';
   }
 }
 
-async function fetchProfile(userId) {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .maybeSingle();
-
-  if (error) throw error;
+async function fetchProfile(userId){
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
+  if(error) throw error;
   return data;
 }
 
-async function fetchSubscription(userId) {
-  const { data, error } = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('coach_id', userId)
-    .maybeSingle();
-
-  if (error) throw error;
+async function fetchSubscription(userId){
+  const { data, error } = await supabase.from('subscriptions').select('*').eq('coach_id', userId).maybeSingle();
+  if(error) throw error;
   return data;
 }
 
-function hydrateProfile() {
+function hydrateProfile(){
   document.getElementById('user-name').textContent = state.profile.full_name || 'Coach';
   document.getElementById('user-avatar').textContent = getInitials(state.profile.full_name || 'Coach');
   document.getElementById('settings-coach-name').textContent = state.profile.full_name || 'Coach';
   document.getElementById('settings-coach-email').textContent = state.profile.email || '—';
 }
 
-function hydrateSubscription() {
+function hydrateSubscription(){
   const pill = document.getElementById('subscription-pill');
-
-  if (state.profile.is_owner) {
-    pill.textContent = 'Owner access';
-    return;
-  }
-
+  if(state.profile.is_owner){ pill.textContent = 'Owner access'; return; }
   pill.textContent = `Plan ${state.subscription?.plan || 'coach'} · ${state.subscription?.status || 'inactive'}`;
 }
 
-async function loadTeams() {
-  const { data, error } = await supabase
-    .from('teams')
-    .select('*')
-    .eq('coach_id', state.sessionUser.id)
-    .order('created_at', { ascending: true });
-
-  if (error) throw error;
-
+async function loadTeams(){
+  const { data, error } = await supabase.from('teams').select('*').eq('coach_id', state.sessionUser.id).order('created_at', { ascending:true });
+  if(error) throw error;
   state.teams = data || [];
   renderTeamsModal();
+  populateConversationPlayerSelect();
 
-  if (!state.teams.length) {
-    renderNoTeamState();
-    return;
-  }
+  if(!state.teams.length){ renderNoTeamState(); return; }
 
   const savedTeamId = localStorage.getItem('coachpro_active_team_id');
-  let active = state.teams.find(team => team.id === savedTeamId) || state.teams[0];
-
+  const active = state.teams.find(t => t.id === savedTeamId) || state.teams[0];
   await setActiveTeam(active.id);
 }
 
-async function setActiveTeam(teamId) {
-  const team = state.teams.find(item => item.id === teamId);
-  if (!team) return;
-
+async function setActiveTeam(teamId){
+  const team = state.teams.find(t => t.id === teamId);
+  if(!team) return;
   state.activeTeam = team;
   localStorage.setItem('coachpro_active_team_id', team.id);
-
   hydrateActiveTeam();
   await loadTeamData(team.id);
 }
 
-function hydrateActiveTeam() {
+function hydrateActiveTeam(){
   const team = state.activeTeam;
-
   document.getElementById('sidebar-team-name').textContent = team.name;
   document.getElementById('sidebar-team-cat').textContent = `${team.category} · ${team.season}`;
   document.getElementById('sidebar-team-avatar').textContent = getInitials(team.name);
   document.getElementById('team-code-badge').textContent = `Code équipe : ${team.team_code || '—'}`;
-
   document.getElementById('settings-team-name').textContent = team.name;
   document.getElementById('settings-team-meta').textContent = `${team.category} · ${team.season}`;
   document.getElementById('settings-team-code').textContent = team.team_code || '—';
-
-  document.getElementById('dashboard-subtitle').textContent =
-    `${team.name} · ${team.category} · ${team.season}`;
+  document.getElementById('dashboard-subtitle').textContent = `${team.name} · ${team.category} · ${team.season}`;
 }
 
-function renderNoTeamState() {
+function renderNoTeamState(){
   document.getElementById('sidebar-team-name').textContent = 'Aucune équipe';
   document.getElementById('sidebar-team-cat').textContent = 'Crée une équipe pour commencer';
-
-  document.getElementById('settings-team-name').textContent = 'Aucune équipe';
-  document.getElementById('settings-team-meta').textContent = '—';
-  document.getElementById('settings-team-code').textContent = '—';
 }
 
-async function loadTeamData(teamId) {
+async function loadTeamData(teamId){
   await Promise.all([
     loadTeamMembers(teamId),
     loadSessions(teamId),
     loadPayments(teamId),
-    loadMessagesForCoach(teamId)
+    loadConversations(teamId)
   ]);
-
   await loadStatsForTeam();
   renderDashboard();
 }
 
-async function loadTeamMembers(teamId) {
+async function loadTeamMembers(teamId){
   const { data, error } = await supabase
     .from('team_members')
     .select(`
@@ -1420,28 +700,22 @@ async function loadTeamMembers(teamId) {
       )
     `)
     .eq('team_id', teamId)
-    .order('jersey_number', { ascending: true });
+    .order('jersey_number', { ascending:true });
 
-  if (error) throw error;
-
+  if(error) throw error;
   state.teamMembers = data || [];
   renderRoster();
+  populateConversationPlayerSelect();
 }
 
-async function loadSessions(teamId) {
-  const { data, error } = await supabase
-    .from('sessions')
-    .select('*')
-    .eq('team_id', teamId)
-    .order('scheduled_at', { ascending: true });
-
-  if (error) throw error;
-
+async function loadSessions(teamId){
+  const { data, error } = await supabase.from('sessions').select('*').eq('team_id', teamId).order('scheduled_at', { ascending:true });
+  if(error) throw error;
   state.sessions = data || [];
   renderSessions();
 }
 
-async function loadPayments(teamId) {
+async function loadPayments(teamId){
   const { data, error } = await supabase
     .from('payments')
     .select(`
@@ -1451,179 +725,170 @@ async function loadPayments(teamId) {
       )
     `)
     .eq('team_id', teamId)
-    .order('due_date', { ascending: false });
+    .order('due_date', { ascending:false });
 
-  if (error) throw error;
-
+  if(error) throw error;
   state.payments = data || [];
   renderPayments();
 }
 
-async function loadMessagesForCoach(teamId) {
-  const { data: conversations, error: convError } = await supabase
-    .from('conversations')
-    .select('id')
-    .eq('team_id', teamId)
-    .order('created_at', { ascending: false });
-
-  if (convError) throw convError;
-
-  const conversationIds = (conversations || []).map(item => item.id);
-
-  if (!conversationIds.length) {
-    state.messages = [];
-    renderMessages();
-    return;
-  }
-
-  const { data, error } = await supabase
-    .from('messages')
-    .select(`
-      *,
-      sender:profiles!messages_sender_id_fkey (
-        full_name
-      )
-    `)
-    .in('conversation_id', conversationIds)
-    .order('created_at', { ascending: false })
-    .limit(20);
-
-  if (error) throw error;
-
-  state.messages = data || [];
-  renderMessages();
-}
-
-async function loadStatsForTeam() {
-  if (!state.teamMembers.length) {
+async function loadStatsForTeam(){
+  if(!state.teamMembers.length){
     state.stats = [];
     renderStats();
     return;
   }
 
-  const memberIds = state.teamMembers.map(member => member.id);
+  const ids = state.teamMembers.map(m => m.id);
+  const { data, error } = await supabase.from('player_stats').select('*').in('team_member_id', ids).order('updated_at', { ascending:false });
+  if(error) throw error;
 
-  const { data, error } = await supabase
-    .from('player_stats')
-    .select('*')
-    .in('team_member_id', memberIds)
-    .order('updated_at', { ascending: false });
-
-  if (error) throw error;
-
-  const latestPerMember = new Map();
-
-  for (const row of data || []) {
-    if (!latestPerMember.has(row.team_member_id)) {
-      latestPerMember.set(row.team_member_id, row);
-    }
+  const latest = new Map();
+  for(const row of (data || [])){
+    if(!latest.has(row.team_member_id)) latest.set(row.team_member_id, row);
   }
-
-  state.stats = Array.from(latestPerMember.values());
+  state.stats = Array.from(latest.values());
   renderStats();
 }
 
-function renderDashboard() {
-  const upcomingSessions = state.sessions.filter(item => new Date(item.scheduled_at) >= new Date());
-  const pendingPayments = state.payments.filter(item => item.status !== 'paid');
+async function loadConversations(teamId){
+  const { data, error } = await supabase
+    .from('conversations')
+    .select('*')
+    .eq('team_id', teamId)
+    .order('created_at', { ascending:false });
 
-  document.getElementById('stat-total-players').textContent = state.teamMembers.length;
-  document.getElementById('stat-upcoming-sessions').textContent = upcomingSessions.length;
-  document.getElementById('stat-pending-payments').textContent = pendingPayments.length;
-  document.getElementById('stat-recent-messages').textContent = state.messages.length;
+  if(error) throw error;
+  state.conversations = data || [];
+  renderConversationList();
 
-  const sessionsList = document.getElementById('dashboard-sessions-list');
-  if (!upcomingSessions.length) {
-    sessionsList.innerHTML = `<div class="empty-note">Aucune session à venir.</div>`;
-  } else {
-    sessionsList.innerHTML = upcomingSessions.slice(0, 5).map(item => `
-      <div class="list-item">
-        <div class="list-title">${escapeHtml(item.title)}</div>
-        <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
-        <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
-      </div>
-    `).join('');
+  if(state.currentConversation){
+    const stillExists = state.conversations.find(c => c.id === state.currentConversation.id);
+    if(stillExists){
+      await openConversation(stillExists.id);
+      return;
+    }
   }
 
-  const paymentsList = document.getElementById('dashboard-payments-list');
-  if (!state.payments.length) {
-    paymentsList.innerHTML = `<div class="empty-note">Aucun paiement pour le moment.</div>`;
+  if(state.conversations.length){
+    await openConversation(state.conversations[0].id);
   } else {
-    paymentsList.innerHTML = state.payments.slice(0, 5).map(item => `
-      <div class="list-item">
-        <div class="list-title">${escapeHtml(item.label)}</div>
-        <div class="list-sub">${item.player?.full_name ? escapeHtml(item.player.full_name) + ' · ' : ''}${formatAmount(item.amount)}</div>
-        <div class="list-sub">${translatePaymentStatus(item.status)} · échéance ${formatDate(item.due_date)}</div>
-      </div>
-    `).join('');
+    state.currentConversation = null;
+    document.getElementById('messages-area').innerHTML = `<div class=\"empty-note\">Aucune conversation pour le moment.</div>`;
+    document.getElementById('current-conversation-title').textContent = 'Sélectionne une conversation';
+    document.getElementById('current-conversation-sub').textContent = 'Aucun fil actif';
   }
 }
 
-function renderRoster() {
-  const tbody = document.getElementById('roster-table-body');
+async function loadMessages(conversationId){
+  const { data, error } = await supabase
+    .from('messages')
+    .select(`
+      *,
+      sender:profiles!messages_sender_id_fkey (
+        id,
+        full_name
+      )
+    `)
+    .eq('conversation_id', conversationId)
+    .order('created_at', { ascending:true });
 
-  if (!state.teamMembers.length) {
-    tbody.innerHTML = `<tr><td colspan="4" class="empty-note">Aucun joueur.</td></tr>`;
+  if(error) throw error;
+  state.currentMessages = data || [];
+  renderMessagesArea();
+}
+
+function renderDashboard(){
+  const upcoming = state.sessions.filter(s => new Date(s.scheduled_at) >= new Date());
+  const pending = state.payments.filter(p => p.status !== 'paid');
+
+  document.getElementById('stat-total-players').textContent = state.teamMembers.length;
+  document.getElementById('stat-upcoming-sessions').textContent = upcoming.length;
+  document.getElementById('stat-pending-payments').textContent = pending.length;
+  document.getElementById('stat-recent-messages').textContent = state.conversations.length;
+
+  const sList = document.getElementById('dashboard-sessions-list');
+  sList.innerHTML = upcoming.length
+    ? upcoming.slice(0,5).map(item => `
+      <div class=\"list-item\">
+        <div class=\"list-title\">${escapeHtml(item.title)}</div>
+        <div class=\"list-sub\">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
+        <div class=\"list-sub\">${escapeHtml(item.location || 'Lieu non précisé')}</div>
+      </div>
+    `).join('')
+    : `<div class=\"empty-note\">Aucune session à venir.</div>`;
+
+  const pList = document.getElementById('dashboard-payments-list');
+  pList.innerHTML = state.payments.length
+    ? state.payments.slice(0,5).map(item => `
+      <div class=\"list-item\">
+        <div class=\"list-title\">${escapeHtml(item.label)}</div>
+        <div class=\"list-sub\">${item.player?.full_name ? escapeHtml(item.player.full_name) + ' · ' : ''}${formatAmount(item.amount)}</div>
+        <div class=\"list-sub\">${translatePaymentStatus(item.status)} · échéance ${formatDate(item.due_date)}</div>
+      </div>
+    `).join('')
+    : `<div class=\"empty-note\">Aucun paiement.</div>`;
+}
+
+function renderRoster(){
+  const tbody = document.getElementById('roster-table-body');
+  if(!state.teamMembers.length){
+    tbody.innerHTML = `<tr><td colspan=\"5\" class=\"empty-note\">Aucun joueur.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = state.teamMembers.map(member => `
     <tr>
       <td>
-        <div style="display:flex;align-items:center;gap:0.7rem">
-          <div class="avatar" style="background:rgba(61,255,122,0.12);color:var(--green)">
-            ${getInitials(member.player?.full_name || 'PL')}
-          </div>
+        <div style=\"display:flex;align-items:center;gap:.7rem\">
+          <div class=\"avatar\" style=\"background:rgba(61,255,122,.12);color:var(--green)\">${getInitials(member.player?.full_name || 'PL')}</div>
           <div>
-            <div style="font-weight:600">${escapeHtml(member.player?.full_name || 'Joueur')}</div>
-            <div style="font-size:0.72rem;color:var(--muted)">${escapeHtml(member.player?.email || '')}</div>
+            <div style=\"font-weight:600\">${escapeHtml(member.player?.full_name || 'Joueur')}</div>
+            <div style=\"font-size:.72rem;color:var(--muted)\">${escapeHtml(member.player?.email || '')}</div>
           </div>
         </div>
       </td>
       <td>${translatePosition(member.position)}</td>
       <td>${member.jersey_number ?? '—'}</td>
-      <td><span class="badge ${statusBadgeClass(member.status)}">${translateStatus(member.status)}</span></td>
+      <td><span class=\"badge ${statusBadgeClass(member.status)}\">${translateStatus(member.status)}</span></td>
+      <td><button class=\"btn btn-ghost\" style=\"padding:.3rem .7rem;font-size:.75rem\" onclick=\"openEditPlayerModal('${member.id}')\">Modifier</button></td>
     </tr>
   `).join('');
 }
 
-function renderSessions() {
+function renderSessions(){
   const list = document.getElementById('sessions-list');
-
-  if (!state.sessions.length) {
-    list.innerHTML = `<div class="empty-note">Aucune session enregistrée.</div>`;
-    return;
-  }
-
-  list.innerHTML = state.sessions.map(item => `
-    <div class="list-item">
-      <div class="list-title">${escapeHtml(item.title)}</div>
-      <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
-      <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
-    </div>
-  `).join('');
+  list.innerHTML = state.sessions.length
+    ? state.sessions.map(item => `
+      <div class=\"list-item\">
+        <div class=\"list-title\">${escapeHtml(item.title)}</div>
+        <div class=\"list-sub\">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
+        <div class=\"list-sub\">${escapeHtml(item.location || 'Lieu non précisé')}</div>
+      </div>
+    `).join('')
+    : `<div class=\"empty-note\">Aucune session.</div>`;
 }
 
-function renderStats() {
-  const totalGoals = state.stats.reduce((sum, row) => sum + Number(row.goals || 0), 0);
-  const totalAssists = state.stats.reduce((sum, row) => sum + Number(row.assists || 0), 0);
-  const totalMatches = state.stats.reduce((sum, row) => sum + Number(row.matches_played || 0), 0);
+function renderStats(){
+  const totalGoals = state.stats.reduce((s,r) => s + Number(r.goals || 0), 0);
+  const totalAssists = state.stats.reduce((s,r) => s + Number(r.assists || 0), 0);
+  const totalMatches = state.stats.reduce((s,r) => s + Number(r.matches_played || 0), 0);
+  const totalMinutes = state.stats.reduce((s,r) => s + Number(r.minutes_played || 0), 0);
 
   document.getElementById('stats-goals').textContent = totalGoals;
   document.getElementById('stats-assists').textContent = totalAssists;
   document.getElementById('stats-matches').textContent = totalMatches;
+  document.getElementById('stats-minutes').textContent = totalMinutes;
 
   const tbody = document.getElementById('stats-table-body');
-
-  if (!state.stats.length) {
-    tbody.innerHTML = `<tr><td colspan="6" class="empty-note">Aucune statistique disponible.</td></tr>`;
+  if(!state.stats.length){
+    tbody.innerHTML = `<tr><td colspan=\"6\" class=\"empty-note\">Aucune statistique.</td></tr>`;
     return;
   }
 
-  const statsByMember = new Map(state.stats.map(row => [row.team_member_id, row]));
+  const byMember = new Map(state.stats.map(r => [r.team_member_id, r]));
   tbody.innerHTML = state.teamMembers.map(member => {
-    const row = statsByMember.get(member.id);
-
+    const row = byMember.get(member.id);
     return `
       <tr>
         <td>${escapeHtml(member.player?.full_name || 'Joueur')}</td>
@@ -1637,237 +902,191 @@ function renderStats() {
   }).join('');
 }
 
-function renderMessages() {
-  const list = document.getElementById('messages-list');
-
-  if (!state.messages.length) {
-    list.innerHTML = `<div class="empty-note">Aucun message pour le moment.</div>`;
-    return;
-  }
-
-  list.innerHTML = state.messages.map(item => `
-    <div class="msg-item">
-      <div class="msg-header">
-        <div class="msg-name">${escapeHtml(item.sender?.full_name || 'Message')}</div>
-        <div class="msg-time">${formatShortDate(item.created_at)}</div>
-      </div>
-      <div class="msg-preview">${escapeHtml(item.content)}</div>
-    </div>
-  `).join('');
-}
-
-function renderPayments() {
+function renderPayments(){
   const tbody = document.getElementById('payments-table-body');
-
-  if (!state.payments.length) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-note">Aucun paiement enregistré.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = state.payments.map(item => `
-    <tr>
-      <td>${escapeHtml(item.label)}</td>
-      <td>${escapeHtml(item.player?.full_name || '—')}</td>
-      <td>${formatAmount(item.amount)}</td>
-      <td>${formatDate(item.due_date)}</td>
-      <td><span class="badge ${paymentBadgeClass(item.status)}">${translatePaymentStatus(item.status)}</span></td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = state.payments.length
+    ? state.payments.map(item => `
+      <tr>
+        <td>${escapeHtml(item.label)}</td>
+        <td>${escapeHtml(item.player?.full_name || '—')}</td>
+        <td>${formatAmount(item.amount)}</td>
+        <td>${formatDate(item.due_date)}</td>
+        <td><span class=\"badge ${paymentBadgeClass(item.status)}\">${translatePaymentStatus(item.status)}</span></td>
+      </tr>
+    `).join('')
+    : `<tr><td colspan=\"5\" class=\"empty-note\">Aucun paiement.</td></tr>`;
 }
 
-function renderTeamsModal() {
+function renderTeamsModal(){
   const list = document.getElementById('teams-modal-list');
-
-  if (!state.teams.length) {
-    list.innerHTML = `<div class="empty-note">Aucune équipe.</div>`;
-    return;
-  }
-
-  list.innerHTML = state.teams.map(team => `
-    <div class="list-item" style="display:flex;align-items:center;justify-content:space-between;gap:1rem">
-      <div>
-        <div class="list-title">${escapeHtml(team.name)}</div>
-        <div class="list-sub">${escapeHtml(team.category)} · ${escapeHtml(team.season)} · code ${escapeHtml(team.team_code || '—')}</div>
+  list.innerHTML = state.teams.length
+    ? state.teams.map(team => `
+      <div class=\"list-item\" style=\"display:flex;align-items:center;justify-content:space-between;gap:1rem\">
+        <div>
+          <div class=\"list-title\">${escapeHtml(team.name)}</div>
+          <div class=\"list-sub\">${escapeHtml(team.category)} · ${escapeHtml(team.season)} · code ${escapeHtml(team.team_code || '—')}</div>
+        </div>
+        <button class=\"btn ${state.activeTeam?.id === team.id ? 'btn-primary' : 'btn-ghost'}\" onclick=\"selectTeam('${team.id}')\">
+          ${state.activeTeam?.id === team.id ? 'Active' : 'Choisir'}
+        </button>
       </div>
-      <button class="btn ${state.activeTeam?.id === team.id ? 'btn-primary' : 'btn-ghost'}" onclick="selectTeam('${team.id}')">
-        ${state.activeTeam?.id === team.id ? 'Active' : 'Choisir'}
-      </button>
-    </div>
-  `).join('');
+    `).join('')
+    : `<div class=\"empty-note\">Aucune équipe.</div>`;
 }
 
-function showPage(id, el) {
-  document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-  document.getElementById(`page-${id}`).classList.add('active');
+function renderConversationList(){
+  const box = document.getElementById('conversation-list');
+  box.innerHTML = state.conversations.length
+    ? state.conversations.map(conv => `
+      <div class=\"conv-item ${state.currentConversation?.id === conv.id ? 'active' : ''}\" onclick=\"openConversation('${conv.id}')\">
+        <div style=\"font-weight:700;font-size:.82rem\">${escapeHtml(conv.title || conversationFallback(conv))}</div>
+        <div style=\"font-size:.72rem;color:var(--muted);margin-top:3px\">${conv.type === 'team' ? 'Chat général' : 'Conversation directe'}</div>
+      </div>
+    `).join('')
+    : `<div class=\"empty-note\">Aucune conversation.</div>`;
+}
 
-  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-  if (el) el.classList.add('active');
+function renderMessagesArea(){
+  const area = document.getElementById('messages-area');
+  area.innerHTML = state.currentMessages.length
+    ? state.currentMessages.map(msg => `
+      <div class=\"bubble ${msg.sender_id === state.sessionUser.id ? 'me' : ''}\">
+        <div class=\"bubble-top\">${escapeHtml(msg.sender?.full_name || 'Utilisateur')} · ${formatShortDate(msg.created_at)}</div>
+        <div>${escapeHtml(msg.content)}</div>
+      </div>
+    `).join('')
+    : `<div class=\"empty-note\">Aucun message.</div>`;
+  area.scrollTop = area.scrollHeight;
+}
+
+function showPage(id, el){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-${id}`).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(el) el.classList.add('active');
 
   const titles = {
-    dashboard: 'Dashboard',
-    roster: 'Effectif',
-    sessions: 'Sessions',
-    stats: 'Statistiques',
-    messages: 'Messages',
-    payments: 'Paiements',
-    settings: 'Paramètres'
+    dashboard:'Dashboard',
+    roster:'Effectif',
+    sessions:'Sessions',
+    stats:'Statistiques',
+    messages:'Messages',
+    payments:'Paiements',
+    settings:'Paramètres'
   };
-
   document.getElementById('topbar-title').textContent = titles[id] || 'Dashboard';
 }
 
-function topbarAction() {
-  const activePage = document.querySelector('.page.active')?.id;
-
-  if (activePage === 'page-roster') {
-    openCreatePlayerModal();
-    return;
-  }
-
-  if (activePage === 'page-sessions') {
-    openCreateSessionModal();
-    return;
-  }
-
+function topbarAction(){
+  const page = document.querySelector('.page.active')?.id;
+  if(page === 'page-roster') return openCreatePlayerModal();
+  if(page === 'page-sessions') return openCreateSessionModal();
+  if(page === 'page-messages') return openNewConversationModal();
   openTeamModal();
 }
 
-function openTeamModal() {
-  renderTeamsModal();
-  clearNotice('team-modal-notice');
-  document.getElementById('team-modal-overlay').classList.add('open');
+function openTeamModal(){ renderTeamsModal(); clearNotice('team-modal-notice'); document.getElementById('team-modal-overlay').classList.add('open'); }
+function closeTeamModal(){ document.getElementById('team-modal-overlay').classList.remove('open'); }
+function openCreatePlayerModal(){ if(!state.activeTeam) return alert(\"Crée d'abord une équipe.\"); clearNotice('player-modal-notice'); document.getElementById('player-modal-overlay').classList.add('open'); }
+function closePlayerModal(){ document.getElementById('player-modal-overlay').classList.remove('open'); }
+function closeEditPlayerModal(){ document.getElementById('edit-player-modal-overlay').classList.remove('open'); }
+function openCreateSessionModal(){ if(!state.activeTeam) return alert(\"Crée d'abord une équipe.\"); clearNotice('session-modal-notice'); document.getElementById('session-modal-overlay').classList.add('open'); }
+function closeSessionModal(){ document.getElementById('session-modal-overlay').classList.remove('open'); }
+function openNewConversationModal(){ if(!state.activeTeam) return alert(\"Crée d'abord une équipe.\"); clearNotice('conversation-modal-notice'); toggleConversationFields(); document.getElementById('conversation-modal-overlay').classList.add('open'); }
+function closeConversationModal(){ document.getElementById('conversation-modal-overlay').classList.remove('open'); }
+
+function populateConversationPlayerSelect(){
+  const select = document.getElementById('conversation-player-select');
+  if(!select) return;
+  select.innerHTML = state.teamMembers.length
+    ? state.teamMembers.map(member => `<option value=\"${member.player_profile_id}\">${escapeHtml(member.player?.full_name || 'Joueur')}</option>`).join('')
+    : '';
 }
 
-function closeTeamModal() {
-  document.getElementById('team-modal-overlay').classList.remove('open');
-}
+function toggleConversationFields(){
+  const type = document.getElementById('conversation-type').value;
+  const group = document.getElementById('conversation-player-group');
+  const title = document.getElementById('conversation-title');
 
-function openCreatePlayerModal() {
-  if (!state.activeTeam) {
-    alert("Crée d'abord une équipe.");
-    return;
+  if(type === 'direct'){
+    group.style.display = 'block';
+    title.placeholder = 'Conversation joueur';
+  } else {
+    group.style.display = 'none';
+    title.placeholder = 'Général équipe';
   }
-
-  clearNotice('player-modal-notice');
-  document.getElementById('player-modal-overlay').classList.add('open');
 }
 
-function closePlayerModal() {
-  document.getElementById('player-modal-overlay').classList.remove('open');
-}
-
-function openCreateSessionModal() {
-  if (!state.activeTeam) {
-    alert("Crée d'abord une équipe.");
-    return;
-  }
-
-  clearNotice('session-modal-notice');
-  document.getElementById('session-modal-overlay').classList.add('open');
-}
-
-function closeSessionModal() {
-  document.getElementById('session-modal-overlay').classList.remove('open');
-}
-
-async function selectTeam(teamId) {
+async function selectTeam(teamId){
   await setActiveTeam(teamId);
   renderTeamsModal();
   closeTeamModal();
 }
 
-async function createTeam() {
+async function createTeam(){
   const name = document.getElementById('create-team-name').value.trim();
   const category = document.getElementById('create-team-category').value.trim() || 'Senior A';
   const season = document.getElementById('create-team-season').value.trim() || '2025/2026';
 
-  if (!name) {
-    showNotice('team-modal-notice', 'error', "Le nom de l'équipe est obligatoire.");
-    return;
-  }
+  if(!name) return showNotice('team-modal-notice', 'error', \"Le nom de l'équipe est obligatoire.\");
 
-  try {
-    const { error } = await supabase
-      .from('teams')
-      .insert({
-        coach_id: state.sessionUser.id,
-        name,
-        category,
-        season
-      });
-
-    if (error) throw error;
+  try{
+    const { error } = await supabase.from('teams').insert({
+      coach_id: state.sessionUser.id,
+      name,
+      category,
+      season
+    });
+    if(error) throw error;
 
     showNotice('team-modal-notice', 'success', 'Équipe créée avec succès.');
     document.getElementById('create-team-name').value = '';
     document.getElementById('create-team-category').value = '';
     document.getElementById('create-team-season').value = '';
-
     await loadTeams();
-  } catch (error) {
+  }catch(error){
     console.error(error);
-    showNotice('team-modal-notice', 'error', error.message || "Impossible de créer l'équipe.");
+    showNotice('team-modal-notice', 'error', error.message || \"Impossible de créer l'équipe.\");
   }
 }
 
-async function createPlayer() {
+async function createPlayer(){
   const fullName = document.getElementById('player-full-name').value.trim();
   const email = document.getElementById('player-email').value.trim().toLowerCase();
   const password = document.getElementById('player-password').value;
   const position = document.getElementById('player-position').value;
   const numberRaw = document.getElementById('player-number').value.trim();
 
-  if (!fullName || !email || !password) {
-    showNotice('player-modal-notice', 'error', 'Remplis tous les champs obligatoires.');
-    return;
+  if(!fullName || !email || !password){
+    return showNotice('player-modal-notice', 'error', 'Remplis tous les champs obligatoires.');
+  }
+  if(password.length < 8){
+    return showNotice('player-modal-notice', 'error', 'Le mot de passe doit contenir au moins 8 caractères.');
   }
 
-  if (password.length < 8) {
-    showNotice('player-modal-notice', 'error', 'Le mot de passe doit contenir au moins 8 caractères.');
-    return;
-  }
-
-  const jerseyNumber = numberRaw ? Number(numberRaw) : null;
-
-  try {
+  try{
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          full_name: fullName,
-          role: 'player'
-        }
-      }
+      options:{ data:{ full_name:fullName, role:'player' } }
     });
-
-    if (error) throw error;
+    if(error) throw error;
 
     const userId = data?.user?.id;
-    if (!userId) {
-      throw new Error("Le compte joueur n'a pas pu être créé.");
-    }
+    if(!userId) throw new Error(\"Le compte joueur n'a pas pu être créé.\");
 
     await waitForProfile(userId);
 
-    const { error: memberError } = await supabase
-      .from('team_members')
-      .insert({
-        team_id: state.activeTeam.id,
-        player_profile_id: userId,
-        jersey_number: jerseyNumber,
-        position,
-        status: 'new'
-      });
+    const { error: memberError } = await supabase.from('team_members').insert({
+      team_id: state.activeTeam.id,
+      player_profile_id: userId,
+      jersey_number: numberRaw ? Number(numberRaw) : null,
+      position,
+      status:'new'
+    });
+    if(memberError) throw memberError;
 
-    if (memberError) throw memberError;
-
-    showNotice(
-      'player-modal-notice',
-      'success',
-      `Joueur créé. Il peut ensuite se connecter comme joueur. Code équipe : ${state.activeTeam.team_code}`
-    );
-
+    showNotice('player-modal-notice', 'success', `Joueur créé. Code équipe : ${state.activeTeam.team_code}`);
     document.getElementById('player-full-name').value = '';
     document.getElementById('player-email').value = '';
     document.getElementById('player-password').value = '';
@@ -1876,13 +1095,54 @@ async function createPlayer() {
 
     await loadTeamMembers(state.activeTeam.id);
     renderDashboard();
-  } catch (error) {
+  }catch(error){
     console.error(error);
     showNotice('player-modal-notice', 'error', error.message || 'Impossible de créer le joueur.');
   }
 }
 
-async function createSession() {
+function openEditPlayerModal(memberId){
+  const member = state.teamMembers.find(m => m.id === memberId);
+  if(!member) return;
+
+  clearNotice('edit-player-modal-notice');
+  document.getElementById('edit-player-member-id').value = member.id;
+  document.getElementById('edit-player-name').value = member.player?.full_name || 'Joueur';
+  document.getElementById('edit-player-position').value = member.position || 'MID';
+  document.getElementById('edit-player-number').value = member.jersey_number ?? '';
+  document.getElementById('edit-player-status').value = member.status || 'active';
+
+  document.getElementById('edit-player-modal-overlay').classList.add('open');
+}
+
+async function savePlayerEdit(){
+  const memberId = document.getElementById('edit-player-member-id').value;
+  const position = document.getElementById('edit-player-position').value;
+  const numberRaw = document.getElementById('edit-player-number').value.trim();
+  const status = document.getElementById('edit-player-status').value;
+
+  try{
+    const { error } = await supabase
+      .from('team_members')
+      .update({
+        position,
+        jersey_number: numberRaw ? Number(numberRaw) : null,
+        status
+      })
+      .eq('id', memberId);
+
+    if(error) throw error;
+
+    showNotice('edit-player-modal-notice', 'success', 'Joueur modifié avec succès.');
+    await loadTeamMembers(state.activeTeam.id);
+    closeEditPlayerModal();
+  }catch(error){
+    console.error(error);
+    showNotice('edit-player-modal-notice', 'error', error.message || 'Impossible de modifier le joueur.');
+  }
+}
+
+async function createSession(){
   const title = document.getElementById('session-title').value.trim();
   const type = document.getElementById('session-type').value;
   const duration = Number(document.getElementById('session-duration').value || 90);
@@ -1891,32 +1151,25 @@ async function createSession() {
   const location = document.getElementById('session-location').value.trim();
   const notes = document.getElementById('session-notes').value.trim();
 
-  if (!title || !date || !time) {
-    showNotice('session-modal-notice', 'error', 'Le titre, la date et l’heure sont obligatoires.');
-    return;
+  if(!title || !date || !time){
+    return showNotice('session-modal-notice', 'error', 'Le titre, la date et l’heure sont obligatoires.');
   }
 
-  try {
-    const scheduledAt = new Date(`${date}T${time}:00`);
-    const iso = scheduledAt.toISOString();
-
-    const { error } = await supabase
-      .from('sessions')
-      .insert({
-        team_id: state.activeTeam.id,
-        created_by: state.sessionUser.id,
-        title,
-        type,
-        scheduled_at: iso,
-        duration_minutes: duration,
-        location,
-        notes
-      });
-
-    if (error) throw error;
+  try{
+    const scheduledAt = new Date(`${date}T${time}:00`).toISOString();
+    const { error } = await supabase.from('sessions').insert({
+      team_id: state.activeTeam.id,
+      created_by: state.sessionUser.id,
+      title,
+      type,
+      scheduled_at: scheduledAt,
+      duration_minutes: duration,
+      location,
+      notes
+    });
+    if(error) throw error;
 
     showNotice('session-modal-notice', 'success', 'Session créée avec succès.');
-
     document.getElementById('session-title').value = '';
     document.getElementById('session-type').value = 'training';
     document.getElementById('session-duration').value = '90';
@@ -1924,164 +1177,193 @@ async function createSession() {
     document.getElementById('session-time').value = '';
     document.getElementById('session-location').value = '';
     document.getElementById('session-notes').value = '';
-
     await loadSessions(state.activeTeam.id);
     renderDashboard();
-  } catch (error) {
+  }catch(error){
     console.error(error);
     showNotice('session-modal-notice', 'error', error.message || 'Impossible de créer la session.');
   }
 }
 
-async function waitForProfile(userId, attempts = 10, delayMs = 600) {
-  for (let i = 0; i < attempts; i++) {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', userId)
-      .maybeSingle();
+async function createConversation(){
+  const typeValue = document.getElementById('conversation-type').value;
+  const titleInput = document.getElementById('conversation-title').value.trim();
+  const selectedPlayerId = document.getElementById('conversation-player-select').value;
 
-    if (error) throw error;
-    if (data) return data;
+  if(!state.activeTeam) return showNotice('conversation-modal-notice', 'error', 'Aucune équipe active.');
 
-    await new Promise(resolve => setTimeout(resolve, delayMs));
+  try{
+    let payload = null;
+
+    if(typeValue === 'general'){
+      payload = {
+        team_id: state.activeTeam.id,
+        type: 'team',
+        title: titleInput || `Général — ${state.activeTeam.name}`,
+        created_by: state.sessionUser.id
+      };
+    } else {
+      if(!selectedPlayerId) return showNotice('conversation-modal-notice', 'error', 'Choisis un joueur.');
+      const member = state.teamMembers.find(m => m.player_profile_id === selectedPlayerId);
+      payload = {
+        team_id: state.activeTeam.id,
+        type: 'direct',
+        title: titleInput || `Coach ↔ ${member?.player?.full_name || 'Joueur'}`,
+        created_by: state.sessionUser.id
+      };
+    }
+
+    const { data: conv, error } = await supabase.from('conversations').insert(payload).select('*').single();
+    if(error) throw error;
+
+    const participants = [{ conversation_id: conv.id, profile_id: state.sessionUser.id }];
+
+    if(typeValue === 'general'){
+      state.teamMembers.forEach(member => {
+        participants.push({ conversation_id: conv.id, profile_id: member.player_profile_id });
+      });
+    } else {
+      participants.push({ conversation_id: conv.id, profile_id: selectedPlayerId });
+    }
+
+    const { error: partError } = await supabase.from('conversation_participants').insert(participants);
+    if(partError) throw partError;
+
+    showNotice('conversation-modal-notice', 'success', 'Conversation créée.');
+    await loadConversations(state.activeTeam.id);
+    closeConversationModal();
+  }catch(error){
+    console.error(error);
+    showNotice('conversation-modal-notice', 'error', error.message || 'Impossible de créer la conversation.');
   }
-
-  throw new Error("Le profil du joueur n'a pas été créé à temps.");
 }
 
-function showNotice(id, type, message) {
+async function openConversation(conversationId){
+  const conv = state.conversations.find(c => c.id === conversationId);
+  if(!conv) return;
+
+  state.currentConversation = conv;
+  renderConversationList();
+
+  document.getElementById('current-conversation-title').textContent = conv.title || conversationFallback(conv);
+  document.getElementById('current-conversation-sub').textContent = conv.type === 'team' ? 'Chat général de l’équipe' : 'Conversation directe';
+
+  await loadMessages(conversationId);
+}
+
+async function openGeneralChat(){
+  const existing = state.conversations.find(c => c.type === 'team');
+  if(existing){
+    await openConversation(existing.id);
+    showPage('messages', document.querySelectorAll('.nav-item')[4]);
+    return;
+  }
+  openNewConversationModal();
+  document.getElementById('conversation-type').value = 'general';
+  toggleConversationFields();
+  document.getElementById('conversation-title').value = `Général — ${state.activeTeam?.name || 'Équipe'}`;
+}
+
+async function sendMessage(){
+  if(!state.currentConversation) return alert('Sélectionne une conversation.');
+  const input = document.getElementById('message-input');
+  const content = input.value.trim();
+  if(!content) return;
+
+  try{
+    const { error } = await supabase.from('messages').insert({
+      conversation_id: state.currentConversation.id,
+      sender_id: state.sessionUser.id,
+      content
+    });
+    if(error) throw error;
+    input.value = '';
+    await loadMessages(state.currentConversation.id);
+  }catch(error){
+    console.error(error);
+    alert(error.message || \"Impossible d'envoyer le message.\");
+  }
+}
+
+async function waitForProfile(userId, attempts=10, delayMs=600){
+  for(let i=0;i<attempts;i++){
+    const { data, error } = await supabase.from('profiles').select('id').eq('id', userId).maybeSingle();
+    if(error) throw error;
+    if(data) return data;
+    await new Promise(r => setTimeout(r, delayMs));
+  }
+  throw new Error(\"Le profil du joueur n'a pas été créé à temps.\");
+}
+
+function showNotice(id, type, message){
   const el = document.getElementById(id);
   el.className = `notice ${type}`;
   el.textContent = message;
 }
-
-function clearNotice(id) {
+function clearNotice(id){
   const el = document.getElementById(id);
   el.className = 'notice';
   el.textContent = '';
 }
 
-async function logout() {
+async function logout(){
   await supabase.auth.signOut();
   window.location.href = '/';
 }
 
-function getInitials(value) {
-  return String(value || '')
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map(part => part[0]?.toUpperCase() || '')
-    .join('') || '??';
+function getInitials(value){
+  return String(value || '').trim().split(/\\s+/).slice(0,2).map(p => p[0]?.toUpperCase() || '').join('') || '??';
 }
-
-function translatePosition(position) {
-  const map = {
-    GK: 'Gardien',
-    DEF: 'Défenseur',
-    MID: 'Milieu',
-    ATT: 'Attaquant'
-  };
-
+function translatePosition(position){
+  const map = { GK:'Gardien', DEF:'Défenseur', MID:'Milieu', ATT:'Attaquant' };
   return map[position] || position || '—';
 }
-
-function translateStatus(status) {
-  const map = {
-    active: 'Actif',
-    injured: 'Blessé',
-    inactive: 'Inactif',
-    new: 'Nouveau'
-  };
-
+function translateStatus(status){
+  const map = { active:'Actif', injured:'Blessé', inactive:'Inactif', new:'Nouveau' };
   return map[status] || status || '—';
 }
-
-function translateSessionType(type) {
-  const map = {
-    training: 'Entraînement',
-    match: 'Match',
-    meeting: 'Réunion',
-    tournament: 'Tournoi'
-  };
-
+function translateSessionType(type){
+  const map = { training:'Entraînement', match:'Match', meeting:'Réunion', tournament:'Tournoi' };
   return map[type] || type || 'Événement';
 }
-
-function translatePaymentStatus(status) {
-  const map = {
-    pending: 'En attente',
-    paid: 'Payé',
-    late: 'En retard'
-  };
-
+function translatePaymentStatus(status){
+  const map = { pending:'En attente', paid:'Payé', late:'En retard' };
   return map[status] || status || '—';
 }
-
-function statusBadgeClass(status) {
-  const map = {
-    active: 'badge-green',
-    injured: 'badge-red',
-    inactive: 'badge-muted',
-    new: 'badge-blue'
-  };
-
+function statusBadgeClass(status){
+  const map = { active:'badge-green', injured:'badge-red', inactive:'badge-muted', new:'badge-blue' };
   return map[status] || 'badge-muted';
 }
-
-function paymentBadgeClass(status) {
-  const map = {
-    pending: 'badge-orange',
-    paid: 'badge-green',
-    late: 'badge-red'
-  };
-
+function paymentBadgeClass(status){
+  const map = { pending:'badge-orange', paid:'badge-green', late:'badge-red' };
   return map[status] || 'badge-muted';
 }
-
-function formatDateTime(value) {
-  if (!value) return 'Date inconnue';
-
-  return new Intl.DateTimeFormat('fr-FR', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
-  }).format(new Date(value));
+function formatDateTime(value){
+  if(!value) return 'Date inconnue';
+  return new Intl.DateTimeFormat('fr-FR', { dateStyle:'medium', timeStyle:'short' }).format(new Date(value));
 }
-
-function formatDate(value) {
-  if (!value) return '—';
-
-  return new Intl.DateTimeFormat('fr-FR', {
-    dateStyle: 'medium'
-  }).format(new Date(value));
+function formatDate(value){
+  if(!value) return '—';
+  return new Intl.DateTimeFormat('fr-FR', { dateStyle:'medium' }).format(new Date(value));
 }
-
-function formatShortDate(value) {
-  if (!value) return '—';
-
-  return new Intl.DateTimeFormat('fr-FR', {
-    dateStyle: 'short',
-    timeStyle: 'short'
-  }).format(new Date(value));
+function formatShortDate(value){
+  if(!value) return '—';
+  return new Intl.DateTimeFormat('fr-FR', { dateStyle:'short', timeStyle:'short' }).format(new Date(value));
 }
-
-function formatAmount(value) {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR'
-  }).format(Number(value || 0));
+function formatAmount(value){
+  return new Intl.NumberFormat('fr-FR', { style:'currency', currency:'EUR' }).format(Number(value || 0));
 }
-
-function escapeHtml(value) {
+function escapeHtml(value){
   return String(value || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('\"','&quot;')
+    .replaceAll(\"'\", '&#039;');
+}
+function conversationFallback(conv){
+  return conv.type === 'team' ? 'Général' : 'Conversation';
 }
 </script>
-
 </body>
 </html>
