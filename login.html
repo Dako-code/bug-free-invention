@@ -53,6 +53,7 @@ body::before {
   transform: translate(-50%, -60%);
   pointer-events: none;
 }
+
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -366,13 +367,13 @@ body::before {
     <!-- Coach-only -->
     <div id="coach-signup-fields">
       <div class="form-group">
-        <label class="form-label">Nom de votre première équipe</label>
+        <label class="form-label">Nom du club / équipe</label>
         <input class="form-input" type="text" id="signup-team-name" placeholder="FC Al-Nour">
       </div>
 
       <div class="form-group">
         <label class="form-label">Catégorie</label>
-        <input class="form-input" type="text" id="signup-team-category" placeholder="Senior A">
+        <input class="form-input" type="text" id="signup-team-category" placeholder="U21 / Senior A / U15">
       </div>
 
       <div class="form-group">
@@ -415,7 +416,7 @@ body::before {
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const SUPABASE_URL = 'https://jjythzsnubqevzjzrzio.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqeXRoenNudWJxZXZ6anpyemlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTg3MDksImV4cCI6MjA5MDQzNDcwOX0.oINviaV_LTZEoOOlRLYU2V2yeFTQhdUHjjRdaHyu5mo';
+const SUPABASE_ANON_KEY = 'REMPLACE_ICI_PAR_TA_CLE_ANON';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentTab = 'login';
@@ -569,6 +570,10 @@ async function login() {
       throw new Error(`Ce compte est enregistré comme ${profile.role === 'coach' ? 'coach' : 'joueur'}, pas comme ${currentRole === 'coach' ? 'coach' : 'joueur'}.`);
     }
 
+    if (profile.role === 'player') {
+      await tryJoinPendingTeam();
+    }
+
     await redirectAfterAuth(data.user.id);
   } catch (error) {
     console.error(error);
@@ -652,19 +657,14 @@ async function signup() {
       await createInitialTeam(user.id, coachTeamName, coachTeamCategory, coachTeamSeason);
       showSuccess('Compte coach créé avec succès. Tu peux maintenant te connecter.');
     } else {
-      const { error: joinError } = await supabase.rpc('join_team_by_code', {
-        input_team_code: playerTeamCode,
-        input_position: playerPosition
-      });
+      localStorage.setItem('pending_team_code', playerTeamCode);
+      localStorage.setItem('pending_player_position', playerPosition);
 
-      if (joinError) {
-        throw new Error('Compte joueur créé, mais le code équipe est invalide ou l’association a échoué.');
-      }
-
-      showSuccess('Compte joueur créé avec succès. Tu peux maintenant te connecter.');
+      showSuccess('Compte joueur créé avec succès. Connecte-toi maintenant pour rejoindre automatiquement ton équipe.');
     }
 
     clearSignupForm();
+
     setTimeout(() => {
       switchTab('login');
     }, 1200);
@@ -731,6 +731,28 @@ async function createInitialTeam(userId, teamName, category, season) {
   if (subError) {
     throw subError;
   }
+}
+
+async function tryJoinPendingTeam() {
+  const pendingTeamCode = localStorage.getItem('pending_team_code');
+  const pendingPosition = localStorage.getItem('pending_player_position') || 'MID';
+
+  if (!pendingTeamCode) {
+    return;
+  }
+
+  const { error } = await supabase.rpc('join_team_by_code', {
+    input_team_code: pendingTeamCode,
+    input_position: pendingPosition
+  });
+
+  if (error) {
+    console.error('join_team_by_code failed:', error);
+    throw new Error("Connexion réussie, mais l'association à l'équipe a échoué. Vérifie le code équipe.");
+  }
+
+  localStorage.removeItem('pending_team_code');
+  localStorage.removeItem('pending_player_position');
 }
 
 async function redirectAfterAuth(userId) {
