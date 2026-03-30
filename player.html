@@ -898,7 +898,8 @@
       team: null,
       conversations: [],
       currentConversation: null,
-      currentMessages: []
+      currentMessages: [],
+      realtimeChannel: null
     };
 
     window.showPage = showPage;
@@ -1037,6 +1038,10 @@
       document.getElementById('perf-attendance-fill').style.width = '0%';
       document.getElementById('perf-rating-label').textContent = '--';
       document.getElementById('perf-rating-fill').style.width = '0%';
+
+      state.currentConversation = null;
+      state.currentMessages = [];
+      unsubscribeMessagesRealtime();
     }
 
     function fillMembership(membership, team) {
@@ -1244,6 +1249,9 @@
 
       if (!ids.length) {
         state.conversations = [];
+        state.currentConversation = null;
+        state.currentMessages = [];
+        unsubscribeMessagesRealtime();
         document.getElementById('conversation-list').innerHTML = `<div class="empty-note">Aucune conversation.</div>`;
         document.getElementById('messages-area').innerHTML = `<div class="empty-note">Aucune conversation.</div>`;
         return;
@@ -1259,6 +1267,14 @@
 
       state.conversations = data || [];
       renderConversationList();
+
+      if (state.currentConversation) {
+        const stillExists = state.conversations.find(c => c.id === state.currentConversation.id);
+        if (stillExists) {
+          await openConversation(stillExists.id);
+          return;
+        }
+      }
 
       if (state.conversations.length) {
         await openConversation(state.conversations[0].id);
@@ -1278,16 +1294,7 @@
         : `<div class="empty-note">Aucune conversation.</div>`;
     }
 
-    async function openConversation(conversationId) {
-      const conv = state.conversations.find(c => c.id === conversationId);
-      if (!conv) return;
-
-      state.currentConversation = conv;
-      renderConversationList();
-
-      document.getElementById('current-conversation-title').textContent = conv.title || (conv.type === 'team' ? 'Général' : 'Conversation');
-      document.getElementById('current-conversation-sub').textContent = conv.type === 'team' ? 'Chat général de l’équipe' : 'Conversation directe';
-
+    async function loadMessages(conversationId) {
       const { data, error } = await supabase
         .from('messages')
         .select(`
@@ -1303,6 +1310,81 @@
 
       state.currentMessages = data || [];
       renderMessagesArea();
+    }
+
+    function unsubscribeMessagesRealtime() {
+      if (state.realtimeChannel) {
+        supabase.removeChannel(state.realtimeChannel);
+        state.realtimeChannel = null;
+      }
+    }
+
+    async function appendRealtimeMessage(newMessage) {
+      if (!state.currentConversation) return;
+      if (newMessage.conversation_id !== state.currentConversation.id) return;
+
+      const alreadyExists = state.currentMessages.some(msg => msg.id === newMessage.id);
+      if (alreadyExists) return;
+
+      const { data: senderProfile, error } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', newMessage.sender_id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error loading sender profile:', error);
+      }
+
+      state.currentMessages.push({
+        ...newMessage,
+        sender: senderProfile || null
+      });
+
+      state.currentMessages.sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+
+      renderMessagesArea();
+    }
+
+    function subscribeToConversationMessages(conversationId) {
+      unsubscribeMessagesRealtime();
+
+      state.realtimeChannel = supabase
+        .channel(`messages:${conversationId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `conversation_id=eq.${conversationId}`
+          },
+          async (payload) => {
+            await appendRealtimeMessage(payload.new);
+          }
+        )
+        .subscribe((status) => {
+          console.log('Player realtime status:', status);
+        });
+    }
+
+    async function openConversation(conversationId) {
+      const conv = state.conversations.find(c => c.id === conversationId);
+      if (!conv) return;
+
+      state.currentConversation = conv;
+      renderConversationList();
+
+      document.getElementById('current-conversation-title').textContent =
+        conv.title || (conv.type === 'team' ? 'Général' : 'Conversation');
+
+      document.getElementById('current-conversation-sub').textContent =
+        conv.type === 'team' ? 'Chat général de l’équipe' : 'Conversation directe';
+
+      await loadMessages(conversationId);
+      subscribeToConversationMessages(conversationId);
     }
 
     function renderMessagesArea() {
@@ -1343,7 +1425,6 @@
         if (error) throw error;
 
         input.value = '';
-        await openConversation(state.currentConversation.id);
 
       } catch (error) {
         console.error(error);
@@ -1369,6 +1450,7 @@
     }
 
     async function logout() {
+      unsubscribeMessagesRealtime();
       await supabase.auth.signOut();
       window.location.href = '/';
     }
