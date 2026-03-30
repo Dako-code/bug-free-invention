@@ -5,181 +5,776 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CoachPro — Connexion</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-:root{--bg:#080C0A;--card:#141C16;--border:#1E2B20;--green:#3DFF7A;--green2:#00C853;--text:#EDF2EE;--muted:#5A7060;--red:#FF5252}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;position:relative;overflow:hidden}
-body::before{content:'';position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(61,255,122,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-60%);pointer-events:none}
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:100%;max-width:420px;position:relative;z-index:1}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--green);text-align:center;letter-spacing:0.05em;margin-bottom:0.3rem}
-.subtitle{text-align:center;color:var(--muted);font-size:0.85rem;margin-bottom:2rem}
-.tabs{display:flex;background:#0F1511;border-radius:10px;padding:3px;margin-bottom:1.5rem}
-.tab{flex:1;text-align:center;padding:0.5rem;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:500;color:var(--muted);transition:all 0.2s}
-.tab.active{background:var(--green);color:#000;font-weight:700}
-.form-group{margin-bottom:1rem}
-.form-label{display:block;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem}
-.form-input{width:100%;background:#0F1511;border:1px solid var(--border);border-radius:10px;padding:0.7rem 0.9rem;color:var(--text);font-family:'Outfit',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s}
-.form-input:focus{border-color:var(--green)}
-.form-input::placeholder{color:var(--muted)}
-.btn{width:100%;padding:0.85rem;border-radius:10px;font-family:'Outfit',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;border:none;background:var(--green);color:#000;transition:all 0.2s;margin-top:0.5rem}
-.btn:hover{background:#5DFFAA;box-shadow:0 0 30px rgba(61,255,122,0.3)}
-.btn:disabled{opacity:0.5;cursor:not-allowed}
-.error{background:rgba(255,82,82,0.1);border:1px solid rgba(255,82,82,0.2);color:var(--red);padding:0.6rem 0.9rem;border-radius:8px;font-size:0.82rem;margin-bottom:1rem;display:none}
-.success{background:rgba(61,255,122,0.1);border:1px solid rgba(61,255,122,0.2);color:var(--green);padding:0.6rem 0.9rem;border-radius:8px;font-size:0.82rem;margin-bottom:1rem;display:none}
-.divider{text-align:center;color:var(--muted);font-size:0.75rem;margin:1rem 0;position:relative}
-.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
-.divider::before{left:0}.divider::after{right:0}
-.footer-text{text-align:center;font-size:0.75rem;color:var(--muted);margin-top:1.5rem}
-.footer-text a{color:var(--green);text-decoration:none}
-.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px}
-@keyframes spin{to{transform:rotate(360deg)}}
+:root {
+  --bg: #080C0A;
+  --card: #141C16;
+  --card-2: #0F1511;
+  --border: #1E2B20;
+  --green: #3DFF7A;
+  --green-2: #00C853;
+  --text: #EDF2EE;
+  --muted: #5A7060;
+  --red: #FF5252;
+  --orange: #FF9100;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(61,255,122,0.07) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  pointer-events: none;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  color: var(--green);
+  text-align: center;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 1.4rem;
+}
+
+.tabs {
+  display: flex;
+  background: var(--card-2);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 0.55rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: var(--green);
+  color: #000;
+  font-weight: 700;
+}
+
+.role-switch {
+  display: flex;
+  background: var(--card-2);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 1.2rem;
+}
+
+.role-option {
+  flex: 1;
+  text-align: center;
+  padding: 0.55rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: all 0.2s;
+}
+
+.role-option.active {
+  background: rgba(61,255,122,0.12);
+  color: var(--green);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: var(--green);
+}
+
+.form-input::placeholder {
+  color: var(--muted);
+}
+
+.form-select option {
+  background: var(--card);
+}
+
+.btn {
+  width: 100%;
+  padding: 0.9rem;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  background: var(--green);
+  color: #000;
+  transition: all 0.2s;
+  margin-top: 0.4rem;
+}
+
+.btn:hover {
+  background: #5DFFAA;
+  box-shadow: 0 0 30px rgba(61,255,122,0.3);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.error,
+.success,
+.info {
+  padding: 0.7rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
+  display: none;
+}
+
+.error {
+  background: rgba(255,82,82,0.1);
+  border: 1px solid rgba(255,82,82,0.2);
+  color: var(--red);
+}
+
+.success {
+  background: rgba(61,255,122,0.1);
+  border: 1px solid rgba(61,255,122,0.2);
+  color: var(--green);
+}
+
+.info {
+  background: rgba(255,145,0,0.12);
+  border: 1px solid rgba(255,145,0,0.2);
+  color: var(--orange);
+}
+
+.divider {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin: 1rem 0;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 42%;
+  height: 1px;
+  background: var(--border);
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.footer-text {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 1.5rem;
+}
+
+.footer-text a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0,0,0,0.3);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.small-note {
+  margin-top: -0.35rem;
+  margin-bottom: 1rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 </style>
 </head>
 <body>
+
 <div class="card">
   <div class="logo">CoachPro</div>
-  <div class="subtitle">La plateforme des coachs qui gagnent</div>
+  <div class="subtitle">Gestion d'équipes, joueurs, performances et communication</div>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('login')">Connexion</div>
-    <div class="tab" onclick="switchTab('signup')">Inscription</div>
+    <div class="tab active" id="tab-login" onclick="switchTab('login')">Connexion</div>
+    <div class="tab" id="tab-signup" onclick="switchTab('signup')">Inscription</div>
+  </div>
+
+  <div class="role-switch">
+    <div class="role-option active" id="role-coach" onclick="setRole('coach')">Coach</div>
+    <div class="role-option" id="role-player" onclick="setRole('player')">Joueur</div>
   </div>
 
   <div id="error-msg" class="error"></div>
   <div id="success-msg" class="success"></div>
+  <div id="info-msg" class="info"></div>
 
   <!-- LOGIN -->
   <div id="form-login">
     <div class="form-group">
       <label class="form-label">Email</label>
-      <input class="form-input" type="email" id="login-email" placeholder="coach@monclub.fr" autocomplete="email">
+      <input class="form-input" type="email" id="login-email" placeholder="email@exemple.com" autocomplete="email">
     </div>
+
     <div class="form-group">
       <label class="form-label">Mot de passe</label>
       <input class="form-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
     </div>
+
+    <div class="small-note" id="login-role-note">
+      Connexion en tant que <strong>coach</strong>.
+    </div>
+
     <button class="btn" onclick="login()" id="login-btn">Se connecter</button>
+
     <div class="divider">ou</div>
-    <p style="text-align:center;font-size:0.8rem;color:var(--muted)">Pas encore de compte ? <a href="#" onclick="switchTab('signup')" style="color:var(--green)">S'inscrire gratuitement →</a></p>
+
+    <p style="text-align:center;font-size:0.8rem;color:var(--muted)">
+      Pas encore de compte ?
+      <a href="#" onclick="switchTab('signup'); return false;" style="color:var(--green)">S'inscrire →</a>
+    </p>
   </div>
 
   <!-- SIGNUP -->
-  <div id="form-signup" style="display:none">
+  <div id="form-signup" class="hidden">
     <div class="form-group">
       <label class="form-label">Nom complet</label>
       <input class="form-input" type="text" id="signup-name" placeholder="Mohamed Exemple" autocomplete="name">
     </div>
+
     <div class="form-group">
       <label class="form-label">Email</label>
-      <input class="form-input" type="email" id="signup-email" placeholder="coach@monclub.fr" autocomplete="email">
+      <input class="form-input" type="email" id="signup-email" placeholder="email@exemple.com" autocomplete="email">
     </div>
+
     <div class="form-group">
       <label class="form-label">Mot de passe</label>
       <input class="form-input" type="password" id="signup-password" placeholder="Minimum 8 caractères" autocomplete="new-password">
     </div>
-    <div class="form-group">
-      <label class="form-label">Nom de votre équipe</label>
-      <input class="form-input" type="text" id="signup-team" placeholder="FC Al-Nour">
+
+    <!-- Coach-only -->
+    <div id="coach-signup-fields">
+      <div class="form-group">
+        <label class="form-label">Nom de votre première équipe</label>
+        <input class="form-input" type="text" id="signup-team-name" placeholder="FC Al-Nour">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Catégorie</label>
+        <input class="form-input" type="text" id="signup-team-category" placeholder="Senior A">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Saison</label>
+        <input class="form-input" type="text" id="signup-team-season" placeholder="2025/2026">
+      </div>
     </div>
-    <button class="btn" onclick="signup()" id="signup-btn">Créer mon compte gratuit</button>
+
+    <!-- Player-only -->
+    <div id="player-signup-fields" class="hidden">
+      <div class="form-group">
+        <label class="form-label">Code équipe</label>
+        <input class="form-input" type="text" id="signup-team-code" placeholder="FCALNO-7A3F">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Poste</label>
+        <select class="form-select" id="signup-position">
+          <option value="MID">Milieu</option>
+          <option value="GK">Gardien</option>
+          <option value="DEF">Défenseur</option>
+          <option value="ATT">Attaquant</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="small-note" id="signup-role-note">
+      Création d’un compte <strong>coach</strong>.
+    </div>
+
+    <button class="btn" onclick="signup()" id="signup-btn">Créer mon compte</button>
   </div>
 
-  <div class="footer-text">En vous inscrivant, vous acceptez nos <a href="#">CGU</a> et notre <a href="#">politique de confidentialité</a>.</div>
+  <div class="footer-text">
+    En vous inscrivant, vous acceptez nos <a href="#">CGU</a> et notre <a href="#">politique de confidentialité</a>.
+  </div>
 </div>
 
 <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  const SUPABASE_URL = 'https://jjythzsnubqevzjzrzio.supabase.co'
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqeXRoenNudWJxZXZ6anpyemlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTg3MDksImV4cCI6MjA5MDQzNDcwOX0.oINviaV_LTZEoOOlRLYU2V2yeFTQhdUHjjRdaHyu5mo'
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const SUPABASE_URL = 'https://jjythzsnubqevzjzrzio.supabase.co';
+const SUPABASE_ANON_KEY = 'REMPLACE_ICI_PAR_TA_CLE_ANON';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Rediriger si déjà connecté
-  const { data: { session } } = await supabase.auth.getSession()
-  if (session) window.location.href = './index.html'
+let currentTab = 'login';
+let currentRole = 'coach';
 
-  window.switchTab = function(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-    document.querySelector(`.tab:${tab==='login'?'first':'last'}-child`).classList.add('active')
-    document.getElementById('form-login').style.display = tab==='login' ? 'block' : 'none'
-    document.getElementById('form-signup').style.display = tab==='signup' ? 'block' : 'none'
-    hideMessages()
+const loginTab = document.getElementById('tab-login');
+const signupTab = document.getElementById('tab-signup');
+
+const roleCoach = document.getElementById('role-coach');
+const rolePlayer = document.getElementById('role-player');
+
+const loginForm = document.getElementById('form-login');
+const signupForm = document.getElementById('form-signup');
+
+const coachSignupFields = document.getElementById('coach-signup-fields');
+const playerSignupFields = document.getElementById('player-signup-fields');
+
+const loginRoleNote = document.getElementById('login-role-note');
+const signupRoleNote = document.getElementById('signup-role-note');
+
+const errorBox = document.getElementById('error-msg');
+const successBox = document.getElementById('success-msg');
+const infoBox = document.getElementById('info-msg');
+
+window.switchTab = switchTab;
+window.setRole = setRole;
+window.login = login;
+window.signup = signup;
+
+init();
+
+async function init() {
+  updateRoleUI();
+  updateTabUI();
+
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (session?.user) {
+    await redirectAfterAuth(session.user.id);
+  }
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  hideMessages();
+  updateTabUI();
+}
+
+function setRole(role) {
+  currentRole = role;
+  hideMessages();
+  updateRoleUI();
+}
+
+function updateTabUI() {
+  const isLogin = currentTab === 'login';
+
+  loginTab.classList.toggle('active', isLogin);
+  signupTab.classList.toggle('active', !isLogin);
+
+  loginForm.classList.toggle('hidden', !isLogin);
+  signupForm.classList.toggle('hidden', isLogin);
+}
+
+function updateRoleUI() {
+  const isCoach = currentRole === 'coach';
+
+  roleCoach.classList.toggle('active', isCoach);
+  rolePlayer.classList.toggle('active', !isCoach);
+
+  coachSignupFields.classList.toggle('hidden', !isCoach);
+  playerSignupFields.classList.toggle('hidden', isCoach);
+
+  loginRoleNote.innerHTML = `Connexion en tant que <strong>${isCoach ? 'coach' : 'joueur'}</strong>.`;
+  signupRoleNote.innerHTML = `Création d’un compte <strong>${isCoach ? 'coach' : 'joueur'}</strong>.`;
+}
+
+function showError(message) {
+  errorBox.textContent = '⚠️ ' + message;
+  errorBox.style.display = 'block';
+  successBox.style.display = 'none';
+  infoBox.style.display = 'none';
+}
+
+function showSuccess(message) {
+  successBox.textContent = message;
+  successBox.style.display = 'block';
+  errorBox.style.display = 'none';
+  infoBox.style.display = 'none';
+}
+
+function showInfo(message) {
+  infoBox.textContent = message;
+  infoBox.style.display = 'block';
+  errorBox.style.display = 'none';
+  successBox.style.display = 'none';
+}
+
+function hideMessages() {
+  errorBox.style.display = 'none';
+  successBox.style.display = 'none';
+  infoBox.style.display = 'none';
+}
+
+function setButtonLoading(button, text) {
+  button.innerHTML = `<span class="spinner"></span>${text}`;
+  button.disabled = true;
+}
+
+function resetButton(button, text) {
+  button.innerHTML = text;
+  button.disabled = false;
+}
+
+async function login() {
+  hideMessages();
+
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const password = document.getElementById('login-password').value;
+  const button = document.getElementById('login-btn');
+
+  if (!email || !password) {
+    showError('Remplis tous les champs.');
+    return;
   }
 
-  window.login = async function() {
-    const email = document.getElementById('login-email').value.trim()
-    const password = document.getElementById('login-password').value
-    if (!email || !password) return showError('Remplissez tous les champs.')
-    const btn = document.getElementById('login-btn')
-    btn.innerHTML = '<span class="spinner"></span>Connexion...'
-    btn.disabled = true
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
-      window.location.href = './index.html'
-    } catch(e) {
-      showError('Email ou mot de passe incorrect.')
-      btn.innerHTML = 'Se connecter'
-      btn.disabled = false
+  setButtonLoading(button, 'Connexion...');
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data?.user?.id) {
+      throw new Error('Connexion impossible.');
+    }
+
+    const profile = await getProfile(data.user.id);
+
+    if (!profile) {
+      throw new Error('Profil utilisateur introuvable.');
+    }
+
+    if (profile.role !== currentRole) {
+      await supabase.auth.signOut();
+      throw new Error(`Ce compte est enregistré comme ${profile.role === 'coach' ? 'coach' : 'joueur'}, pas comme ${currentRole === 'coach' ? 'coach' : 'joueur'}.`);
+    }
+
+    await redirectAfterAuth(data.user.id);
+  } catch (error) {
+    console.error(error);
+    showError(error.message || 'Email ou mot de passe incorrect.');
+    resetButton(button, 'Se connecter');
+  }
+}
+
+async function signup() {
+  hideMessages();
+
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim().toLowerCase();
+  const password = document.getElementById('signup-password').value;
+  const button = document.getElementById('signup-btn');
+
+  if (!name || !email || !password) {
+    showError('Remplis tous les champs obligatoires.');
+    return;
+  }
+
+  if (password.length < 8) {
+    showError('Le mot de passe doit contenir au moins 8 caractères.');
+    return;
+  }
+
+  let coachTeamName = '';
+  let coachTeamCategory = '';
+  let coachTeamSeason = '';
+  let playerTeamCode = '';
+  let playerPosition = 'MID';
+
+  if (currentRole === 'coach') {
+    coachTeamName = document.getElementById('signup-team-name').value.trim();
+    coachTeamCategory = document.getElementById('signup-team-category').value.trim() || 'Senior A';
+    coachTeamSeason = document.getElementById('signup-team-season').value.trim() || '2025/2026';
+
+    if (!coachTeamName) {
+      showError('Le nom de la première équipe est obligatoire pour un coach.');
+      return;
     }
   }
 
-  window.signup = async function() {
-    const name = document.getElementById('signup-name').value.trim()
-    const email = document.getElementById('signup-email').value.trim()
-    const password = document.getElementById('signup-password').value
-    const teamName = document.getElementById('signup-team').value.trim()
-    if (!name || !email || !password || !teamName) return showError('Remplissez tous les champs.')
-    if (password.length < 8) return showError('Le mot de passe doit faire au moins 8 caractères.')
-    const btn = document.getElementById('signup-btn')
-    btn.innerHTML = '<span class="spinner"></span>Création...'
-    btn.disabled = true
-    try {
-      // 1. Créer le compte
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: name } }
-      })
-      if (error) throw error
+  if (currentRole === 'player') {
+    playerTeamCode = document.getElementById('signup-team-code').value.trim().toUpperCase();
+    playerPosition = document.getElementById('signup-position').value;
 
-      // 2. Sauvegarder le nom d'équipe en localStorage pour après confirmation email
-      localStorage.setItem('pending_team', teamName)
-      localStorage.setItem('pending_name', name)
-
-      // 3. Afficher succès — pas de redirection, l'utilisateur doit confirmer son email
-      showSuccess('✅ Compte créé ! Vérifiez votre email pour confirmer, puis connectez-vous.')
-      btn.innerHTML = 'Créer mon compte gratuit'
-      btn.disabled = false
-
-      // Basculer vers l'onglet connexion après 3 secondes
-      setTimeout(() => switchTab('login'), 3000)
-
-    } catch(e) {
-      showError(e.message || 'Erreur lors de l\'inscription.')
-      btn.innerHTML = 'Créer mon compte gratuit'
-      btn.disabled = false
+    if (!playerTeamCode) {
+      showError('Le code équipe est obligatoire pour un joueur.');
+      return;
     }
   }
 
-  function showError(msg) {
-    const el = document.getElementById('error-msg')
-    el.textContent = '⚠️ ' + msg
-    el.style.display = 'block'
-    document.getElementById('success-msg').style.display = 'none'
+  setButtonLoading(button, 'Création...');
+
+  try {
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          role: currentRole
+        }
+      }
+    });
+
+    if (signUpError) {
+      throw signUpError;
+    }
+
+    const user = signUpData.user;
+
+    if (!user?.id) {
+      throw new Error('Le compte a été créé, mais l’utilisateur est introuvable.');
+    }
+
+    await waitForProfile(user.id);
+
+    if (currentRole === 'coach') {
+      await createInitialTeam(user.id, coachTeamName, coachTeamCategory, coachTeamSeason);
+      showSuccess('Compte coach créé avec succès. Tu peux maintenant te connecter.');
+    } else {
+      const { error: joinError } = await supabase.rpc('join_team_by_code', {
+        input_team_code: playerTeamCode,
+        input_position: playerPosition
+      });
+
+      if (joinError) {
+        throw new Error('Compte joueur créé, mais le code équipe est invalide ou l’association a échoué.');
+      }
+
+      showSuccess('Compte joueur créé avec succès. Tu peux maintenant te connecter.');
+    }
+
+    clearSignupForm();
+    setTimeout(() => {
+      switchTab('login');
+    }, 1200);
+
+  } catch (error) {
+    console.error(error);
+    showError(error.message || 'Erreur lors de l’inscription.');
+  } finally {
+    resetButton(button, 'Créer mon compte');
+  }
+}
+
+async function getProfile(userId) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
   }
 
-  function showSuccess(msg) {
-    const el = document.getElementById('success-msg')
-    el.textContent = msg
-    el.style.display = 'block'
-    document.getElementById('error-msg').style.display = 'none'
+  return data;
+}
+
+async function waitForProfile(userId, attempts = 10, delayMs = 600) {
+  for (let i = 0; i < attempts; i++) {
+    const profile = await getProfile(userId);
+
+    if (profile) {
+      return profile;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, delayMs));
   }
 
-  function hideMessages() {
-    document.getElementById('error-msg').style.display = 'none'
-    document.getElementById('success-msg').style.display = 'none'
+  throw new Error('Le profil utilisateur n’a pas été créé à temps.');
+}
+
+async function createInitialTeam(userId, teamName, category, season) {
+  const { error } = await supabase
+    .from('teams')
+    .insert({
+      coach_id: userId,
+      name: teamName,
+      category,
+      season
+    });
+
+  if (error) {
+    throw error;
   }
+
+  const { error: subError } = await supabase
+    .from('subscriptions')
+    .upsert({
+      coach_id: userId,
+      provider: 'stripe',
+      plan: 'pro',
+      status: 'inactive'
+    });
+
+  if (subError) {
+    throw subError;
+  }
+}
+
+async function redirectAfterAuth(userId) {
+  const profile = await getProfile(userId);
+
+  if (!profile) {
+    throw new Error('Profil introuvable.');
+  }
+
+  if (profile.role === 'coach') {
+    if (profile.is_owner) {
+      window.location.href = '/app';
+      return;
+    }
+
+    const { data: subscription, error: subscriptionError } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('coach_id', userId)
+      .maybeSingle();
+
+    if (subscriptionError) {
+      throw subscriptionError;
+    }
+
+    const allowedStatuses = ['active', 'trialing'];
+
+    if (subscription && allowedStatuses.includes(subscription.status)) {
+      window.location.href = '/app';
+      return;
+    }
+
+    showInfo('Ton compte coach existe, mais ton abonnement n’est pas encore actif. Pour l’instant, l’accès coach est bloqué tant que la page de paiement n’est pas branchée.');
+    await supabase.auth.signOut();
+    return;
+  }
+
+  if (profile.role === 'player') {
+    window.location.href = '/player.html';
+    return;
+  }
+
+  throw new Error('Rôle utilisateur invalide.');
+}
+
+function clearSignupForm() {
+  document.getElementById('signup-name').value = '';
+  document.getElementById('signup-email').value = '';
+  document.getElementById('signup-password').value = '';
+  document.getElementById('signup-team-name').value = '';
+  document.getElementById('signup-team-category').value = '';
+  document.getElementById('signup-team-season').value = '';
+  document.getElementById('signup-team-code').value = '';
+  document.getElementById('signup-position').value = 'MID';
+}
 </script>
+
 </body>
 </html>
