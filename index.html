@@ -898,7 +898,24 @@
           </div>
         </div>
       </div>
+<div class="page" id="page-matches">
+  <div class="section-header">
+    <div>
+      <div class="page-title">Matchs</div>
+      <div class="page-desc">Matchs renseignés avec statistiques et résumé</div>
+    </div>
+  </div>
 
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Historique des matchs</span>
+    </div>
+
+    <div class="list" id="matches-list">
+      <div class="empty-note">Aucun match renseigné.</div>
+    </div>
+  </div>
+</div>
       <div class="page" id="page-stats">
         <div class="page-header">
           <div class="page-title">Statistiques</div>
@@ -1297,24 +1314,23 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqeXRoenNudWJxZXZ6anpyemlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTg3MDksImV4cCI6MjA5MDQzNDcwOX0.oINviaV_LTZEoOOlRLYU2V2yeFTQhdUHjjRdaHyu5mo';
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const state = {
-      sessionUser: null,
-      profile: null,
-      subscription: null,
-      teams: [],
-      activeTeam: null,
-      teamMembers: [],
-      sessions: [],
-      stats: [],
-      payments: [],
-      conversations: [],
-      currentConversation: null,
-      currentMessages: [],
-      realtimeChannel: null,
-      attendanceRealtimeChannel: null,
-      matchReports: [],
-    };
-
+const state = {
+  sessionUser: null,
+  profile: null,
+  subscription: null,
+  teams: [],
+  activeTeam: null,
+  teamMembers: [],
+  sessions: [],
+  matchReports: [],
+  stats: [],
+  payments: [],
+  conversations: [],
+  currentConversation: null,
+  currentMessages: [],
+  realtimeChannel: null,
+  attendanceRealtimeChannel: null
+};
     window.showPage = showPage;
     window.logout = logout;
     window.openTeamModal = openTeamModal;
