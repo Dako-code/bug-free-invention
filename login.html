@@ -34,11 +34,12 @@ body {
   font-family: 'Outfit', sans-serif;
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: 1rem;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body::before {
@@ -52,16 +53,18 @@ body::before {
   transform: translate(-50%, -60%);
   pointer-events: none;
 }
-
 .card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 2.5rem;
+  padding: 2rem;
   width: 100%;
   max-width: 460px;
   position: relative;
   z-index: 1;
+  margin: 2rem 0;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
 }
 
 .logo {
