@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CoachPro — Gestion d'équipe</title>
+<title>CoachPro — Dashboard Coach</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
 :root {
   --bg: #080C0A;
@@ -27,1320 +28,2060 @@
   --r: 10px;
   --r2: 14px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{height:100%}
-body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;height:100%;display:flex;overflow:hidden}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+}
 
 /* SIDEBAR */
-.sidebar{width:220px;min-width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:0;overflow:hidden;transition:width 0.3s}
-.sidebar-logo{padding:1.4rem 1.2rem 1rem;border-bottom:1px solid var(--border);flex-shrink:0}
-.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.05em;color:var(--green);line-height:1}
-.logo-sub{font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-top:2px}
-.sidebar-team{padding:0.8rem 1rem;border-bottom:1px solid var(--border)}
-.team-selector{background:var(--card);border:1px solid var(--border2);border-radius:var(--r);padding:0.6rem 0.8rem;cursor:pointer;display:flex;align-items:center;gap:0.6rem;transition:border-color 0.2s}
-.team-selector:hover{border-color:var(--green)}
-.team-avatar{width:30px;height:30px;background:linear-gradient(135deg,#1a4a2a,#0d3020);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:var(--green);flex-shrink:0}
-.team-info{flex:1;min-width:0}
-.team-name{font-size:0.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.team-cat{font-size:0.68rem;color:var(--muted);letter-spacing:0.05em}
-.team-chevron{color:var(--muted);font-size:0.7rem}
-nav{flex:1;overflow-y:auto;padding:0.6rem 0}
-nav::-webkit-scrollbar{width:3px}
-nav::-webkit-scrollbar-thumb{background:var(--border2)}
-.nav-section{padding:0.5rem 1rem 0.2rem;font-size:0.62rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted)}
-.nav-item{display:flex;align-items:center;gap:0.7rem;padding:0.55rem 1rem;cursor:pointer;color:var(--muted2);font-size:0.85rem;font-weight:500;border-left:3px solid transparent;transition:all 0.15s;position:relative}
-.nav-item:hover{color:var(--text);background:var(--green-dim)}
-.nav-item.active{color:var(--green);border-left-color:var(--green);background:var(--green-dim)}
-.nav-icon{font-size:1rem;width:18px;text-align:center;flex-shrink:0}
-.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:0.62rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:100px;min-width:18px;text-align:center}
-.sidebar-bottom{padding:0.8rem;border-top:1px solid var(--border)}
-.user-card{display:flex;align-items:center;gap:0.6rem;padding:0.6rem;border-radius:var(--r);cursor:pointer;transition:background 0.15s}
-.user-card:hover{background:var(--green-dim)}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--green2),#004D20);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;color:#fff;flex-shrink:0}
-.user-name{font-size:0.82rem;font-weight:600}
-.user-role{font-size:0.68rem;color:var(--muted)}
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-logo {
+  padding: 1.4rem 1.2rem 1rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.05em;
+  color: var(--green);
+  line-height: 1;
+}
+
+.logo-sub {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.sidebar-team {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.team-selector {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 0.65rem 0.8rem;
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.team-selector:hover {
+  border-color: var(--green);
+}
+
+.team-avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg,#1a4a2a,#0d3020);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green);
+  font-weight: 700;
+  font-size: 0.76rem;
+  flex-shrink: 0;
+}
+
+.team-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.team-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-cat {
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.team-chevron {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.6rem 0;
+}
+
+.nav-section {
+  padding: 0.5rem 1rem 0.2rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  color: var(--muted2);
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+}
+
+.nav-item:hover {
+  color: var(--text);
+  background: var(--green-dim);
+}
+
+.nav-item.active {
+  color: var(--green);
+  border-left-color: var(--green);
+  background: var(--green-dim);
+}
+
+.nav-icon {
+  font-size: 1rem;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sidebar-bottom {
+  padding: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem;
+  border-radius: var(--r);
+}
+
+.user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green2), #004D20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.user-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.user-role {
+  font-size: 0.68rem;
+  color: var(--muted);
+}
 
 /* MAIN */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.8rem;height:56px;display:flex;align-items:center;gap:1rem;flex-shrink:0}
-.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.05em;color:var(--text)}
-.topbar-spacer{flex:1}
-.topbar-search{background:var(--card);border:1px solid var(--border2);border-radius:var(--r);padding:0.45rem 0.9rem;display:flex;align-items:center;gap:0.5rem;width:220px;transition:border-color 0.2s}
-.topbar-search:focus-within{border-color:var(--green)}
-.topbar-search input{background:none;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:0.82rem;width:100%}
-.topbar-search input::placeholder{color:var(--muted)}
-.topbar-icon-btn{width:36px;height:36px;background:var(--card);border:1px solid var(--border2);border-radius:var(--r);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.2s;position:relative;font-size:1rem}
-.topbar-icon-btn:hover{border-color:var(--green)}
-.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid var(--surface)}
-.btn{padding:0.45rem 1rem;border-radius:var(--r);font-family:'Outfit',sans-serif;font-weight:600;font-size:0.82rem;cursor:pointer;border:none;transition:all 0.15s}
-.btn-primary{background:var(--green);color:#000}
-.btn-primary:hover{background:#5DFFAA;box-shadow:0 0 20px rgba(61,255,122,0.3)}
-.btn-ghost{background:transparent;color:var(--muted2);border:1px solid var(--border2)}
-.btn-ghost:hover{border-color:var(--green);color:var(--green)}
-.btn-danger{background:rgba(255,82,82,0.1);color:var(--red);border:1px solid rgba(255,82,82,0.2)}
-.btn-danger:hover{background:rgba(255,82,82,0.2)}
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-shrink: 0;
+}
+
+.topbar-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.05em;
+}
+
+.topbar-spacer {
+  flex: 1;
+}
+
+.topbar-pill {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.75rem;
+  color: var(--muted2);
+}
+
+.btn {
+  padding: 0.45rem 1rem;
+  border-radius: var(--r);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+
+.btn-primary {
+  background: var(--green);
+  color: #000;
+}
+
+.btn-primary:hover {
+  background: #5DFFAA;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+
+.btn-ghost:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.btn-danger {
+  background: rgba(255,82,82,0.1);
+  color: var(--red);
+  border: 1px solid rgba(255,82,82,0.2);
+}
+
+.btn-danger:hover {
+  background: rgba(255,82,82,0.16);
+}
 
 /* CONTENT */
-.content{flex:1;overflow-y:auto;padding:1.5rem 1.8rem}
-.content::-webkit-scrollbar{width:4px}
-.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.8rem;
+}
 
-/* PAGES */
-.page{display:none}
-.page.active{display:block}
+.page {
+  display: none;
+}
 
-/* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem}
-.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.card-title{font-size:0.78rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted2)}
+.page.active {
+  display: block;
+}
 
-/* GRID LAYOUTS */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem}
+.page-header {
+  margin-bottom: 1.5rem;
+}
 
-/* STAT CARDS */
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;display:flex;flex-direction:column;gap:0.4rem;transition:border-color 0.2s,transform 0.2s}
-.stat-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.stat-label{font-size:0.72rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
-.stat-value{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;line-height:1;color:var(--text)}
-.stat-change{font-size:0.75rem;font-weight:500;display:flex;align-items:center;gap:0.3rem}
-.up{color:var(--green)}
-.down{color:var(--red)}
-.stat-icon{font-size:1.5rem;margin-bottom:0.3rem}
+.page-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
 
-/* SECTION HEADER */
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
-.section-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.03em}
-.section-sub{font-size:0.8rem;color:var(--muted);margin-top:2px}
+.page-desc {
+  font-size: 0.83rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
 
-/* PAGE HEADER */
-.page-header{margin-bottom:1.5rem}
-.page-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.03em;line-height:1}
-.page-desc{font-size:0.83rem;color:var(--muted);margin-top:4px}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
 
-/* TABLE */
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-th{font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:0.6rem 0.8rem;text-align:left;border-bottom:1px solid var(--border)}
-td{padding:0.75rem 0.8rem;border-bottom:1px solid var(--border);font-size:0.84rem;vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(255,255,255,0.015)}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 1.2rem;
+}
 
-/* AVATAR */
-.avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;flex-shrink:0}
-.avatar-sm{width:26px;height:26px;font-size:0.65rem}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
 
-/* BADGE */
-.badge{display:inline-flex;align-items:center;padding:0.2rem 0.55rem;border-radius:100px;font-size:0.68rem;font-weight:600;letter-spacing:0.05em}
-.badge-green{background:rgba(61,255,122,0.12);color:var(--green)}
-.badge-red{background:rgba(255,82,82,0.12);color:var(--red)}
-.badge-orange{background:rgba(255,145,0,0.12);color:var(--orange)}
-.badge-blue{background:rgba(64,196,255,0.12);color:var(--blue)}
-.badge-purple{background:rgba(206,147,216,0.12);color:var(--purple)}
-.badge-yellow{background:rgba(255,215,64,0.12);color:var(--yellow)}
-.badge-muted{background:var(--border);color:var(--muted2)}
+.card-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted2);
+}
 
-/* PROGRESS */
-.progress-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
-.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green2),var(--green));transition:width 0.8s ease}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
 
-/* PILL TABS */
-.tabs{display:flex;gap:0.4rem;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:0.25rem;width:fit-content;margin-bottom:1.2rem}
-.tab{padding:0.35rem 0.9rem;border-radius:6px;font-size:0.8rem;font-weight:500;cursor:pointer;color:var(--muted2);transition:all 0.15s}
-.tab.active{background:var(--green);color:#000;font-weight:700}
-.tab:hover:not(.active){color:var(--text);background:var(--green-dim)}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
 
-/* RATING STARS */
-.stars{display:flex;gap:2px}
-.star{font-size:0.75rem;color:var(--border2)}
-.star.filled{color:var(--yellow)}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
 
-/* FORM */
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
-.form-group{display:flex;flex-direction:column;gap:0.4rem}
-.form-label{font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted2)}
-.form-input{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:0.6rem 0.8rem;color:var(--text);font-family:'Outfit',sans-serif;font-size:0.85rem;outline:none;transition:border-color 0.2s;width:100%}
-.form-input:focus{border-color:var(--green)}
-.form-input::placeholder{color:var(--muted)}
-select.form-input option{background:var(--card)}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stat-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.stat-sub {
+  font-size: 0.75rem;
+  color: var(--muted2);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 100px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.badge-green {
+  background: rgba(61,255,122,0.12);
+  color: var(--green);
+}
+
+.badge-red {
+  background: rgba(255,82,82,0.12);
+  color: var(--red);
+}
+
+.badge-orange {
+  background: rgba(255,145,0,0.12);
+  color: var(--orange);
+}
+
+.badge-blue {
+  background: rgba(64,196,255,0.12);
+  color: var(--blue);
+}
+
+.badge-purple {
+  background: rgba(206,147,216,0.12);
+  color: var(--purple);
+}
+
+.badge-yellow {
+  background: rgba(255,215,64,0.12);
+  color: var(--yellow);
+}
+
+.badge-muted {
+  background: var(--border);
+  color: var(--muted2);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 0.75rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+  vertical-align: middle;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.list-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 0.85rem;
+}
+
+.list-title {
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.list-sub {
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.msg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.msg-item {
+  padding: 0.85rem;
+  border-radius: var(--r);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.msg-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.msg-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.msg-time {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.msg-preview {
+  font-size: 0.77rem;
+  color: var(--muted2);
+  margin-top: 0.35rem;
+}
+
+.empty-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.progress-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--green2), var(--green));
+}
 
 /* MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:1rem}
-.modal-overlay.open{display:flex}
-.modal{background:var(--card);border:1px solid var(--border2);border-radius:var(--r2);padding:2rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;position:relative;animation:slideUp 0.25s ease}
-@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;margin-bottom:0.3rem}
-.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;line-height:1;padding:0.2rem 0.4rem;border-radius:4px}
-.modal-close:hover{color:var(--text);background:var(--border)}
-.modal-footer{display:flex;gap:0.6rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
 
-/* ATTENDANCE */
-.attend-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.6rem}
-.attend-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:0.7rem;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none}
-.attend-card.present{border-color:var(--green);background:rgba(61,255,122,0.05)}
-.attend-card.absent{border-color:var(--red);background:rgba(255,82,82,0.05)}
-.attend-card.late{border-color:var(--orange);background:rgba(255,145,0,0.05)}
-.attend-name{font-size:0.78rem;font-weight:600;margin-top:0.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.attend-pos{font-size:0.65rem;color:var(--muted)}
-.attend-status{font-size:0.65rem;font-weight:700;margin-top:0.3rem;letter-spacing:0.05em}
+.modal-overlay.open {
+  display: flex;
+}
 
-/* CALENDAR */
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cal-header{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:0.5rem}
-.cal-day-name{text-align:center;font-size:0.65rem;font-weight:600;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem}
-.cal-cell{min-height:70px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.4rem;position:relative;cursor:pointer;transition:border-color 0.15s}
-.cal-cell:hover{border-color:var(--border2)}
-.cal-cell.today{border-color:var(--green);background:rgba(61,255,122,0.04)}
-.cal-cell.other-month .cal-date{color:var(--muted)}
-.cal-date{font-size:0.78rem;font-weight:600;margin-bottom:0.3rem}
-.cal-cell.today .cal-date{color:var(--green)}
-.cal-event{font-size:0.58rem;font-weight:600;border-radius:3px;padding:0.1rem 0.3rem;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cal-event.match{background:rgba(255,82,82,0.15);color:var(--red)}
-.cal-event.training{background:rgba(61,255,122,0.12);color:var(--green)}
-.cal-event.meeting{background:rgba(64,196,255,0.12);color:var(--blue)}
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  padding: 1.6rem;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
 
-/* CHART */
-.chart-bars{display:flex;align-items:flex-end;gap:4px;height:100px}
-.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
-.chart-bar{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--green),var(--green2));transition:height 0.6s ease;min-height:3px}
-.chart-bar-label{font-size:0.6rem;color:var(--muted);white-space:nowrap}
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  margin-bottom: 0.35rem;
+}
 
-/* RADAR */
-.radar-container{display:flex;justify-content:center;align-items:center;padding:1rem}
-svg.radar{overflow:visible}
+.modal-close {
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
 
-/* MESSAGES */
-.msg-list{display:flex;flex-direction:column;gap:0.5rem}
-.msg-item{display:flex;align-items:flex-start;gap:0.8rem;padding:0.8rem;border-radius:var(--r);cursor:pointer;transition:background 0.15s;border:1px solid transparent}
-.msg-item:hover{background:var(--green-dim);border-color:var(--border)}
-.msg-item.unread{background:rgba(61,255,122,0.04);border-color:var(--border)}
-.msg-item.unread .msg-name{font-weight:700}
-.msg-preview{font-size:0.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}
-.msg-time{font-size:0.7rem;color:var(--muted);white-space:nowrap;margin-left:auto}
-.unread-dot{width:8px;height:8px;background:var(--green);border-radius:50%;margin-top:4px;flex-shrink:0}
+.modal-footer {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
 
-/* PLAYER CARD */
-.player-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
-.player-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green2),var(--green))}
-.player-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.3)}
-.player-card-top{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.8rem}
-.player-number{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--border2);line-height:1;margin-left:auto}
-.player-name{font-size:0.92rem;font-weight:700}
-.player-pos{font-size:0.72rem;color:var(--muted);margin-top:1px}
-.player-stats-row{display:flex;gap:0.8rem;margin-top:0.6rem}
-.player-stat{text-align:center}
-.player-stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--green);line-height:1}
-.player-stat-lbl{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
 
-/* TIMELINE */
-.timeline{display:flex;flex-direction:column;gap:0}
-.timeline-item{display:flex;gap:0.8rem;padding:0.6rem 0;position:relative}
-.timeline-item:not(:last-child)::before{content:'';position:absolute;left:15px;top:28px;bottom:-10px;width:1px;background:var(--border);z-index:0}
-.timeline-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0;position:relative;z-index:1;border:2px solid var(--border)}
-.timeline-content{flex:1;padding-top:4px}
-.timeline-title{font-size:0.83rem;font-weight:600}
-.timeline-sub{font-size:0.73rem;color:var(--muted);margin-top:1px}
-.timeline-time{font-size:0.7rem;color:var(--muted);margin-left:auto;white-space:nowrap;margin-top:4px}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
 
-/* PAYMENT */
-.payment-row{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 0;border-bottom:1px solid var(--border)}
-.payment-row:last-child{border-bottom:none}
-.payment-info{flex:1}
-.payment-name{font-size:0.84rem;font-weight:600}
-.payment-desc{font-size:0.73rem;color:var(--muted);margin-top:1px}
-.payment-amount{font-family:'Bebas Neue',sans-serif;font-size:1.3rem}
-.payment-amount.paid{color:var(--green)}
-.payment-amount.pending{color:var(--orange)}
-.payment-amount.late{color:var(--red)}
+.form-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted2);
+}
 
-/* TOOLTIP */
-.tooltip{position:relative}
-.tooltip:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#000;color:var(--text);font-size:0.7rem;padding:0.3rem 0.6rem;border-radius:4px;white-space:nowrap;pointer-events:none;z-index:100}
+.form-input,
+.form-select,
+.form-textarea {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 0.7rem 0.85rem;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  width: 100%;
+}
 
-/* SCROLLBAR */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--green);
+}
 
-/* NOTIFICATIONS PANEL */
-.notif-panel{position:absolute;top:50px;right:0;width:300px;background:var(--card);border:1px solid var(--border2);border-radius:var(--r2);box-shadow:0 20px 60px rgba(0,0,0,0.5);z-index:200;display:none}
-.notif-panel.open{display:block}
-.notif-panel-header{padding:0.8rem 1rem;border-bottom:1px solid var(--border);font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted2)}
-.notif-item{padding:0.75rem 1rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s}
-.notif-item:last-child{border-bottom:none}
-.notif-item:hover{background:var(--green-dim)}
-.notif-item-title{font-size:0.8rem;font-weight:600;margin-bottom:2px}
-.notif-item-desc{font-size:0.72rem;color:var(--muted)}
-.notif-item-time{font-size:0.67rem;color:var(--muted);margin-top:3px}
+.notice {
+  margin-bottom: 1rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: var(--r);
+  font-size: 0.82rem;
+  display: none;
+}
 
-/* RESPONSIVE TWEAKS */
-.gap-1{gap:0.8rem}
-.mb-1{margin-bottom:0.8rem}
-.mb-2{margin-bottom:1.5rem}
-.mt-1{margin-top:0.8rem}
-.flex{display:flex}
-.flex-col{flex-direction:column}
-.items-center{align-items:center}
-.justify-between{justify-content:space-between}
-.gap-sm{gap:0.5rem}
-.text-muted{color:var(--muted)}
-.text-green{color:var(--green)}
-.font-bold{font-weight:700}
-.w-full{width:100%}
+.notice.error {
+  display: block;
+  background: rgba(255,82,82,0.1);
+  border: 1px solid rgba(255,82,82,0.2);
+  color: var(--red);
+}
+
+.notice.success {
+  display: block;
+  background: rgba(61,255,122,0.1);
+  border: 1px solid rgba(61,255,122,0.2);
+  color: var(--green);
+}
+
+@media (max-width: 1100px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  body {
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .main {
+    width: 100%;
+  }
+
+  .grid-4,
+  .grid-3,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-text">CoachPro</div>
     <div class="logo-sub">Team Management</div>
   </div>
+
   <div class="sidebar-team">
     <div class="team-selector" onclick="openTeamModal()">
-      <div class="team-avatar">FC</div>
+      <div class="team-avatar" id="sidebar-team-avatar">TM</div>
       <div class="team-info">
-        <div class="team-name">FC Al-Nour</div>
-        <div class="team-cat">Senior A · Saison 2025/26</div>
+        <div class="team-name" id="sidebar-team-name">Aucune équipe</div>
+        <div class="team-cat" id="sidebar-team-cat">Crée une équipe pour commencer</div>
       </div>
       <div class="team-chevron">⌄</div>
     </div>
   </div>
+
   <nav>
     <div class="nav-section">Principal</div>
-    <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">⚡</span>Dashboard</div>
-    <div class="nav-item" onclick="showPage('roster',this)"><span class="nav-icon">👥</span>Effectif</div>
-    <div class="nav-item" onclick="showPage('sessions',this)"><span class="nav-icon">⚽</span>Sessions</div>
-    <div class="nav-item" onclick="showPage('stats',this)"><span class="nav-icon">📊</span>Statistiques</div>
-    <div class="nav-item" onclick="showPage('attendance',this)"><span class="nav-icon">✅</span>Présences</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <span class="nav-icon">⚡</span>Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('roster', this)">
+      <span class="nav-icon">👥</span>Effectif
+    </div>
+    <div class="nav-item" onclick="showPage('sessions', this)">
+      <span class="nav-icon">⚽</span>Sessions
+    </div>
+    <div class="nav-item" onclick="showPage('stats', this)">
+      <span class="nav-icon">📊</span>Statistiques
+    </div>
+
     <div class="nav-section">Organisation</div>
-    <div class="nav-item" onclick="showPage('calendar',this)"><span class="nav-icon">📅</span>Calendrier</div>
-    <div class="nav-item" onclick="showPage('messages',this)"><span class="nav-icon">💬</span>Messages<span class="nav-badge">3</span></div>
-    <div class="nav-item" onclick="showPage('payments',this)"><span class="nav-icon">💳</span>Paiements</div>
+    <div class="nav-item" onclick="showPage('messages', this)">
+      <span class="nav-icon">💬</span>Messages
+    </div>
+    <div class="nav-item" onclick="showPage('payments', this)">
+      <span class="nav-icon">💳</span>Paiements
+    </div>
+
     <div class="nav-section">Club</div>
-    <div class="nav-item" onclick="showPage('reports',this)"><span class="nav-icon">📋</span>Rapports</div>
-    <div class="nav-item" onclick="showPage('settings',this)"><span class="nav-icon">⚙️</span>Paramètres</div>
+    <div class="nav-item" onclick="showPage('settings', this)">
+      <span class="nav-icon">⚙️</span>Paramètres
+    </div>
   </nav>
+
   <div class="sidebar-bottom">
     <div class="user-card">
-      <div class="user-avatar">M</div>
+      <div class="user-avatar" id="user-avatar">C</div>
       <div>
-        <div class="user-name">Coach Mohamed</div>
-        <div class="user-role">Entraîneur principal</div>
+        <div class="user-name" id="user-name">Coach</div>
+        <div class="user-role">Entraîneur</div>
       </div>
     </div>
   </div>
 </aside>
 
-<!-- MAIN -->
 <div class="main">
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-title" id="topbar-title">Dashboard</div>
     <div class="topbar-spacer"></div>
-    <div class="topbar-search">
-      <span>🔍</span>
-      <input type="text" placeholder="Rechercher..." id="globalSearch" oninput="handleSearch(this.value)">
-    </div>
-    <div class="topbar-icon-btn tooltip" data-tip="Notifications" style="position:relative" onclick="toggleNotif()">
-      🔔
-      <div class="notif-dot"></div>
-      <div class="notif-panel" id="notifPanel">
-        <div class="notif-panel-header">Notifications</div>
-        <div class="notif-item"><div class="notif-item-title">⚽ Match demain 15h</div><div class="notif-item-desc">FC Al-Nour vs Racing Étoile</div><div class="notif-item-time">Il y a 30 min</div></div>
-        <div class="notif-item"><div class="notif-item-title">💬 Nouveau message</div><div class="notif-item-desc">Karim: "Je serai en retard demain"</div><div class="notif-item-time">Il y a 1h</div></div>
-        <div class="notif-item"><div class="notif-item-title">💳 Cotisation impayée</div><div class="notif-item-desc">3 joueurs ont une cotisation en retard</div><div class="notif-item-time">Hier</div></div>
-      </div>
-    </div>
+    <div class="topbar-pill" id="subscription-pill">Plan coach</div>
+    <button class="btn btn-ghost" onclick="logout()">Déconnexion</button>
     <button class="btn btn-primary" id="topbar-action" onclick="topbarAction()">+ Ajouter</button>
   </div>
 
-  <!-- CONTENT -->
   <div class="content">
 
-    <!-- ===================== DASHBOARD ===================== -->
+    <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="page-header">
         <div class="page-title">Bon retour, Coach 👋</div>
-        <div class="page-desc">Saison 2025/26 · Semaine 28 · Prochain match dans <strong style="color:var(--green)">2 jours</strong></div>
+        <div class="page-desc" id="dashboard-subtitle">Charge tes équipes, tes joueurs et tes sessions en temps réel.</div>
       </div>
 
-      <div class="grid-4 mb-2">
+      <div class="grid-4" style="margin-bottom:1.5rem">
         <div class="stat-card">
-          <div class="stat-icon">👥</div>
           <div class="stat-label">Effectif total</div>
-          <div class="stat-value">22</div>
-          <div class="stat-change up">↑ +2 ce mois</div>
+          <div class="stat-value" id="stat-total-players">0</div>
+          <div class="stat-sub">Joueurs dans l’équipe active</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">✅</div>
-          <div class="stat-label">Présence moy.</div>
-          <div class="stat-value">86%</div>
-          <div class="stat-change up">↑ +4% vs mois dernier</div>
+          <div class="stat-label">Sessions à venir</div>
+          <div class="stat-value" id="stat-upcoming-sessions">0</div>
+          <div class="stat-sub">Matchs, entraînements et réunions</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">🏆</div>
-          <div class="stat-label">Victoires</div>
-          <div class="stat-value">14</div>
-          <div class="stat-change"><span style="color:var(--muted)">sur 20 matchs</span></div>
+          <div class="stat-label">Paiements en attente</div>
+          <div class="stat-value" id="stat-pending-payments">0</div>
+          <div class="stat-sub">Paiements non réglés</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">⚡</div>
-          <div class="stat-label">Sessions ce mois</div>
-          <div class="stat-value">18</div>
-          <div class="stat-change down">↓ -2 vs mois dernier</div>
+          <div class="stat-label">Messages récents</div>
+          <div class="stat-value" id="stat-recent-messages">0</div>
+          <div class="stat-sub">Derniers messages de l’équipe</div>
         </div>
       </div>
 
-      <div class="grid-2 mb-2">
-        <!-- Prochain match -->
+      <div class="grid-2">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Prochain Match</span>
-            <span class="badge badge-red">J-2</span>
+            <span class="card-title">Prochaines sessions</span>
           </div>
-          <div style="text-align:center;padding:1rem 0">
-            <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.8rem">Dimanche 31 Mars · 15:00 · Stade Municipal</div>
-            <div style="display:flex;align-items:center;justify-content:center;gap:1.5rem">
-              <div style="text-align:center">
-                <div style="width:56px;height:56px;background:linear-gradient(135deg,#1a4a2a,#0d3020);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem;font-size:1.5rem">⚽</div>
-                <div style="font-weight:700;font-size:0.9rem">FC Al-Nour</div>
-                <div style="font-size:0.7rem;color:var(--muted)">Domicile</div>
-              </div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--muted)">VS</div>
-              <div style="text-align:center">
-                <div style="width:56px;height:56px;background:linear-gradient(135deg,#3a1a1a,#2a0d0d);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem;font-size:1.5rem">🛡️</div>
-                <div style="font-weight:700;font-size:0.9rem">Racing Étoile</div>
-                <div style="font-size:0.7rem;color:var(--muted)">Extérieur</div>
-              </div>
-            </div>
-            <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:1rem">
-              <button class="btn btn-primary" onclick="showPage('sessions',document.querySelector('[onclick*=sessions]'))">Préparer la session</button>
-              <button class="btn btn-ghost" onclick="showPage('roster',document.querySelector('[onclick*=roster]'))">Voir l'effectif</button>
-            </div>
+          <div class="list" id="dashboard-sessions-list">
+            <div class="empty-note">Aucune session à venir.</div>
           </div>
         </div>
 
-        <!-- Activité récente -->
         <div class="card">
-          <div class="card-header"><span class="card-title">Activité récente</span></div>
-          <div class="timeline">
-            <div class="timeline-item">
-              <div class="timeline-dot" style="background:rgba(61,255,122,0.1);border-color:var(--green);color:var(--green)">✓</div>
-              <div class="timeline-content"><div class="timeline-title">Session tactique terminée</div><div class="timeline-sub">18 joueurs présents · Note moy: 7.8/10</div></div>
-              <div class="timeline-time">Auj.</div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot" style="background:rgba(64,196,255,0.1);border-color:var(--blue);color:var(--blue)">💬</div>
-              <div class="timeline-content"><div class="timeline-title">Message de Karim</div><div class="timeline-sub">"Je serai en retard demain coach"</div></div>
-              <div class="timeline-time">1h</div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot" style="background:rgba(255,82,82,0.1);border-color:var(--red);color:var(--red)">💳</div>
-              <div class="timeline-content"><div class="timeline-title">Cotisation impayée</div><div class="timeline-sub">3 joueurs · Total: 180€</div></div>
-              <div class="timeline-time">Hier</div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot" style="background:rgba(255,145,0,0.1);border-color:var(--orange);color:var(--orange)">⚽</div>
-              <div class="timeline-content"><div class="timeline-title">Victoire 3-1 vs AS Lumière</div><div class="timeline-sub">Buteurs: Sofiane ×2, Amine ×1</div></div>
-              <div class="timeline-time">Sam.</div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot" style="background:rgba(206,147,216,0.1);border-color:var(--purple);color:var(--purple)">👤</div>
-              <div class="timeline-content"><div class="timeline-title">Nouveau joueur ajouté</div><div class="timeline-sub">Youssef Belkadi · Milieu de terrain</div></div>
-              <div class="timeline-time">Lun.</div>
-            </div>
+          <div class="card-header">
+            <span class="card-title">Derniers paiements</span>
           </div>
-        </div>
-      </div>
-
-      <div class="grid-2 mb-2">
-        <!-- Présence hebdo -->
-        <div class="card">
-          <div class="card-header"><span class="card-title">Présence — 6 dernières semaines</span><span class="badge badge-green">En hausse</span></div>
-          <div class="chart-bars" style="height:110px;align-items:flex-end;display:flex;gap:6px;padding-top:0.5rem">
-            <div class="chart-bar-wrap"><div class="chart-bar" style="height:72%"></div><div class="chart-bar-label">S22</div></div>
-            <div class="chart-bar-wrap"><div class="chart-bar" style="height:65%"></div><div class="chart-bar-label">S23</div></div>
-            <div class="chart-bar-wrap"><div class="chart-bar" style="height:80%"></div><div class="chart-bar-label">S24</div></div>
-            <div class="chart-bar-wrap"><div class="chart-bar" style="height:78%"></div><div class="chart-bar-label">S25</div></div>
-            <div class="chart-bar-wrap"><div class="chart-bar" style="height:88%"></div><div class="chart-bar-label">S26</div></div>
-            <div class="chart-bar-wrap"><div class="chart-bar" style="height:86%;background:linear-gradient(180deg,#3DFF7A,#00C853)"></div><div class="chart-bar-label" style="color:var(--green)">S27</div></div>
+          <div class="list" id="dashboard-payments-list">
+            <div class="empty-note">Aucun paiement pour le moment.</div>
           </div>
-        </div>
-
-        <!-- Top performers -->
-        <div class="card">
-          <div class="card-header"><span class="card-title">Top performers ce mois</span><button class="btn btn-ghost" onclick="showPage('stats',document.querySelector('[onclick*=stats]'))">Voir tout</button></div>
-          <div style="display:flex;flex-direction:column;gap:0.5rem">
-            <div style="display:flex;align-items:center;gap:0.8rem;padding:0.4rem 0">
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--muted);width:20px;text-align:center">1</div>
-              <div class="avatar" style="background:linear-gradient(135deg,#1a4a2a,#0d3020);color:var(--green)">SO</div>
-              <div style="flex:1"><div style="font-size:0.84rem;font-weight:600">Sofiane Ouali</div><div style="font-size:0.7rem;color:var(--muted)">Attaquant · 8 buts</div></div>
-              <div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--green)">9.2</div><div style="font-size:0.65rem;color:var(--muted)">/10</div></div>
-            </div>
-            <div style="display:flex;align-items:center;gap:0.8rem;padding:0.4rem 0">
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--muted);width:20px;text-align:center">2</div>
-              <div class="avatar" style="background:linear-gradient(135deg,#1a2a4a,#0d2030);color:var(--blue)">AM</div>
-              <div style="flex:1"><div style="font-size:0.84rem;font-weight:600">Amine Mansouri</div><div style="font-size:0.7rem;color:var(--muted)">Milieu · 5 passes déc.</div></div>
-              <div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--green)">8.7</div><div style="font-size:0.65rem;color:var(--muted)">/10</div></div>
-            </div>
-            <div style="display:flex;align-items:center;gap:0.8rem;padding:0.4rem 0">
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--muted);width:20px;text-align:center">3</div>
-              <div class="avatar" style="background:linear-gradient(135deg,#4a1a1a,#300d0d);color:var(--red)">KB</div>
-              <div style="flex:1"><div style="font-size:0.84rem;font-weight:600">Karim Belhadj</div><div style="font-size:0.7rem;color:var(--muted)">Gardien · 4 clean sheets</div></div>
-              <div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--green)">8.4</div><div style="font-size:0.65rem;color:var(--muted)">/10</div></div>
-            </div>
-            <div style="display:flex;align-items:center;gap:0.8rem;padding:0.4rem 0">
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--muted);width:20px;text-align:center">4</div>
-              <div class="avatar" style="background:linear-gradient(135deg,#2a1a4a,#1a0d30);color:var(--purple)">RD</div>
-              <div style="flex:1"><div style="font-size:0.84rem;font-weight:600">Rayan Dembélé</div><div style="font-size:0.7rem;color:var(--muted)">Défenseur · 0 fautes</div></div>
-              <div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--green)">8.1</div><div style="font-size:0.65rem;color:var(--muted)">/10</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick actions -->
-      <div class="card">
-        <div class="card-header"><span class="card-title">Actions rapides</span></div>
-        <div style="display:flex;gap:0.8rem;flex-wrap:wrap">
-          <button class="btn btn-ghost" onclick="openModal('session')">⚽ Nouvelle session</button>
-          <button class="btn btn-ghost" onclick="showPage('attendance',document.querySelector('[onclick*=attendance]'))">✅ Prendre les présences</button>
-          <button class="btn btn-ghost" onclick="openModal('player')">👤 Ajouter un joueur</button>
-          <button class="btn btn-ghost" onclick="showPage('messages',document.querySelector('[onclick*=messages]'))">💬 Envoyer un message</button>
-          <button class="btn btn-ghost" onclick="showPage('reports',document.querySelector('[onclick*=reports]'))">📋 Générer un rapport</button>
-          <button class="btn btn-ghost" onclick="showPage('payments',document.querySelector('[onclick*=payments]'))">💳 Voir les paiements</button>
         </div>
       </div>
     </div>
 
-    <!-- ===================== ROSTER ===================== -->
+    <!-- ROSTER -->
     <div class="page" id="page-roster">
       <div class="section-header">
-        <div><div class="page-title">Effectif</div><div class="page-desc">22 joueurs enregistrés · 4 postes</div></div>
-        <button class="btn btn-primary" onclick="openModal('player')">+ Ajouter un joueur</button>
-      </div>
-
-      <div class="tabs">
-        <div class="tab active" onclick="filterRoster('all',this)">Tous (22)</div>
-        <div class="tab" onclick="filterRoster('GK',this)">Gardiens (2)</div>
-        <div class="tab" onclick="filterRoster('DEF',this)">Défenseurs (7)</div>
-        <div class="tab" onclick="filterRoster('MID',this)">Milieux (8)</div>
-        <div class="tab" onclick="filterRoster('ATT',this)">Attaquants (5)</div>
-      </div>
-
-      <div class="grid-auto" id="roster-grid"></div>
-    </div>
-
-    <!-- ===================== SESSIONS ===================== -->
-    <div class="page" id="page-sessions">
-      <div class="section-header">
-        <div><div class="page-title">Sessions d'entraînement</div><div class="page-desc">18 sessions ce mois</div></div>
-        <button class="btn btn-primary" onclick="openModal('session')">+ Nouvelle session</button>
-      </div>
-      <div class="grid-2">
         <div>
-          <div class="card mb-1">
-            <div class="card-header"><span class="card-title">Sessions récentes</span></div>
-            <div style="display:flex;flex-direction:column;gap:0">
-              <div style="padding:0.8rem 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openSessionDetail('Tactique défensive')">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem">
-                  <div style="font-weight:600;font-size:0.88rem">Tactique défensive</div>
-                  <span class="badge badge-green">Terminée</span>
-                </div>
-                <div style="font-size:0.76rem;color:var(--muted)">Mer 26 Mar · 18h00 · 90 min · 18/22 présents</div>
-                <div style="margin-top:0.6rem"><div style="font-size:0.7rem;color:var(--muted);margin-bottom:3px">Note moyenne de session</div><div class="progress-bar"><div class="progress-fill" style="width:78%"></div></div></div>
-              </div>
-              <div style="padding:0.8rem 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openSessionDetail('Travail physique')">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem">
-                  <div style="font-weight:600;font-size:0.88rem">Travail physique</div>
-                  <span class="badge badge-green">Terminée</span>
-                </div>
-                <div style="font-size:0.76rem;color:var(--muted)">Lun 24 Mar · 17h30 · 75 min · 20/22 présents</div>
-                <div style="margin-top:0.6rem"><div style="font-size:0.7rem;color:var(--muted);margin-bottom:3px">Note moyenne de session</div><div class="progress-bar"><div class="progress-fill" style="width:84%"></div></div></div>
-              </div>
-              <div style="padding:0.8rem 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openSessionDetail('Jeu en transition')">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem">
-                  <div style="font-weight:600;font-size:0.88rem">Jeu en transition</div>
-                  <span class="badge badge-green">Terminée</span>
-                </div>
-                <div style="font-size:0.76rem;color:var(--muted)">Sam 22 Mar · 09h00 · 120 min · 22/22 présents</div>
-                <div style="margin-top:0.6rem"><div style="font-size:0.7rem;color:var(--muted);margin-bottom:3px">Note moyenne de session</div><div class="progress-bar"><div class="progress-fill" style="width:92%"></div></div></div>
-              </div>
-              <div style="padding:0.8rem 0;cursor:pointer" onclick="openModal('session')">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem">
-                  <div style="font-weight:600;font-size:0.88rem">Préparation match</div>
-                  <span class="badge badge-orange">Planifiée</span>
-                </div>
-                <div style="font-size:0.76rem;color:var(--muted)">Ven 28 Mar · 18h00 · 60 min</div>
-              </div>
-            </div>
-          </div>
+          <div class="page-title">Effectif</div>
+          <div class="page-desc" id="roster-subtitle">Joueurs rattachés à l’équipe active</div>
         </div>
-        <div>
-          <div class="card mb-1">
-            <div class="card-header"><span class="card-title">Exercices populaires</span></div>
-            <div style="display:flex;flex-direction:column;gap:0.7rem">
-              <div style="display:flex;align-items:center;gap:0.8rem">
-                <div style="width:36px;height:36px;background:rgba(61,255,122,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem">🔄</div>
-                <div style="flex:1"><div style="font-size:0.83rem;font-weight:600">Rondo 5v2</div><div style="font-size:0.7rem;color:var(--muted)">Possession · Utilisé 14x</div></div>
-                <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span></div>
-              </div>
-              <div style="display:flex;align-items:center;gap:0.8rem">
-                <div style="width:36px;height:36px;background:rgba(64,196,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem">🏃</div>
-                <div style="flex:1"><div style="font-size:0.83rem;font-weight:600">Sprint navette 20m</div><div style="font-size:0.7rem;color:var(--muted)">Physique · Utilisé 11x</div></div>
-                <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span></div>
-              </div>
-              <div style="display:flex;align-items:center;gap:0.8rem">
-                <div style="width:36px;height:36px;background:rgba(255,215,64,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem">🎯</div>
-                <div style="flex:1"><div style="font-size:0.83rem;font-weight:600">Finition 1v1</div><div style="font-size:0.7rem;color:var(--muted)">Technique · Utilisé 9x</div></div>
-                <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span></div>
-              </div>
-              <div style="display:flex;align-items:center;gap:0.8rem">
-                <div style="width:36px;height:36px;background:rgba(206,147,216,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem">🧠</div>
-                <div style="flex:1"><div style="font-size:0.83rem;font-weight:600">Bloc défensif 4-4</div><div style="font-size:0.7rem;color:var(--muted)">Tactique · Utilisé 7x</div></div>
-                <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span><span class="star">★</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header"><span class="card-title">Charge d'entraînement</span></div>
-            <div style="display:flex;gap:1rem;text-align:center">
-              <div style="flex:1;background:var(--surface);border-radius:var(--r);padding:0.8rem">
-                <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--green)">18</div>
-                <div style="font-size:0.7rem;color:var(--muted)">Sessions/mois</div>
-              </div>
-              <div style="flex:1;background:var(--surface);border-radius:var(--r);padding:0.8rem">
-                <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--blue)">27h</div>
-                <div style="font-size:0.7rem;color:var(--muted)">Heures total</div>
-              </div>
-              <div style="flex:1;background:var(--surface);border-radius:var(--r);padding:0.8rem">
-                <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--orange)">90</div>
-                <div style="font-size:0.7rem;color:var(--muted)">Min moy/session</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <button class="btn btn-primary" onclick="openCreatePlayerModal()">+ Ajouter un joueur</button>
       </div>
-    </div>
 
-    <!-- ===================== STATS ===================== -->
-    <div class="page" id="page-stats">
-      <div class="section-header">
-        <div><div class="page-title">Statistiques</div><div class="page-desc">Performances individuelles & collectives</div></div>
-        <div style="display:flex;gap:0.5rem">
-          <select class="form-input" style="width:auto;font-size:0.8rem">
-            <option>Toute la saison</option>
-            <option>Ce mois</option>
-            <option>3 derniers matchs</option>
-          </select>
-          <button class="btn btn-ghost">📥 Exporter</button>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Liste des joueurs</span>
+          <span class="badge badge-blue" id="team-code-badge">Code équipe : —</span>
         </div>
-      </div>
-      <div class="card mb-2">
-        <div class="card-header"><span class="card-title">Classement joueurs</span></div>
+
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>#</th><th>Joueur</th><th>Poste</th><th>Sessions</th><th>Présence</th><th>Note moy.</th><th>Buts</th><th>Passes</th><th>Forme</th>
+                <th>Joueur</th>
+                <th>Poste</th>
+                <th>Numéro</th>
+                <th>Statut</th>
               </tr>
             </thead>
-            <tbody id="stats-table-body"></tbody>
+            <tbody id="roster-table-body">
+              <tr>
+                <td colspan="4" class="empty-note">Aucun joueur.</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-header"><span class="card-title">Performance collective</span></div>
-          <div style="display:flex;flex-direction:column;gap:0.8rem">
-            <div><div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px"><span>Technique</span><span style="color:var(--green)">82%</span></div><div class="progress-bar"><div class="progress-fill" style="width:82%"></div></div></div>
-            <div><div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px"><span>Physique</span><span style="color:var(--green)">75%</span></div><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div></div>
-            <div><div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px"><span>Tactique</span><span style="color:var(--green)">68%</span></div><div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div></div>
-            <div><div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px"><span>Mental</span><span style="color:var(--green)">79%</span></div><div class="progress-bar"><div class="progress-fill" style="width:79%"></div></div></div>
-            <div><div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px"><span>Communication</span><span style="color:var(--green)">88%</span></div><div class="progress-bar"><div class="progress-fill" style="width:88%"></div></div></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><span class="card-title">Résultats de la saison</span></div>
-          <div style="display:flex;gap:1rem;margin-bottom:1rem">
-            <div style="flex:1;text-align:center;background:rgba(61,255,122,0.08);border-radius:var(--r);padding:0.8rem"><div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--green)">14</div><div style="font-size:0.72rem;color:var(--muted)">Victoires</div></div>
-            <div style="flex:1;text-align:center;background:rgba(255,215,64,0.08);border-radius:var(--r);padding:0.8rem"><div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--yellow)">3</div><div style="font-size:0.72rem;color:var(--muted)">Nuls</div></div>
-            <div style="flex:1;text-align:center;background:rgba(255,82,82,0.08);border-radius:var(--r);padding:0.8rem"><div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--red)">3</div><div style="font-size:0.72rem;color:var(--muted)">Défaites</div></div>
-          </div>
-          <div style="display:flex;gap:1rem;text-align:center">
-            <div style="flex:1"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--text)">38</div><div style="font-size:0.7rem;color:var(--muted)">Buts marqués</div></div>
-            <div style="flex:1"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--text)">18</div><div style="font-size:0.7rem;color:var(--muted)">Buts encaissés</div></div>
-            <div style="flex:1"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--green)">+20</div><div style="font-size:0.7rem;color:var(--muted)">Goal avg.</div></div>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- ===================== ATTENDANCE ===================== -->
-    <div class="page" id="page-attendance">
+    <!-- SESSIONS -->
+    <div class="page" id="page-sessions">
       <div class="section-header">
-        <div><div class="page-title">Présences</div><div class="page-desc">Session du Mercredi 26 Mars · Cliquez sur un joueur pour changer son statut</div></div>
-        <div style="display:flex;gap:0.5rem">
-          <button class="btn btn-ghost" onclick="markAll('present')">✅ Tous présents</button>
-          <button class="btn btn-primary" onclick="saveAttendance()">💾 Enregistrer</button>
+        <div>
+          <div class="page-title">Sessions</div>
+          <div class="page-desc">Entraînements, matchs, réunions et tournois</div>
         </div>
+        <button class="btn btn-primary" onclick="openCreateSessionModal()">+ Nouvelle session</button>
       </div>
-      <div class="grid-3 mb-2" style="max-width:500px">
-        <div class="card" style="text-align:center;padding:0.8rem">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--green)" id="att-present-count">0</div>
-          <div style="font-size:0.7rem;color:var(--muted)">Présents</div>
-        </div>
-        <div class="card" style="text-align:center;padding:0.8rem">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--red)" id="att-absent-count">0</div>
-          <div style="font-size:0.7rem;color:var(--muted)">Absents</div>
-        </div>
-        <div class="card" style="text-align:center;padding:0.8rem">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--orange)" id="att-late-count">0</div>
-          <div style="font-size:0.7rem;color:var(--muted)">En retard</div>
-        </div>
-      </div>
-      <div class="attend-grid" id="attend-grid"></div>
-    </div>
 
-    <!-- ===================== CALENDAR ===================== -->
-    <div class="page" id="page-calendar">
-      <div class="section-header">
-        <div><div class="page-title">Calendrier</div><div class="page-desc" id="cal-month-label">Mars 2026</div></div>
-        <div style="display:flex;gap:0.5rem;align-items:center">
-          <button class="btn btn-ghost" onclick="changeMonth(-1)">←</button>
-          <button class="btn btn-ghost" onclick="changeMonth(1)">→</button>
-          <button class="btn btn-primary" onclick="openModal('event')">+ Événement</button>
-        </div>
-      </div>
       <div class="card">
-        <div class="cal-header">
-          <div class="cal-day-name">Lun</div><div class="cal-day-name">Mar</div><div class="cal-day-name">Mer</div>
-          <div class="cal-day-name">Jeu</div><div class="cal-day-name">Ven</div><div class="cal-day-name">Sam</div><div class="cal-day-name">Dim</div>
+        <div class="card-header">
+          <span class="card-title">Planning de l’équipe</span>
         </div>
-        <div class="cal-grid" id="cal-grid"></div>
-      </div>
-      <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem"><div style="width:10px;height:10px;border-radius:2px;background:rgba(255,82,82,0.4)"></div>Match</div>
-        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem"><div style="width:10px;height:10px;border-radius:2px;background:rgba(61,255,122,0.3)"></div>Entraînement</div>
-        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem"><div style="width:10px;height:10px;border-radius:2px;background:rgba(64,196,255,0.3)"></div>Réunion</div>
+
+        <div class="list" id="sessions-list">
+          <div class="empty-note">Aucune session enregistrée.</div>
+        </div>
       </div>
     </div>
 
-    <!-- ===================== MESSAGES ===================== -->
+    <!-- STATS -->
+    <div class="page" id="page-stats">
+      <div class="page-header">
+        <div class="page-title">Statistiques</div>
+        <div class="page-desc">Statistiques agrégées de l’équipe active</div>
+      </div>
+
+      <div class="grid-3" id="stats-cards">
+        <div class="stat-card">
+          <div class="stat-label">Buts cumulés</div>
+          <div class="stat-value" id="stats-goals">0</div>
+          <div class="stat-sub">Saison active</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Passes cumulées</div>
+          <div class="stat-value" id="stats-assists">0</div>
+          <div class="stat-sub">Saison active</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Matchs cumulés</div>
+          <div class="stat-value" id="stats-matches">0</div>
+          <div class="stat-sub">Somme des matchs joués</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1.5rem">
+        <div class="card-header">
+          <span class="card-title">Détail par joueur</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Joueur</th>
+                <th>Buts</th>
+                <th>Passes</th>
+                <th>Matchs</th>
+                <th>Minutes</th>
+                <th>Note moy.</th>
+              </tr>
+            </thead>
+            <tbody id="stats-table-body">
+              <tr>
+                <td colspan="6" class="empty-note">Aucune statistique disponible.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
     <div class="page" id="page-messages">
       <div class="section-header">
-        <div><div class="page-title">Messages</div><div class="page-desc">3 messages non lus</div></div>
-        <button class="btn btn-primary" onclick="openModal('message')">✉️ Nouveau message</button>
-      </div>
-      <div class="grid-2" style="grid-template-columns:1fr 1.6fr">
-        <div class="card" style="padding:0">
-          <div style="padding:0.8rem 1rem;border-bottom:1px solid var(--border);font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted2)">Conversations</div>
-          <div class="msg-list" style="padding:0.5rem">
-            <div class="msg-item unread" onclick="openConversation('Karim Belhadj','KB','Karim: Je serai en retard demain coach, désolé !')">
-              <div style="position:relative"><div class="avatar" style="background:linear-gradient(135deg,#4a1a1a,#300d0d);color:var(--red)">KB</div><div class="unread-dot" style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--green);border-radius:50%;border:2px solid var(--card)"></div></div>
-              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between"><div class="msg-name" style="font-size:0.84rem;font-weight:700">Karim Belhadj</div><div class="msg-time">14:32</div></div><div class="msg-preview">Je serai en retard demain coach, désolé !</div></div>
-            </div>
-            <div class="msg-item unread" onclick="openConversation('Équipe — Général','👥','Sofiane: On se retrouve à quelle heure ?')">
-              <div style="position:relative"><div class="avatar" style="background:linear-gradient(135deg,#1a3a2a,#0d2a1a);color:var(--green)">👥</div><div class="unread-dot" style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--green);border-radius:50%;border:2px solid var(--card)"></div></div>
-              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between"><div class="msg-name" style="font-size:0.84rem;font-weight:700">Équipe — Général</div><div class="msg-time">12:10</div></div><div class="msg-preview">Sofiane: On se retrouve à quelle heure samedi ?</div></div>
-            </div>
-            <div class="msg-item unread" onclick="openConversation('Amine Mansouri','AM','Amine: Merci coach pour les retours !')">
-              <div style="position:relative"><div class="avatar" style="background:linear-gradient(135deg,#1a2a4a,#0d2030);color:var(--blue)">AM</div><div class="unread-dot" style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--green);border-radius:50%;border:2px solid var(--card)"></div></div>
-              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between"><div class="msg-name" style="font-size:0.84rem;font-weight:700">Amine Mansouri</div><div class="msg-time">Hier</div></div><div class="msg-preview">Merci coach pour les retours, très utile !</div></div>
-            </div>
-            <div class="msg-item" onclick="openConversation('Sofiane Ouali','SO','Coach: Super match samedi Sofiane !')">
-              <div class="avatar" style="background:linear-gradient(135deg,#1a4a2a,#0d3020);color:var(--green)">SO</div>
-              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between"><div class="msg-name" style="font-size:0.84rem;font-weight:600">Sofiane Ouali</div><div class="msg-time">Lun.</div></div><div class="msg-preview">Coach: Super match samedi Sofiane !</div></div>
-            </div>
-          </div>
+        <div>
+          <div class="page-title">Messages</div>
+          <div class="page-desc">Messagerie de l’équipe active</div>
         </div>
-        <div class="card" id="conversation-panel" style="display:flex;flex-direction:column;min-height:400px">
-          <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.5rem;color:var(--muted)">
-            <div style="font-size:2rem">💬</div>
-            <div style="font-size:0.85rem">Sélectionnez une conversation</div>
-          </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Derniers messages</span>
+        </div>
+
+        <div class="msg-list" id="messages-list">
+          <div class="empty-note">Aucun message pour le moment.</div>
         </div>
       </div>
     </div>
 
-    <!-- ===================== PAYMENTS ===================== -->
+    <!-- PAYMENTS -->
     <div class="page" id="page-payments">
       <div class="section-header">
-        <div><div class="page-title">Paiements</div><div class="page-desc">Cotisations & finances de l'équipe</div></div>
-        <button class="btn btn-primary" onclick="openModal('payment')">+ Nouvelle cotisation</button>
+        <div>
+          <div class="page-title">Paiements</div>
+          <div class="page-desc">Cotisations et paiements liés à l’équipe active</div>
+        </div>
       </div>
-      <div class="grid-4 mb-2">
-        <div class="stat-card"><div class="stat-label">Total collecté</div><div class="stat-value" style="font-size:2rem;color:var(--green)">1 840€</div><div class="stat-change up">↑ Ce mois</div></div>
-        <div class="stat-card"><div class="stat-label">En attente</div><div class="stat-value" style="font-size:2rem;color:var(--orange)">360€</div><div class="stat-change" style="color:var(--muted)">3 joueurs</div></div>
-        <div class="stat-card"><div class="stat-label">En retard</div><div class="stat-value" style="font-size:2rem;color:var(--red)">120€</div><div class="stat-change" style="color:var(--muted)">1 joueur</div></div>
-        <div class="stat-card"><div class="stat-label">Taux de paiement</div><div class="stat-value" style="font-size:2rem">87%</div><div class="stat-change up">↑ +5% vs mois</div></div>
-      </div>
+
       <div class="card">
-        <div class="card-header"><span class="card-title">Cotisations joueurs</span></div>
-        <div id="payments-list"></div>
-      </div>
-    </div>
+        <div class="card-header">
+          <span class="card-title">État des paiements</span>
+        </div>
 
-    <!-- ===================== REPORTS ===================== -->
-    <div class="page" id="page-reports">
-      <div class="section-header">
-        <div><div class="page-title">Rapports</div><div class="page-desc">Générez et exportez vos rapports</div></div>
-      </div>
-      <div class="grid-2 mb-2">
-        <div class="card" style="cursor:pointer;transition:border-color 0.2s" onmouseenter="this.style.borderColor='var(--green)'" onmouseleave="this.style.borderColor='var(--border)'" onclick="alert('Rapport généré ! Dans la vraie appli, un PDF serait téléchargé.')">
-          <div style="font-size:2rem;margin-bottom:0.8rem">📊</div>
-          <div style="font-weight:700;margin-bottom:0.4rem">Rapport de performance</div>
-          <div style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem">Stats complètes par joueur, notes moyennes, progression sur la saison.</div>
-          <span class="badge badge-green">PDF · Excel</span>
-        </div>
-        <div class="card" style="cursor:pointer;transition:border-color 0.2s" onmouseenter="this.style.borderColor='var(--green)'" onmouseleave="this.style.borderColor='var(--border)'" onclick="alert('Rapport généré !')">
-          <div style="font-size:2rem;margin-bottom:0.8rem">✅</div>
-          <div style="font-weight:700;margin-bottom:0.4rem">Rapport de présences</div>
-          <div style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem">Historique complet des présences, absences et retards par joueur.</div>
-          <span class="badge badge-blue">PDF · Excel</span>
-        </div>
-        <div class="card" style="cursor:pointer;transition:border-color 0.2s" onmouseenter="this.style.borderColor='var(--green)'" onmouseleave="this.style.borderColor='var(--border)'" onclick="alert('Rapport généré !')">
-          <div style="font-size:2rem;margin-bottom:0.8rem">💳</div>
-          <div style="font-weight:700;margin-bottom:0.4rem">Rapport financier</div>
-          <div style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem">État des cotisations, paiements reçus, montants en attente.</div>
-          <span class="badge badge-yellow">PDF · Excel</span>
-        </div>
-        <div class="card" style="cursor:pointer;transition:border-color 0.2s" onmouseenter="this.style.borderColor='var(--green)'" onmouseleave="this.style.borderColor='var(--border)'" onclick="alert('Rapport généré !')">
-          <div style="font-size:2rem;margin-bottom:0.8rem">🏆</div>
-          <div style="font-weight:700;margin-bottom:0.4rem">Bilan de saison</div>
-          <div style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem">Résumé complet de la saison pour présenter à la direction du club.</div>
-          <span class="badge badge-purple">PDF · Présentation</span>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Libellé</th>
+                <th>Joueur</th>
+                <th>Montant</th>
+                <th>Échéance</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody id="payments-table-body">
+              <tr>
+                <td colspan="5" class="empty-note">Aucun paiement enregistré.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- ===================== SETTINGS ===================== -->
+    <!-- SETTINGS -->
     <div class="page" id="page-settings">
-      <div class="page-header"><div class="page-title">Paramètres</div><div class="page-desc">Gérez votre compte et votre équipe</div></div>
+      <div class="page-header">
+        <div class="page-title">Paramètres</div>
+        <div class="page-desc">Ton compte coach et l’équipe active</div>
+      </div>
+
       <div class="grid-2">
-        <div>
-          <div class="card mb-1">
-            <div class="card-header"><span class="card-title">Profil coach</span></div>
-            <div class="form-group mb-1"><label class="form-label">Nom complet</label><input class="form-input" value="Mohamed (Coach)"></div>
-            <div class="form-group mb-1"><label class="form-label">Email</label><input class="form-input" value="coach@fcalnour.fr"></div>
-            <div class="form-group mb-1"><label class="form-label">Téléphone</label><input class="form-input" value="+33 6 00 00 00 00"></div>
-            <button class="btn btn-primary">Enregistrer</button>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Profil coach</span>
           </div>
-          <div class="card">
-            <div class="card-header"><span class="card-title">Équipe</span></div>
-            <div class="form-group mb-1"><label class="form-label">Nom de l'équipe</label><input class="form-input" value="FC Al-Nour"></div>
-            <div class="form-group mb-1"><label class="form-label">Catégorie</label><select class="form-input"><option>Senior A</option><option>Senior B</option><option>U21</option><option>U18</option></select></div>
-            <div class="form-group mb-1"><label class="form-label">Saison</label><input class="form-input" value="2025/2026"></div>
-            <button class="btn btn-primary">Enregistrer</button>
-          </div>
-        </div>
-        <div>
-          <div class="card mb-1">
-            <div class="card-header"><span class="card-title">Notifications</span></div>
-            <div style="display:flex;flex-direction:column;gap:0.8rem">
-              <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:0.84rem;font-weight:600">Messages</div><div style="font-size:0.72rem;color:var(--muted)">Alertes de nouveaux messages</div></div><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
-              <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:0.84rem;font-weight:600">Rappels de session</div><div style="font-size:0.72rem;color:var(--muted)">1h avant chaque entraînement</div></div><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
-              <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:0.84rem;font-weight:600">Paiements en retard</div><div style="font-size:0.72rem;color:var(--muted)">Alertes de cotisations impayées</div></div><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
+
+          <div class="list">
+            <div class="list-item">
+              <div class="list-title" id="settings-coach-name">—</div>
+              <div class="list-sub" id="settings-coach-email">—</div>
             </div>
           </div>
-          <div class="card">
-            <div class="card-header"><span class="card-title">Abonnement</span></div>
-            <div style="background:var(--green-dim);border:1px solid rgba(61,255,122,0.2);border-radius:var(--r);padding:1rem;margin-bottom:1rem">
-              <div style="font-weight:700;color:var(--green);margin-bottom:0.3rem">⚡ Plan Pro actif</div>
-              <div style="font-size:0.8rem;color:var(--muted)">Renouvellement le 1er Avril 2026 · 9€/mois</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Équipe active</span>
+          </div>
+
+          <div class="list">
+            <div class="list-item">
+              <div class="list-title" id="settings-team-name">—</div>
+              <div class="list-sub" id="settings-team-meta">—</div>
             </div>
-            <button class="btn btn-ghost w-full">Gérer l'abonnement</button>
+            <div class="list-item">
+              <div class="list-title">Code équipe</div>
+              <div class="list-sub" id="settings-team-code">—</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-  </div><!-- end .content -->
-</div><!-- end .main -->
-
-<!-- MODALS -->
-<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal" id="modal-content"></div>
+  </div>
 </div>
 
-<!-- PLAYER DETAIL MODAL -->
-<div class="modal-overlay" id="player-modal" onclick="if(event.target===this)document.getElementById('player-modal').classList.remove('open')">
-  <div class="modal" style="max-width:600px" id="player-detail-content"></div>
-</div>
+<!-- TEAM MODAL -->
+<div class="modal-overlay" id="team-modal-overlay" onclick="if(event.target===this)closeTeamModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeTeamModal()">✕</button>
+    <div class="modal-title">Mes équipes</div>
+    <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem">
+      Choisis l’équipe active ou crée une nouvelle catégorie/équipe.
+    </p>
 
-<style>
-.toggle{position:relative;display:inline-block;width:40px;height:22px}
-.toggle input{opacity:0;width:0;height:0}
-.slider{position:absolute;cursor:pointer;inset:0;background:var(--border2);border-radius:22px;transition:0.3s}
-.slider:before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:0.3s}
-.toggle input:checked + .slider{background:var(--green)}
-.toggle input:checked + .slider:before{transform:translateX(18px)}
-</style>
+    <div id="team-modal-notice" class="notice"></div>
 
-<script>
-// ============ DATA ============
-const players = [
-  {id:1,name:'Karim Belhadj',pos:'GK',number:1,age:26,goals:0,assists:0,sessions:20,attendance:91,rating:8.4,color:'#FF5252',initials:'KB',status:'active'},
-  {id:2,name:'Mehdi Ziani',pos:'GK',number:16,age:22,goals:0,assists:0,sessions:18,attendance:82,rating:7.2,color:'#FF7043',initials:'MZ',status:'active'},
-  {id:3,name:'Rayan Dembélé',pos:'DEF',number:2,age:24,goals:1,assists:2,sessions:19,attendance:86,rating:8.1,color:'#CE93D8',initials:'RD',status:'active'},
-  {id:4,name:'Bilal Ouchen',pos:'DEF',number:5,age:28,goals:2,assists:1,sessions:17,attendance:77,rating:7.5,color:'#80DEEA',initials:'BO',status:'active'},
-  {id:5,name:'Nassim Aïssa',pos:'DEF',number:6,age:23,goals:0,assists:3,sessions:20,attendance:91,rating:7.8,color:'#A5D6A7',initials:'NA',status:'active'},
-  {id:6,name:'Omar Ferhat',pos:'DEF',number:3,age:30,goals:1,assists:1,sessions:15,attendance:68,rating:6.9,color:'#FFE082',initials:'OF',status:'injured'},
-  {id:7,name:'Ayoub Tabet',pos:'DEF',number:4,age:21,goals:0,assists:2,sessions:18,attendance:82,rating:7.3,color:'#F48FB1',initials:'AT',status:'active'},
-  {id:8,name:'Sami Lachkar',pos:'DEF',number:13,age:25,goals:0,assists:0,sessions:12,attendance:55,rating:6.5,color:'#BCAAA4',initials:'SL',status:'inactive'},
-  {id:9,name:'Amine Mansouri',pos:'MID',number:8,age:25,goals:3,assists:5,sessions:20,attendance:91,rating:8.7,color:'#40C4FF',initials:'AM',status:'active'},
-  {id:10,name:'Hamza Idrissi',pos:'MID',number:7,age:22,goals:4,assists:3,sessions:19,attendance:86,rating:7.9,color:'#69F0AE',initials:'HI',status:'active'},
-  {id:11,name:'Yacine Bouri',pos:'MID',number:10,age:27,goals:5,assists:6,sessions:20,attendance:91,rating:8.0,color:'#FFD740',initials:'YB',status:'active'},
-  {id:12,name:'Adel Saïdi',pos:'MID',number:14,age:23,goals:2,assists:2,sessions:16,attendance:73,rating:7.1,color:'#FF80AB',initials:'AS',status:'active'},
-  {id:13,name:'Mourad Bensaid',pos:'MID',number:11,age:29,goals:1,assists:4,sessions:18,attendance:82,rating:7.6,color:'#B39DDB',initials:'MB',status:'active'},
-  {id:14,name:'Zinedine Arfa',pos:'MID',number:15,age:20,goals:0,assists:1,sessions:14,attendance:64,rating:6.8,color:'#80CBC4',initials:'ZA',status:'active'},
-  {id:15,name:'Lyes Benali',pos:'MID',number:18,age:24,goals:2,assists:3,sessions:17,attendance:77,rating:7.4,color:'#EF9A9A',initials:'LB',status:'active'},
-  {id:16,name:'Youssef Belkadi',pos:'MID',number:22,age:21,goals:0,assists:0,sessions:3,attendance:100,rating:7.0,color:'#CE93D8',initials:'YK',status:'new'},
-  {id:17,name:'Sofiane Ouali',pos:'ATT',number:9,age:26,goals:8,assists:4,sessions:20,attendance:91,rating:9.2,color:'#3DFF7A',initials:'SO',status:'active'},
-  {id:18,name:'Walid Cherif',pos:'ATT',number:17,age:24,goals:5,assists:2,sessions:19,attendance:86,rating:8.2,color:'#FFD740',initials:'WC',status:'active'},
-  {id:19,name:'Tarek Mekki',pos:'ATT',number:21,age:22,goals:3,assists:1,sessions:17,attendance:77,rating:7.5,color:'#FF9100',initials:'TM',status:'active'},
-  {id:20,name:'Idriss Boukhalef',pos:'ATT',number:11,age:28,goals:6,assists:3,sessions:16,attendance:73,rating:7.8,color:'#FF5252',initials:'IB',status:'active'},
-  {id:21,name:'Anis Djebali',pos:'ATT',number:19,age:20,goals:1,assists:0,sessions:13,attendance:59,rating:6.7,color:'#80DEEA',initials:'AD',status:'active'},
-];
+    <div class="list" id="teams-modal-list" style="margin-bottom:1rem">
+      <div class="empty-note">Aucune équipe.</div>
+    </div>
 
-const posLabels = {GK:'Gardien',DEF:'Défenseur',MID:'Milieu',ATT:'Attaquant'};
-const statusLabels = {active:'Actif',injured:'Blessé',inactive:'Inactif',new:'Nouveau'};
-const statusBadge = {active:'badge-green',injured:'badge-red',inactive:'badge-muted',new:'badge-blue'};
+    <div style="border-top:1px solid var(--border);padding-top:1rem;margin-top:0.5rem">
+      <div class="form-group">
+        <label class="form-label">Nom du club / équipe</label>
+        <input class="form-input" id="create-team-name" placeholder="FC Al-Nour">
+      </div>
 
-let attendanceState = {};
-let calMonth = 2; // March (0-indexed)
-let calYear = 2026;
-
-// ============ NAVIGATION ============
-function showPage(id, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if(el) el.classList.add('active');
-  const titles = {dashboard:'Dashboard',roster:'Effectif',sessions:'Sessions',stats:'Statistiques',attendance:'Présences',calendar:'Calendrier',messages:'Messages',payments:'Paiements',reports:'Rapports',settings:'Paramètres'};
-  document.getElementById('topbar-title').textContent = titles[id] || id;
-  if(id==='roster') renderRoster('all');
-  if(id==='stats') renderStatsTable();
-  if(id==='attendance') renderAttendance();
-  if(id==='calendar') renderCalendar();
-  if(id==='payments') renderPayments();
-}
-
-// ============ ROSTER ============
-function filterRoster(pos, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  if(el) el.classList.add('active');
-  renderRoster(pos);
-}
-
-function renderRoster(filter) {
-  const grid = document.getElementById('roster-grid');
-  const list = filter==='all' ? players : players.filter(p=>p.pos===filter);
-  grid.innerHTML = list.map(p => `
-    <div class="player-card" onclick="openPlayerDetail(${p.id})">
-      <div class="player-card-top">
-        <div class="avatar" style="background:${p.color}22;color:${p.color};width:42px;height:42px;font-size:0.85rem">${p.initials}</div>
-        <div>
-          <div class="player-name">${p.name}</div>
-          <div class="player-pos">${posLabels[p.pos]}</div>
-          <span class="badge ${statusBadge[p.status]}" style="margin-top:4px">${statusLabels[p.status]}</span>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Catégorie</label>
+          <input class="form-input" id="create-team-category" placeholder="U21 / Senior A / U15">
         </div>
-        <div class="player-number">${p.number}</div>
+
+        <div class="form-group">
+          <label class="form-label">Saison</label>
+          <input class="form-input" id="create-team-season" placeholder="2025/2026">
+        </div>
       </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${p.attendance}%"></div></div>
-      <div style="display:flex;justify-content:space-between;font-size:0.67rem;color:var(--muted);margin:4px 0 0.6rem">
-        <span>Présence</span><span style="color:var(--green2)">${p.attendance}%</span>
-      </div>
-      <div class="player-stats-row">
-        <div class="player-stat"><div class="player-stat-val">${p.rating}</div><div class="player-stat-lbl">Note</div></div>
-        <div class="player-stat"><div class="player-stat-val">${p.goals}</div><div class="player-stat-lbl">Buts</div></div>
-        <div class="player-stat"><div class="player-stat-val">${p.assists}</div><div class="player-stat-lbl">Passes</div></div>
-        <div class="player-stat"><div class="player-stat-val">${p.sessions}</div><div class="player-stat-lbl">Sessions</div></div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeTeamModal()">Fermer</button>
+        <button class="btn btn-primary" onclick="createTeam()">Créer l’équipe</button>
       </div>
     </div>
-  `).join('');
+  </div>
+</div>
+
+<!-- CREATE PLAYER MODAL -->
+<div class="modal-overlay" id="player-modal-overlay" onclick="if(event.target===this)closePlayerModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closePlayerModal()">✕</button>
+    <div class="modal-title">Créer un joueur</div>
+    <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem">
+      Cela crée un vrai compte joueur connecté, puis l’associe à l’équipe active.
+    </p>
+
+    <div id="player-modal-notice" class="notice"></div>
+
+    <div class="form-group">
+      <label class="form-label">Nom complet</label>
+      <input class="form-input" id="player-full-name" placeholder="Karim Belhadj">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="player-email" placeholder="joueur@email.com">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <input class="form-input" id="player-password" type="password" placeholder="Minimum 8 caractères">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Poste</label>
+        <select class="form-select" id="player-position">
+          <option value="GK">Gardien</option>
+          <option value="DEF">Défenseur</option>
+          <option value="MID">Milieu</option>
+          <option value="ATT">Attaquant</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Numéro</label>
+        <input class="form-input" id="player-number" type="number" placeholder="10">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closePlayerModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="createPlayer()">Créer le joueur</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE SESSION MODAL -->
+<div class="modal-overlay" id="session-modal-overlay" onclick="if(event.target===this)closeSessionModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSessionModal()">✕</button>
+    <div class="modal-title">Nouvelle session</div>
+    <p style="color:var(--muted);font-size:0.82rem;margin-bottom:1rem">
+      Crée un entraînement, un match, une réunion ou un tournoi.
+    </p>
+
+    <div id="session-modal-notice" class="notice"></div>
+
+    <div class="form-group">
+      <label class="form-label">Titre</label>
+      <input class="form-input" id="session-title" placeholder="Préparation match">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <select class="form-select" id="session-type">
+          <option value="training">Entraînement</option>
+          <option value="match">Match</option>
+          <option value="meeting">Réunion</option>
+          <option value="tournament">Tournoi</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Durée (minutes)</label>
+        <input class="form-input" id="session-duration" type="number" placeholder="90" value="90">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input class="form-input" id="session-date" type="date">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Heure</label>
+        <input class="form-input" id="session-time" type="time">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Lieu</label>
+      <input class="form-input" id="session-location" placeholder="Stade municipal">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" id="session-notes" rows="4" placeholder="Objectifs, contenu, consignes..."></textarea>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeSessionModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="createSession()">Créer la session</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const SUPABASE_URL = 'https://jjythzsnubqevzjzrzio.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqeXRoenNudWJxZXZ6anpyemlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTg3MDksImV4cCI6MjA5MDQzNDcwOX0.oINviaV_LTZEoOOlRLYU2V2yeFTQhdUHjjRdaHyu5mo';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+window.showPage = showPage;
+window.logout = logout;
+window.openTeamModal = openTeamModal;
+window.closeTeamModal = closeTeamModal;
+window.openCreatePlayerModal = openCreatePlayerModal;
+window.closePlayerModal = closePlayerModal;
+window.openCreateSessionModal = openCreateSessionModal;
+window.closeSessionModal = closeSessionModal;
+window.createTeam = createTeam;
+window.createPlayer = createPlayer;
+window.createSession = createSession;
+window.topbarAction = topbarAction;
+window.selectTeam = selectTeam;
+
+const state = {
+  sessionUser: null,
+  profile: null,
+  subscription: null,
+  teams: [],
+  activeTeam: null,
+  teamMembers: [],
+  sessions: [],
+  stats: [],
+  messages: [],
+  payments: []
+};
+
+init();
+
+async function init() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session?.user) {
+      window.location.href = '/';
+      return;
+    }
+
+    state.sessionUser = session.user;
+
+    const profile = await fetchProfile(session.user.id);
+
+    if (!profile) {
+      throw new Error('Profil coach introuvable.');
+    }
+
+    if (profile.role !== 'coach') {
+      window.location.href = '/player.html';
+      return;
+    }
+
+    state.profile = profile;
+    hydrateProfile();
+
+    if (!profile.is_owner) {
+      const subscription = await fetchSubscription(session.user.id);
+      state.subscription = subscription;
+
+      const allowed = ['active', 'trialing'];
+      if (!subscription || !allowed.includes(subscription.status)) {
+        alert("Ton abonnement coach n'est pas actif. Pour l'instant, l'accès coach est bloqué.");
+        await logout();
+        return;
+      }
+    } else {
+      state.subscription = { plan: 'owner', status: 'active' };
+    }
+
+    hydrateSubscription();
+    await loadTeams();
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message || 'Impossible de charger le dashboard coach.');
+    window.location.href = '/';
+  }
 }
 
-function openPlayerDetail(id) {
-  const p = players.find(x=>x.id===id);
-  if(!p) return;
-  const el = document.getElementById('player-detail-content');
-  el.innerHTML = `
-    <button class="modal-close" onclick="document.getElementById('player-modal').classList.remove('open')">✕</button>
-    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
-      <div class="avatar" style="background:${p.color}22;color:${p.color};width:64px;height:64px;font-size:1.2rem;border-radius:16px">${p.initials}</div>
-      <div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1">${p.name}</div>
-        <div style="color:var(--muted);font-size:0.85rem;margin-top:2px">${posLabels[p.pos]} · #${p.number} · ${p.age} ans</div>
-        <span class="badge ${statusBadge[p.status]}" style="margin-top:6px">${statusLabels[p.status]}</span>
-      </div>
-      <div style="margin-left:auto;text-align:right">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--green);line-height:1">${p.rating}</div>
-        <div style="font-size:0.72rem;color:var(--muted)">/10 note moy.</div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.8rem;margin-bottom:1.5rem">
-      <div style="background:var(--surface);border-radius:var(--r);padding:0.8rem;text-align:center">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--green)">${p.goals}</div>
-        <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Buts</div>
-      </div>
-      <div style="background:var(--surface);border-radius:var(--r);padding:0.8rem;text-align:center">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--blue)">${p.assists}</div>
-        <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Passes D.</div>
-      </div>
-      <div style="background:var(--surface);border-radius:var(--r);padding:0.8rem;text-align:center">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--orange)">${p.attendance}%</div>
-        <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Présence</div>
-      </div>
-      <div style="background:var(--surface);border-radius:var(--r);padding:0.8rem;text-align:center">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--purple)">${p.sessions}</div>
-        <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em">Sessions</div>
-      </div>
-    </div>
-    <div style="margin-bottom:1rem">
-      <div style="font-size:0.72rem;font-weight:600;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.8rem">Profil de performance</div>
-      <div style="display:flex;flex-direction:column;gap:0.6rem">
-        <div><div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:3px"><span>Technique</span><span style="color:var(--green)">${Math.round(p.rating*9)}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(p.rating*9)}%"></div></div></div>
-        <div><div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:3px"><span>Physique</span><span style="color:var(--green)">${Math.round(p.rating*8.5)}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(p.rating*8.5)}%"></div></div></div>
-        <div><div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:3px"><span>Tactique</span><span style="color:var(--green)">${Math.round(p.rating*8)}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(p.rating*8)}%"></div></div></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:0.5rem">
-      <button class="btn btn-primary" style="flex:1">✏️ Modifier</button>
-      <button class="btn btn-ghost" onclick="openConversationPlayer('${p.name}','${p.initials}','${p.color}')">💬 Message</button>
-      <button class="btn btn-danger">🗑️</button>
-    </div>
-  `;
-  document.getElementById('player-modal').classList.add('open');
+async function fetchProfile(userId) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
 }
 
-function openConversationPlayer(name, initials, color) {
-  document.getElementById('player-modal').classList.remove('open');
-  showPage('messages', document.querySelector('[onclick*=messages]'));
-  setTimeout(()=>openConversation(name, initials, 'Aucun message encore.'), 100);
+async function fetchSubscription(userId) {
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('coach_id', userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
 }
 
-// ============ STATS TABLE ============
-function renderStatsTable() {
-  const sorted = [...players].sort((a,b) => b.rating - a.rating);
-  document.getElementById('stats-table-body').innerHTML = sorted.map((p,i) => `
-    <tr onclick="openPlayerDetail(${p.id})" style="cursor:pointer">
-      <td style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:${i<3?'var(--green)':'var(--muted)'}">${i+1}</td>
-      <td><div style="display:flex;align-items:center;gap:0.6rem">
-        <div class="avatar" style="background:${p.color}22;color:${p.color}">${p.initials}</div>
-        <div><div style="font-weight:600">${p.name}</div><div style="font-size:0.7rem;color:var(--muted)">#${p.number}</div></div>
-      </div></td>
-      <td><span class="badge badge-muted">${posLabels[p.pos]}</span></td>
-      <td>${p.sessions}</td>
-      <td><span style="color:${p.attendance>=80?'var(--green)':p.attendance>=60?'var(--orange)':'var(--red)'}">${p.attendance}%</span></td>
-      <td><span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--green)">${p.rating}</span></td>
-      <td>${p.goals}</td>
-      <td>${p.assists}</td>
-      <td><div style="display:flex;gap:2px">${[1,2,3,4,5].map(s=>`<div style="width:6px;height:6px;border-radius:50%;background:${s<=Math.round(p.rating/2)?'var(--green)':'var(--border2)'}"></div>`).join('')}</div></td>
+function hydrateProfile() {
+  document.getElementById('user-name').textContent = state.profile.full_name || 'Coach';
+  document.getElementById('user-avatar').textContent = getInitials(state.profile.full_name || 'Coach');
+  document.getElementById('settings-coach-name').textContent = state.profile.full_name || 'Coach';
+  document.getElementById('settings-coach-email').textContent = state.profile.email || '—';
+}
+
+function hydrateSubscription() {
+  const pill = document.getElementById('subscription-pill');
+
+  if (state.profile.is_owner) {
+    pill.textContent = 'Owner access';
+    return;
+  }
+
+  pill.textContent = `Plan ${state.subscription?.plan || 'coach'} · ${state.subscription?.status || 'inactive'}`;
+}
+
+async function loadTeams() {
+  const { data, error } = await supabase
+    .from('teams')
+    .select('*')
+    .eq('coach_id', state.sessionUser.id)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+
+  state.teams = data || [];
+  renderTeamsModal();
+
+  if (!state.teams.length) {
+    renderNoTeamState();
+    return;
+  }
+
+  const savedTeamId = localStorage.getItem('coachpro_active_team_id');
+  let active = state.teams.find(team => team.id === savedTeamId) || state.teams[0];
+
+  await setActiveTeam(active.id);
+}
+
+async function setActiveTeam(teamId) {
+  const team = state.teams.find(item => item.id === teamId);
+  if (!team) return;
+
+  state.activeTeam = team;
+  localStorage.setItem('coachpro_active_team_id', team.id);
+
+  hydrateActiveTeam();
+  await loadTeamData(team.id);
+}
+
+function hydrateActiveTeam() {
+  const team = state.activeTeam;
+
+  document.getElementById('sidebar-team-name').textContent = team.name;
+  document.getElementById('sidebar-team-cat').textContent = `${team.category} · ${team.season}`;
+  document.getElementById('sidebar-team-avatar').textContent = getInitials(team.name);
+  document.getElementById('team-code-badge').textContent = `Code équipe : ${team.team_code || '—'}`;
+
+  document.getElementById('settings-team-name').textContent = team.name;
+  document.getElementById('settings-team-meta').textContent = `${team.category} · ${team.season}`;
+  document.getElementById('settings-team-code').textContent = team.team_code || '—';
+
+  document.getElementById('dashboard-subtitle').textContent =
+    `${team.name} · ${team.category} · ${team.season}`;
+}
+
+function renderNoTeamState() {
+  document.getElementById('sidebar-team-name').textContent = 'Aucune équipe';
+  document.getElementById('sidebar-team-cat').textContent = 'Crée une équipe pour commencer';
+
+  document.getElementById('settings-team-name').textContent = 'Aucune équipe';
+  document.getElementById('settings-team-meta').textContent = '—';
+  document.getElementById('settings-team-code').textContent = '—';
+}
+
+async function loadTeamData(teamId) {
+  await Promise.all([
+    loadTeamMembers(teamId),
+    loadSessions(teamId),
+    loadPayments(teamId),
+    loadMessagesForCoach(teamId)
+  ]);
+
+  await loadStatsForTeam();
+  renderDashboard();
+}
+
+async function loadTeamMembers(teamId) {
+  const { data, error } = await supabase
+    .from('team_members')
+    .select(`
+      *,
+      player:profiles!team_members_player_profile_id_fkey (
+        id,
+        full_name,
+        email
+      )
+    `)
+    .eq('team_id', teamId)
+    .order('jersey_number', { ascending: true });
+
+  if (error) throw error;
+
+  state.teamMembers = data || [];
+  renderRoster();
+}
+
+async function loadSessions(teamId) {
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('*')
+    .eq('team_id', teamId)
+    .order('scheduled_at', { ascending: true });
+
+  if (error) throw error;
+
+  state.sessions = data || [];
+  renderSessions();
+}
+
+async function loadPayments(teamId) {
+  const { data, error } = await supabase
+    .from('payments')
+    .select(`
+      *,
+      player:profiles!payments_player_profile_id_fkey (
+        full_name
+      )
+    `)
+    .eq('team_id', teamId)
+    .order('due_date', { ascending: false });
+
+  if (error) throw error;
+
+  state.payments = data || [];
+  renderPayments();
+}
+
+async function loadMessagesForCoach(teamId) {
+  const { data: conversations, error: convError } = await supabase
+    .from('conversations')
+    .select('id')
+    .eq('team_id', teamId)
+    .order('created_at', { ascending: false });
+
+  if (convError) throw convError;
+
+  const conversationIds = (conversations || []).map(item => item.id);
+
+  if (!conversationIds.length) {
+    state.messages = [];
+    renderMessages();
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from('messages')
+    .select(`
+      *,
+      sender:profiles!messages_sender_id_fkey (
+        full_name
+      )
+    `)
+    .in('conversation_id', conversationIds)
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (error) throw error;
+
+  state.messages = data || [];
+  renderMessages();
+}
+
+async function loadStatsForTeam() {
+  if (!state.teamMembers.length) {
+    state.stats = [];
+    renderStats();
+    return;
+  }
+
+  const memberIds = state.teamMembers.map(member => member.id);
+
+  const { data, error } = await supabase
+    .from('player_stats')
+    .select('*')
+    .in('team_member_id', memberIds)
+    .order('updated_at', { ascending: false });
+
+  if (error) throw error;
+
+  const latestPerMember = new Map();
+
+  for (const row of data || []) {
+    if (!latestPerMember.has(row.team_member_id)) {
+      latestPerMember.set(row.team_member_id, row);
+    }
+  }
+
+  state.stats = Array.from(latestPerMember.values());
+  renderStats();
+}
+
+function renderDashboard() {
+  const upcomingSessions = state.sessions.filter(item => new Date(item.scheduled_at) >= new Date());
+  const pendingPayments = state.payments.filter(item => item.status !== 'paid');
+
+  document.getElementById('stat-total-players').textContent = state.teamMembers.length;
+  document.getElementById('stat-upcoming-sessions').textContent = upcomingSessions.length;
+  document.getElementById('stat-pending-payments').textContent = pendingPayments.length;
+  document.getElementById('stat-recent-messages').textContent = state.messages.length;
+
+  const sessionsList = document.getElementById('dashboard-sessions-list');
+  if (!upcomingSessions.length) {
+    sessionsList.innerHTML = `<div class="empty-note">Aucune session à venir.</div>`;
+  } else {
+    sessionsList.innerHTML = upcomingSessions.slice(0, 5).map(item => `
+      <div class="list-item">
+        <div class="list-title">${escapeHtml(item.title)}</div>
+        <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
+        <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
+      </div>
+    `).join('');
+  }
+
+  const paymentsList = document.getElementById('dashboard-payments-list');
+  if (!state.payments.length) {
+    paymentsList.innerHTML = `<div class="empty-note">Aucun paiement pour le moment.</div>`;
+  } else {
+    paymentsList.innerHTML = state.payments.slice(0, 5).map(item => `
+      <div class="list-item">
+        <div class="list-title">${escapeHtml(item.label)}</div>
+        <div class="list-sub">${item.player?.full_name ? escapeHtml(item.player.full_name) + ' · ' : ''}${formatAmount(item.amount)}</div>
+        <div class="list-sub">${translatePaymentStatus(item.status)} · échéance ${formatDate(item.due_date)}</div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderRoster() {
+  const tbody = document.getElementById('roster-table-body');
+
+  if (!state.teamMembers.length) {
+    tbody.innerHTML = `<tr><td colspan="4" class="empty-note">Aucun joueur.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = state.teamMembers.map(member => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:0.7rem">
+          <div class="avatar" style="background:rgba(61,255,122,0.12);color:var(--green)">
+            ${getInitials(member.player?.full_name || 'PL')}
+          </div>
+          <div>
+            <div style="font-weight:600">${escapeHtml(member.player?.full_name || 'Joueur')}</div>
+            <div style="font-size:0.72rem;color:var(--muted)">${escapeHtml(member.player?.email || '')}</div>
+          </div>
+        </div>
+      </td>
+      <td>${translatePosition(member.position)}</td>
+      <td>${member.jersey_number ?? '—'}</td>
+      <td><span class="badge ${statusBadgeClass(member.status)}">${translateStatus(member.status)}</span></td>
     </tr>
   `).join('');
 }
 
-// ============ ATTENDANCE ============
-function renderAttendance() {
-  if(Object.keys(attendanceState).length===0) {
-    players.forEach(p => {
-      attendanceState[p.id] = p.status==='injured'?'absent':p.status==='inactive'?'absent':'present';
-    });
+function renderSessions() {
+  const list = document.getElementById('sessions-list');
+
+  if (!state.sessions.length) {
+    list.innerHTML = `<div class="empty-note">Aucune session enregistrée.</div>`;
+    return;
   }
-  const grid = document.getElementById('attend-grid');
-  grid.innerHTML = players.map(p => `
-    <div class="attend-card ${attendanceState[p.id]}" id="att-${p.id}" onclick="cycleAttendance(${p.id})">
-      <div class="avatar" style="background:${p.color}22;color:${p.color};margin:0 auto;width:36px;height:36px;font-size:0.75rem">${p.initials}</div>
-      <div class="attend-name">${p.name.split(' ')[0]}</div>
-      <div class="attend-pos">${posLabels[p.pos]}</div>
-      <div class="attend-status" style="color:${attendanceState[p.id]==='present'?'var(--green)':attendanceState[p.id]==='absent'?'var(--red)':'var(--orange)'}">${attendanceState[p.id]==='present'?'PRÉSENT':attendanceState[p.id]==='absent'?'ABSENT':'EN RETARD'}</div>
+
+  list.innerHTML = state.sessions.map(item => `
+    <div class="list-item">
+      <div class="list-title">${escapeHtml(item.title)}</div>
+      <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
+      <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
     </div>
   `).join('');
-  updateAttCounts();
 }
 
-function cycleAttendance(id) {
-  const cycle = ['present','late','absent'];
-  const cur = attendanceState[id];
-  attendanceState[id] = cycle[(cycle.indexOf(cur)+1)%3];
-  const el = document.getElementById('att-'+id);
-  el.className = 'attend-card '+attendanceState[id];
-  el.querySelector('.attend-status').textContent = attendanceState[id]==='present'?'PRÉSENT':attendanceState[id]==='absent'?'ABSENT':'EN RETARD';
-  el.querySelector('.attend-status').style.color = attendanceState[id]==='present'?'var(--green)':attendanceState[id]==='absent'?'var(--red)':'var(--orange)';
-  updateAttCounts();
-}
+function renderStats() {
+  const totalGoals = state.stats.reduce((sum, row) => sum + Number(row.goals || 0), 0);
+  const totalAssists = state.stats.reduce((sum, row) => sum + Number(row.assists || 0), 0);
+  const totalMatches = state.stats.reduce((sum, row) => sum + Number(row.matches_played || 0), 0);
 
-function markAll(status) {
-  players.forEach(p => attendanceState[p.id]=status);
-  renderAttendance();
-}
+  document.getElementById('stats-goals').textContent = totalGoals;
+  document.getElementById('stats-assists').textContent = totalAssists;
+  document.getElementById('stats-matches').textContent = totalMatches;
 
-function updateAttCounts() {
-  const vals = Object.values(attendanceState);
-  document.getElementById('att-present-count').textContent = vals.filter(v=>v==='present').length;
-  document.getElementById('att-absent-count').textContent = vals.filter(v=>v==='absent').length;
-  document.getElementById('att-late-count').textContent = vals.filter(v=>v==='late').length;
-}
+  const tbody = document.getElementById('stats-table-body');
 
-function saveAttendance() {
-  const p = Object.values(attendanceState).filter(v=>v==='present').length;
-  alert(`✅ Présences enregistrées !\n${p}/${players.length} joueurs présents.`);
-}
-
-// ============ CALENDAR ============
-const calEvents = {
-  '2026-3-24': [{type:'training',label:'Entraînement 17h30'}],
-  '2026-3-26': [{type:'training',label:'Entraînement 18h00'}],
-  '2026-3-28': [{type:'training',label:'Préparation match'}],
-  '2026-3-29': [{type:'match',label:'Match vs Racing 15h'}],
-  '2026-3-31': [{type:'meeting',label:'Réunion staff 10h'}],
-  '2026-4-2':  [{type:'training',label:'Reprise 18h00'}],
-  '2026-4-5':  [{type:'match',label:'Match Coupe 14h'}],
-};
-
-function renderCalendar() {
-  const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-  document.getElementById('cal-month-label').textContent = `${months[calMonth]} ${calYear}`;
-  const grid = document.getElementById('cal-grid');
-  const first = new Date(calYear, calMonth, 1).getDay();
-  const offset = first===0?6:first-1;
-  const days = new Date(calYear, calMonth+1, 0).getDate();
-  const prevDays = new Date(calYear, calMonth, 0).getDate();
-  let cells = '';
-  const today = new Date();
-  for(let i=0;i<offset;i++) {
-    cells += `<div class="cal-cell other-month"><div class="cal-date">${prevDays-offset+i+1}</div></div>`;
+  if (!state.stats.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-note">Aucune statistique disponible.</td></tr>`;
+    return;
   }
-  for(let d=1;d<=days;d++) {
-    const isToday = d===today.getDate()&&calMonth===today.getMonth()&&calYear===today.getFullYear();
-    const key = `${calYear}-${calMonth+1}-${d}`;
-    const evts = calEvents[key]||[];
-    cells += `<div class="cal-cell${isToday?' today':''}"><div class="cal-date">${d}</div>${evts.map(e=>`<div class="cal-event ${e.type}">${e.label}</div>`).join('')}</div>`;
+
+  const statsByMember = new Map(state.stats.map(row => [row.team_member_id, row]));
+  tbody.innerHTML = state.teamMembers.map(member => {
+    const row = statsByMember.get(member.id);
+
+    return `
+      <tr>
+        <td>${escapeHtml(member.player?.full_name || 'Joueur')}</td>
+        <td>${row?.goals ?? 0}</td>
+        <td>${row?.assists ?? 0}</td>
+        <td>${row?.matches_played ?? 0}</td>
+        <td>${row?.minutes_played ?? 0}</td>
+        <td>${row?.avg_rating ?? '—'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderMessages() {
+  const list = document.getElementById('messages-list');
+
+  if (!state.messages.length) {
+    list.innerHTML = `<div class="empty-note">Aucun message pour le moment.</div>`;
+    return;
   }
-  const remaining = 42-(offset+days);
-  for(let i=1;i<=remaining;i++) cells += `<div class="cal-cell other-month"><div class="cal-date">${i}</div></div>`;
-  grid.innerHTML = cells;
-}
 
-function changeMonth(dir) {
-  calMonth += dir;
-  if(calMonth>11){calMonth=0;calYear++;}
-  if(calMonth<0){calMonth=11;calYear--;}
-  renderCalendar();
+  list.innerHTML = state.messages.map(item => `
+    <div class="msg-item">
+      <div class="msg-header">
+        <div class="msg-name">${escapeHtml(item.sender?.full_name || 'Message')}</div>
+        <div class="msg-time">${formatShortDate(item.created_at)}</div>
+      </div>
+      <div class="msg-preview">${escapeHtml(item.content)}</div>
+    </div>
+  `).join('');
 }
-
-// ============ PAYMENTS ============
-const payments = [
-  {name:'Karim Belhadj',initials:'KB',color:'#FF5252',amount:60,status:'paid'},
-  {name:'Sofiane Ouali',initials:'SO',color:'#3DFF7A',amount:60,status:'paid'},
-  {name:'Amine Mansouri',initials:'AM',color:'#40C4FF',amount:60,status:'paid'},
-  {name:'Yacine Bouri',initials:'YB',color:'#FFD740',amount:60,status:'paid'},
-  {name:'Rayan Dembélé',initials:'RD',color:'#CE93D8',amount:60,status:'paid'},
-  {name:'Hamza Idrissi',initials:'HI',color:'#69F0AE',amount:60,status:'pending'},
-  {name:'Walid Cherif',initials:'WC',color:'#FFD740',amount:60,status:'pending'},
-  {name:'Nassim Aïssa',initials:'NA',color:'#A5D6A7',amount:60,status:'pending'},
-  {name:'Omar Ferhat',initials:'OF',color:'#FFE082',amount:60,status:'late'},
-];
 
 function renderPayments() {
-  const statusLabel = {paid:'Payé',pending:'En attente',late:'En retard'};
-  const statusClass = {paid:'badge-green',pending:'badge-orange',late:'badge-red'};
-  document.getElementById('payments-list').innerHTML = payments.map(p => `
-    <div class="payment-row">
-      <div class="avatar" style="background:${p.color}22;color:${p.color}">${p.initials}</div>
-      <div class="payment-info">
-        <div class="payment-name">${p.name}</div>
-        <div class="payment-desc">Cotisation Mars 2026</div>
+  const tbody = document.getElementById('payments-table-body');
+
+  if (!state.payments.length) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-note">Aucun paiement enregistré.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = state.payments.map(item => `
+    <tr>
+      <td>${escapeHtml(item.label)}</td>
+      <td>${escapeHtml(item.player?.full_name || '—')}</td>
+      <td>${formatAmount(item.amount)}</td>
+      <td>${formatDate(item.due_date)}</td>
+      <td><span class="badge ${paymentBadgeClass(item.status)}">${translatePaymentStatus(item.status)}</span></td>
+    </tr>
+  `).join('');
+}
+
+function renderTeamsModal() {
+  const list = document.getElementById('teams-modal-list');
+
+  if (!state.teams.length) {
+    list.innerHTML = `<div class="empty-note">Aucune équipe.</div>`;
+    return;
+  }
+
+  list.innerHTML = state.teams.map(team => `
+    <div class="list-item" style="display:flex;align-items:center;justify-content:space-between;gap:1rem">
+      <div>
+        <div class="list-title">${escapeHtml(team.name)}</div>
+        <div class="list-sub">${escapeHtml(team.category)} · ${escapeHtml(team.season)} · code ${escapeHtml(team.team_code || '—')}</div>
       </div>
-      <span class="badge ${statusClass[p.status]}">${statusLabel[p.status]}</span>
-      <div class="payment-amount ${p.status}">${p.amount}€</div>
-      ${p.status!=='paid'?`<button class="btn btn-ghost" style="font-size:0.75rem;padding:0.3rem 0.7rem" onclick="markPaid('${p.name}')">Marquer payé</button>`:'<div style="width:90px"></div>'}
+      <button class="btn ${state.activeTeam?.id === team.id ? 'btn-primary' : 'btn-ghost'}" onclick="selectTeam('${team.id}')">
+        ${state.activeTeam?.id === team.id ? 'Active' : 'Choisir'}
+      </button>
     </div>
   `).join('');
 }
 
-function markPaid(name) {
-  const p = payments.find(x=>x.name===name);
-  if(p) p.status='paid';
-  renderPayments();
-}
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+  document.getElementById(`page-${id}`).classList.add('active');
 
-// ============ MESSAGES ============
-function openConversation(name, initials, lastMsg) {
-  const panel = document.getElementById('conversation-panel');
-  panel.innerHTML = `
-    <div style="display:flex;align-items:center;gap:0.8rem;padding:0.8rem 1rem;border-bottom:1px solid var(--border)">
-      <div class="avatar" style="background:var(--green-dim);color:var(--green)">${initials.length>2?'👥':initials}</div>
-      <div><div style="font-weight:700;font-size:0.9rem">${name}</div><div style="font-size:0.7rem;color:var(--green)">● En ligne</div></div>
-    </div>
-    <div style="flex:1;padding:1rem;display:flex;flex-direction:column;gap:0.7rem;overflow-y:auto">
-      <div style="align-self:flex-start;background:var(--surface);border-radius:0 12px 12px 12px;padding:0.6rem 0.9rem;max-width:80%">
-        <div style="font-size:0.83rem">${lastMsg.replace(/^[^:]+: /,'')}</div>
-        <div style="font-size:0.65rem;color:var(--muted);margin-top:3px">14:32</div>
-      </div>
-      <div style="align-self:flex-end;background:var(--green);border-radius:12px 0 12px 12px;padding:0.6rem 0.9rem;max-width:80%">
-        <div style="font-size:0.83rem;color:#000">Ok, pas de souci ! À demain.</div>
-        <div style="font-size:0.65rem;color:rgba(0,0,0,0.5);margin-top:3px">14:35</div>
-      </div>
-    </div>
-    <div style="padding:0.8rem;border-top:1px solid var(--border);display:flex;gap:0.5rem">
-      <input class="form-input" placeholder="Votre message..." id="msg-input" onkeydown="if(event.key==='Enter')sendMsg('${name}','${initials}','${lastMsg}')">
-      <button class="btn btn-primary" onclick="sendMsg('${name}','${initials}','${lastMsg}')">Envoyer</button>
-    </div>
-  `;
-}
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  if (el) el.classList.add('active');
 
-function sendMsg(name, initials, lastMsg) {
-  const input = document.getElementById('msg-input');
-  if(!input || !input.value.trim()) return;
-  const msgArea = input.closest('[style*="flex-direction:column"]').querySelector('[style*="overflow-y:auto"]') || input.parentElement.previousElementSibling;
-  const div = document.createElement('div');
-  div.style.cssText = 'align-self:flex-end;background:var(--green);border-radius:12px 0 12px 12px;padding:0.6rem 0.9rem;max-width:80%;display:flex;flex-direction:column';
-  div.innerHTML = `<div style="font-size:0.83rem;color:#000">${input.value}</div><div style="font-size:0.65rem;color:rgba(0,0,0,0.5);margin-top:3px">Maintenant</div>`;
-  const msgs = document.querySelector('#conversation-panel [style*="overflow-y:auto"]');
-  if(msgs) { msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight; }
-  input.value = '';
-}
-
-// ============ MODALS ============
-function openModal(type) {
-  const el = document.getElementById('modal-content');
-  const modals = {
-    player: `
-      <button class="modal-close" onclick="closeModal()">✕</button>
-      <div class="modal-title">Nouveau joueur</div>
-      <p style="color:var(--muted);font-size:0.83rem;margin-bottom:1.2rem">Ajoutez un joueur à votre effectif</p>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Prénom</label><input class="form-input" placeholder="Sofiane"></div>
-        <div class="form-group"><label class="form-label">Nom</label><input class="form-input" placeholder="Ouali"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Poste</label><select class="form-input"><option>Gardien (GK)</option><option>Défenseur (DEF)</option><option>Milieu (MID)</option><option>Attaquant (ATT)</option></select></div>
-        <div class="form-group"><label class="form-label">Numéro</label><input class="form-input" type="number" placeholder="9"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Âge</label><input class="form-input" type="number" placeholder="22"></div>
-        <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" placeholder="+33 6 00 00 00 00"></div>
-      </div>
-      <div class="form-group" style="margin-bottom:1rem"><label class="form-label">Email</label><input class="form-input" placeholder="joueur@email.fr"></div>
-      <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="closeModal();alert('Joueur ajouté !')">Ajouter le joueur</button></div>`,
-    session: `
-      <button class="modal-close" onclick="closeModal()">✕</button>
-      <div class="modal-title">Nouvelle session</div>
-      <p style="color:var(--muted);font-size:0.83rem;margin-bottom:1.2rem">Planifiez un entraînement ou un match</p>
-      <div class="form-group" style="margin-bottom:1rem"><label class="form-label">Titre</label><input class="form-input" placeholder="Tactique défensive"></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Type</label><select class="form-input"><option>Entraînement</option><option>Match</option><option>Réunion</option><option>Tournoi</option></select></div>
-        <div class="form-group"><label class="form-label">Durée</label><select class="form-input"><option>45 min</option><option>60 min</option><option>75 min</option><option>90 min</option><option>120 min</option></select></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" value="2026-03-31"></div>
-        <div class="form-group"><label class="form-label">Heure</label><input class="form-input" type="time" value="18:00"></div>
-      </div>
-      <div class="form-group" style="margin-bottom:1rem"><label class="form-label">Lieu</label><input class="form-input" placeholder="Stade Municipal"></div>
-      <div class="form-group" style="margin-bottom:1rem"><label class="form-label">Notes / Objectifs</label><textarea class="form-input" rows="3" placeholder="Objectifs de la session..."></textarea></div>
-      <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="closeModal();alert('Session créée et joueurs notifiés !')">Créer & Notifier</button></div>`,
-    event: `
-      <button class="modal-close" onclick="closeModal()">✕</button>
-      <div class="modal-title">Nouvel événement</div>
-      <div class="form-group" style="margin-bottom:1rem"><label class="form-label">Titre</label><input class="form-input" placeholder="Match vs AS Lumière"></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Type</label><select class="form-input"><option>Match</option><option>Entraînement</option><option>Réunion</option></select></div>
-        <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date"></div>
-      </div>
-      <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="closeModal();alert('Événement ajouté !')">Ajouter</button></div>`,
-    message: `
-      <button class="modal-close" onclick="closeModal()">✕</button>
-      <div class="modal-title">Nouveau message</div>
-      <div class="form-group" style="margin-bottom:1rem"><label class="form-label">Destinataires</label><select class="form-input"><option>Toute l'équipe</option><option>Défenseurs</option><option>Milieux</option><option>Attaquants</option><option>Joueur individuel</option></select></div>
-      <div class="form-group" style="margin-bottom:1rem"><label class="form-label">Message</label><textarea class="form-input" rows="4" placeholder="Votre message pour l'équipe..."></textarea></div>
-      <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="closeModal();alert('Message envoyé à toute l\'équipe !')">Envoyer</button></div>`,
-    payment: `
-      <button class="modal-close" onclick="closeModal()">✕</button>
-      <div class="modal-title">Nouvelle cotisation</div>
-      <div class="form-group" style="margin-bottom:1rem"><label class="form-label">Libellé</label><input class="form-input" placeholder="Cotisation Avril 2026"></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Montant (€)</label><input class="form-input" type="number" placeholder="60"></div>
-        <div class="form-group"><label class="form-label">Échéance</label><input class="form-input" type="date" value="2026-04-30"></div>
-      </div>
-      <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="closeModal();alert('Cotisation créée et joueurs notifiés !')">Créer & Notifier</button></div>`,
+  const titles = {
+    dashboard: 'Dashboard',
+    roster: 'Effectif',
+    sessions: 'Sessions',
+    stats: 'Statistiques',
+    messages: 'Messages',
+    payments: 'Paiements',
+    settings: 'Paramètres'
   };
-  el.innerHTML = modals[type] || '';
-  document.getElementById('modal-overlay').classList.add('open');
+
+  document.getElementById('topbar-title').textContent = titles[id] || 'Dashboard';
 }
 
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
-
-function openSessionDetail(name) {
-  const el = document.getElementById('modal-content');
-  el.innerHTML = `
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-title">${name}</div>
-    <p style="color:var(--muted);font-size:0.8rem;margin-bottom:1rem">Mercredi 26 Mars · 18h00 · 90 min · Stade Municipal</p>
-    <div style="display:flex;gap:1rem;margin-bottom:1.2rem">
-      <div style="flex:1;background:var(--surface);border-radius:var(--r);padding:0.7rem;text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--green)">18</div><div style="font-size:0.68rem;color:var(--muted)">Présents</div></div>
-      <div style="flex:1;background:var(--surface);border-radius:var(--r);padding:0.7rem;text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--red)">4</div><div style="font-size:0.68rem;color:var(--muted)">Absents</div></div>
-      <div style="flex:1;background:var(--surface);border-radius:var(--r);padding:0.7rem;text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--blue)">7.8</div><div style="font-size:0.68rem;color:var(--muted)">Note moy.</div></div>
-    </div>
-    <div style="font-size:0.8rem;font-weight:600;color:var(--muted2);margin-bottom:0.6rem;letter-spacing:0.1em;text-transform:uppercase">Notes coach</div>
-    <div style="background:var(--surface);border-radius:var(--r);padding:0.8rem;font-size:0.83rem;color:var(--muted);margin-bottom:1rem">Bonne session dans l'ensemble. Le pressing haut fonctionne mieux. Sofiane très en forme. Travailler encore la transition défensive.</div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Fermer</button><button class="btn btn-primary">✏️ Modifier</button></div>
-  `;
-  document.getElementById('modal-overlay').classList.add('open');
-}
-
-// ============ NOTIFS ============
-function toggleNotif() {
-  document.getElementById('notifPanel').classList.toggle('open');
-}
-document.addEventListener('click', e => {
-  if(!e.target.closest('.topbar-icon-btn')) document.getElementById('notifPanel').classList.remove('open');
-});
-
-// ============ SEARCH ============
-function handleSearch(val) {
-  if(!val) return;
-  const found = players.find(p=>p.name.toLowerCase().includes(val.toLowerCase()));
-  if(found) openPlayerDetail(found.id);
-}
-
-// ============ TOPBAR ACTION ============
 function topbarAction() {
-  const page = document.querySelector('.page.active').id;
-  const map = {'page-roster':'player','page-sessions':'session','page-calendar':'event','page-messages':'message','page-payments':'payment'};
-  openModal(map[page]||'player');
+  const activePage = document.querySelector('.page.active')?.id;
+
+  if (activePage === 'page-roster') {
+    openCreatePlayerModal();
+    return;
+  }
+
+  if (activePage === 'page-sessions') {
+    openCreateSessionModal();
+    return;
+  }
+
+  openTeamModal();
 }
 
-// ============ TEAM MODAL ============
 function openTeamModal() {
-  const el = document.getElementById('modal-content');
-  el.innerHTML = `
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-title">Mes équipes</div>
-    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem">
-      <div style="display:flex;align-items:center;gap:0.8rem;background:var(--green-dim);border:1px solid rgba(61,255,122,0.2);border-radius:var(--r);padding:0.8rem;cursor:pointer">
-        <div class="team-avatar">FC</div>
-        <div style="flex:1"><div style="font-weight:700">FC Al-Nour</div><div style="font-size:0.72rem;color:var(--muted)">Senior A · 22 joueurs</div></div>
-        <span class="badge badge-green">Actif</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:0.8rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:0.8rem;cursor:pointer" onclick="alert('Changement d\'équipe simulé')">
-        <div class="team-avatar" style="background:linear-gradient(135deg,#1a2a4a,#0d2030)">U1</div>
-        <div style="flex:1"><div style="font-weight:700">FC Al-Nour U18</div><div style="font-size:0.72rem;color:var(--muted)">U18 · 18 joueurs</div></div>
-        <span class="badge badge-muted">Changer</span>
-      </div>
-    </div>
-    <button class="btn btn-primary w-full" onclick="closeModal();openModal('player')">+ Créer une nouvelle équipe</button>
-  `;
-  document.getElementById('modal-overlay').classList.add('open');
+  renderTeamsModal();
+  clearNotice('team-modal-notice');
+  document.getElementById('team-modal-overlay').classList.add('open');
 }
 
-// ============ INIT ============
-renderRoster('all');
-renderCalendar();
+function closeTeamModal() {
+  document.getElementById('team-modal-overlay').classList.remove('open');
+}
+
+function openCreatePlayerModal() {
+  if (!state.activeTeam) {
+    alert("Crée d'abord une équipe.");
+    return;
+  }
+
+  clearNotice('player-modal-notice');
+  document.getElementById('player-modal-overlay').classList.add('open');
+}
+
+function closePlayerModal() {
+  document.getElementById('player-modal-overlay').classList.remove('open');
+}
+
+function openCreateSessionModal() {
+  if (!state.activeTeam) {
+    alert("Crée d'abord une équipe.");
+    return;
+  }
+
+  clearNotice('session-modal-notice');
+  document.getElementById('session-modal-overlay').classList.add('open');
+}
+
+function closeSessionModal() {
+  document.getElementById('session-modal-overlay').classList.remove('open');
+}
+
+async function selectTeam(teamId) {
+  await setActiveTeam(teamId);
+  renderTeamsModal();
+  closeTeamModal();
+}
+
+async function createTeam() {
+  const name = document.getElementById('create-team-name').value.trim();
+  const category = document.getElementById('create-team-category').value.trim() || 'Senior A';
+  const season = document.getElementById('create-team-season').value.trim() || '2025/2026';
+
+  if (!name) {
+    showNotice('team-modal-notice', 'error', "Le nom de l'équipe est obligatoire.");
+    return;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('teams')
+      .insert({
+        coach_id: state.sessionUser.id,
+        name,
+        category,
+        season
+      });
+
+    if (error) throw error;
+
+    showNotice('team-modal-notice', 'success', 'Équipe créée avec succès.');
+    document.getElementById('create-team-name').value = '';
+    document.getElementById('create-team-category').value = '';
+    document.getElementById('create-team-season').value = '';
+
+    await loadTeams();
+  } catch (error) {
+    console.error(error);
+    showNotice('team-modal-notice', 'error', error.message || "Impossible de créer l'équipe.");
+  }
+}
+
+async function createPlayer() {
+  const fullName = document.getElementById('player-full-name').value.trim();
+  const email = document.getElementById('player-email').value.trim().toLowerCase();
+  const password = document.getElementById('player-password').value;
+  const position = document.getElementById('player-position').value;
+  const numberRaw = document.getElementById('player-number').value.trim();
+
+  if (!fullName || !email || !password) {
+    showNotice('player-modal-notice', 'error', 'Remplis tous les champs obligatoires.');
+    return;
+  }
+
+  if (password.length < 8) {
+    showNotice('player-modal-notice', 'error', 'Le mot de passe doit contenir au moins 8 caractères.');
+    return;
+  }
+
+  const jerseyNumber = numberRaw ? Number(numberRaw) : null;
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          role: 'player'
+        }
+      }
+    });
+
+    if (error) throw error;
+
+    const userId = data?.user?.id;
+    if (!userId) {
+      throw new Error("Le compte joueur n'a pas pu être créé.");
+    }
+
+    await waitForProfile(userId);
+
+    const { error: memberError } = await supabase
+      .from('team_members')
+      .insert({
+        team_id: state.activeTeam.id,
+        player_profile_id: userId,
+        jersey_number: jerseyNumber,
+        position,
+        status: 'new'
+      });
+
+    if (memberError) throw memberError;
+
+    showNotice(
+      'player-modal-notice',
+      'success',
+      `Joueur créé. Il peut ensuite se connecter comme joueur. Code équipe : ${state.activeTeam.team_code}`
+    );
+
+    document.getElementById('player-full-name').value = '';
+    document.getElementById('player-email').value = '';
+    document.getElementById('player-password').value = '';
+    document.getElementById('player-position').value = 'GK';
+    document.getElementById('player-number').value = '';
+
+    await loadTeamMembers(state.activeTeam.id);
+    renderDashboard();
+  } catch (error) {
+    console.error(error);
+    showNotice('player-modal-notice', 'error', error.message || 'Impossible de créer le joueur.');
+  }
+}
+
+async function createSession() {
+  const title = document.getElementById('session-title').value.trim();
+  const type = document.getElementById('session-type').value;
+  const duration = Number(document.getElementById('session-duration').value || 90);
+  const date = document.getElementById('session-date').value;
+  const time = document.getElementById('session-time').value;
+  const location = document.getElementById('session-location').value.trim();
+  const notes = document.getElementById('session-notes').value.trim();
+
+  if (!title || !date || !time) {
+    showNotice('session-modal-notice', 'error', 'Le titre, la date et l’heure sont obligatoires.');
+    return;
+  }
+
+  try {
+    const scheduledAt = new Date(`${date}T${time}:00`);
+    const iso = scheduledAt.toISOString();
+
+    const { error } = await supabase
+      .from('sessions')
+      .insert({
+        team_id: state.activeTeam.id,
+        created_by: state.sessionUser.id,
+        title,
+        type,
+        scheduled_at: iso,
+        duration_minutes: duration,
+        location,
+        notes
+      });
+
+    if (error) throw error;
+
+    showNotice('session-modal-notice', 'success', 'Session créée avec succès.');
+
+    document.getElementById('session-title').value = '';
+    document.getElementById('session-type').value = 'training';
+    document.getElementById('session-duration').value = '90';
+    document.getElementById('session-date').value = '';
+    document.getElementById('session-time').value = '';
+    document.getElementById('session-location').value = '';
+    document.getElementById('session-notes').value = '';
+
+    await loadSessions(state.activeTeam.id);
+    renderDashboard();
+  } catch (error) {
+    console.error(error);
+    showNotice('session-modal-notice', 'error', error.message || 'Impossible de créer la session.');
+  }
+}
+
+async function waitForProfile(userId, attempts = 10, delayMs = 600) {
+  for (let i = 0; i < attempts; i++) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (data) return data;
+
+    await new Promise(resolve => setTimeout(resolve, delayMs));
+  }
+
+  throw new Error("Le profil du joueur n'a pas été créé à temps.");
+}
+
+function showNotice(id, type, message) {
+  const el = document.getElementById(id);
+  el.className = `notice ${type}`;
+  el.textContent = message;
+}
+
+function clearNotice(id) {
+  const el = document.getElementById(id);
+  el.className = 'notice';
+  el.textContent = '';
+}
+
+async function logout() {
+  await supabase.auth.signOut();
+  window.location.href = '/';
+}
+
+function getInitials(value) {
+  return String(value || '')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() || '')
+    .join('') || '??';
+}
+
+function translatePosition(position) {
+  const map = {
+    GK: 'Gardien',
+    DEF: 'Défenseur',
+    MID: 'Milieu',
+    ATT: 'Attaquant'
+  };
+
+  return map[position] || position || '—';
+}
+
+function translateStatus(status) {
+  const map = {
+    active: 'Actif',
+    injured: 'Blessé',
+    inactive: 'Inactif',
+    new: 'Nouveau'
+  };
+
+  return map[status] || status || '—';
+}
+
+function translateSessionType(type) {
+  const map = {
+    training: 'Entraînement',
+    match: 'Match',
+    meeting: 'Réunion',
+    tournament: 'Tournoi'
+  };
+
+  return map[type] || type || 'Événement';
+}
+
+function translatePaymentStatus(status) {
+  const map = {
+    pending: 'En attente',
+    paid: 'Payé',
+    late: 'En retard'
+  };
+
+  return map[status] || status || '—';
+}
+
+function statusBadgeClass(status) {
+  const map = {
+    active: 'badge-green',
+    injured: 'badge-red',
+    inactive: 'badge-muted',
+    new: 'badge-blue'
+  };
+
+  return map[status] || 'badge-muted';
+}
+
+function paymentBadgeClass(status) {
+  const map = {
+    pending: 'badge-orange',
+    paid: 'badge-green',
+    late: 'badge-red'
+  };
+
+  return map[status] || 'badge-muted';
+}
+
+function formatDateTime(value) {
+  if (!value) return 'Date inconnue';
+
+  return new Intl.DateTimeFormat('fr-FR', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  }).format(new Date(value));
+}
+
+function formatDate(value) {
+  if (!value) return '—';
+
+  return new Intl.DateTimeFormat('fr-FR', {
+    dateStyle: 'medium'
+  }).format(new Date(value));
+}
+
+function formatShortDate(value) {
+  if (!value) return '—';
+
+  return new Intl.DateTimeFormat('fr-FR', {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  }).format(new Date(value));
+}
+
+function formatAmount(value) {
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(Number(value || 0));
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
 </script>
+
 </body>
 </html>
