@@ -2130,71 +2130,34 @@ async function loadSessions(teamId) {
         showNotice('team-modal-notice', 'error', error.message || "Impossible de créer l'équipe.");
       }
     }
+async function createPlayer() {
+  if (!state.activeTeam) {
+    showNotice('player-modal-notice', 'error', "Aucune équipe active.");
+    return;
+  }
 
-    async function createPlayer() {
-      const fullName = document.getElementById('player-full-name').value.trim();
-      const email = document.getElementById('player-email').value.trim().toLowerCase();
-      const password = document.getElementById('player-password').value;
-      const position = document.getElementById('player-position').value;
-      const numberRaw = document.getElementById('player-number').value.trim();
+  const fullName = document.getElementById('player-full-name').value.trim();
+  const email = document.getElementById('player-email').value.trim().toLowerCase();
+  const position = document.getElementById('player-position').value;
+  const numberRaw = document.getElementById('player-number').value.trim();
 
-      if (!fullName || !email || !password) {
-        showNotice('player-modal-notice', 'error', 'Remplis tous les champs obligatoires.');
-        return;
-      }
+  if (!fullName || !email) {
+    showNotice('player-modal-notice', 'error', 'Nom et email requis.');
+    return;
+  }
 
-      if (password.length < 8) {
-        showNotice('player-modal-notice', 'error', 'Le mot de passe doit contenir au moins 8 caractères.');
-        return;
-      }
+  showNotice(
+    'player-modal-notice',
+    'success',
+    `Le joueur doit créer son compte lui-même depuis la page de connexion avec le code équipe : ${state.activeTeam.team_code}`
+  );
 
-      try {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: fullName,
-              role: 'player'
-            }
-          }
-        });
-
-        if (error) throw error;
-
-        const userId = data?.user?.id;
-        if (!userId) throw new Error("Le compte joueur n'a pas pu être créé.");
-
-        await waitForProfile(userId);
-
-        const { error: memberError } = await supabase
-          .from('team_members')
-          .insert({
-            team_id: state.activeTeam.id,
-            player_profile_id: userId,
-            jersey_number: numberRaw ? Number(numberRaw) : null,
-            position,
-            status: 'new'
-          });
-
-        if (memberError) throw memberError;
-
-        showNotice('player-modal-notice', 'success', `Joueur créé. Code équipe : ${state.activeTeam.team_code}`);
-
-        document.getElementById('player-full-name').value = '';
-        document.getElementById('player-email').value = '';
-        document.getElementById('player-password').value = '';
-        document.getElementById('player-position').value = 'GK';
-        document.getElementById('player-number').value = '';
-
-        await loadTeamMembers(state.activeTeam.id);
-        renderDashboard();
-
-      } catch (error) {
-        console.error(error);
-        showNotice('player-modal-notice', 'error', error.message || 'Impossible de créer le joueur.');
-      }
-    }
+  document.getElementById('player-full-name').value = '';
+  document.getElementById('player-email').value = '';
+  document.getElementById('player-password').value = '';
+  document.getElementById('player-position').value = 'GK';
+  document.getElementById('player-number').value = '';
+}
 
     async function savePlayerEdit() {
       const memberId = document.getElementById('edit-player-member-id').value;
