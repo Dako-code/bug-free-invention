@@ -1039,12 +1039,6 @@
     <div class="empty-note">Aucun match renseigné.</div>
   </div>
 </div>
-
-    <div class="list" id="matches-list">
-      <div class="empty-note">Aucun match renseigné.</div>
-    </div>
-  </div>
-</div>
       <div class="page" id="page-sessions">
         <div class="section-header">
           <div>
@@ -1064,16 +1058,6 @@
         </div>
       </div>
 
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Historique des matchs</span>
-    </div>
-
-    <div class="list" id="matches-list">
-      <div class="empty-note">Aucun match renseigné.</div>
-    </div>
-  </div>
-</div>
       <div class="page" id="page-stats">
         <div class="page-header">
           <div class="page-title">Statistiques</div>
@@ -3128,6 +3112,48 @@ async function logout() {
     return;
   }
 
+  list.innerHTML = state.matchReports.map(report => {
+    const statsRows = report.match_player_stats || [];
+
+    const scorers = statsRows.filter(row => Number(row.goals || 0) > 0);
+    const assisters = statsRows.filter(row => Number(row.assists || 0) > 0);
+    const conceded = statsRows.filter(row => Number(row.goals_conceded || 0) > 0);
+    const motm = statsRows.find(row => row.is_man_of_the_match);
+
+    const findMember = (teamMemberId) => {
+      return state.teamMembers.find(m => m.id === teamMemberId);
+    };
+
+    const findMemberName = (teamMemberId) => {
+      return findMember(teamMemberId)?.player?.full_name || 'Joueur';
+    };
+
+    const totalGoals = scorers.reduce((sum, row) => sum + Number(row.goals || 0), 0);
+    const totalConceded = conceded.reduce((sum, row) => sum + Number(row.goals_conceded || 0), 0);
+
+    const renderRows = (rows, valueKey, emptyText) => {
+      if (!rows.length) {
+        return `<div class="match-empty">${emptyText}</div>`;
+      }
+
+      return rows
+        .sort((a, b) => Number(b[valueKey] || 0) - Number(a[valueKey] || 0))
+        .map(row => `
+          <div class="match-stat-row">
+            <div style="display:flex;align-items:center;gap:.7rem">
+              <div class="avatar" style="background:rgba(61,255,122,.12);color:var(--green)">
+                ${getInitials(findMemberName(row.team_member_id))}
+              </div>
+              <div>
+                <div class="match-player-name">${escapeHtml(findMemberName(row.team_member_id))}</div>
+              </div>
+            </div>
+            <div class="match-stat-badge">${Number(row[valueKey] || 0)}</div>
+          </div>
+        `)
+        .join('');
+    };
+
     return `
       <div class="match-card">
         <div class="match-top">
@@ -3185,74 +3211,6 @@ async function logout() {
           <button class="btn btn-ghost" onclick="openMatchModal('${report.session_id}')">
             Modifier le match
           </button>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-  list.innerHTML = state.matchReports.map(report => {
-    const statsRows = report.match_player_stats || [];
-
-    const scorers = statsRows.filter(row => Number(row.goals || 0) > 0);
-    const assisters = statsRows.filter(row => Number(row.assists || 0) > 0);
-    const conceded = statsRows.filter(row => Number(row.goals_conceded || 0) > 0);
-    const motm = statsRows.find(row => row.is_man_of_the_match);
-
-    const findMemberName = (teamMemberId) => {
-      const member = state.teamMembers.find(m => m.id === teamMemberId);
-      return member?.player?.full_name || 'Joueur';
-    };
-
-    return `
-      <div class="list-item">
-        <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap">
-          <div>
-            <div class="list-title">${escapeHtml(state.activeTeam?.name || 'Mon équipe')} ${report.score_for} - ${report.score_against} ${escapeHtml(report.opponent)}</div>
-            <div class="list-sub">Match renseigné</div>
-            <div class="list-sub">Homme du match : ${escapeHtml(motm ? findMemberName(motm.team_member_id) : '—')}</div>
-          </div>
-
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-            <button class="btn btn-ghost" onclick="openMatchModal('${report.session_id}')">
-              Modifier
-            </button>
-          </div>
-        </div>
-
-        <div class="grid-2" style="margin-top:1rem">
-          <div>
-            <div class="list-title">Buteurs</div>
-            <div class="list-sub" style="margin-top:.4rem">
-              ${
-                scorers.length
-                  ? scorers.map(row => `${escapeHtml(findMemberName(row.team_member_id))} (${row.goals})`).join(', ')
-                  : 'Aucun'
-              }
-            </div>
-          </div>
-
-          <div>
-            <div class="list-title">Passeurs décisifs</div>
-            <div class="list-sub" style="margin-top:.4rem">
-              ${
-                assisters.length
-                  ? assisters.map(row => `${escapeHtml(findMemberName(row.team_member_id))} (${row.assists})`).join(', ')
-                  : 'Aucun'
-              }
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:1rem">
-          <div class="list-title">Buts encaissés</div>
-          <div class="list-sub" style="margin-top:.4rem">
-            ${
-              conceded.length
-                ? conceded.map(row => `${escapeHtml(findMemberName(row.team_member_id))} (${row.goals_conceded})`).join(', ')
-                : 'Aucun'
-            }
-          </div>
         </div>
       </div>
     `;
