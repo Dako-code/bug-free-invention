@@ -1044,7 +1044,6 @@
       </div>
     </div>
 
-    <!-- MODALES -->
     <div class="modal-overlay" id="team-modal-overlay" onclick="if(event.target===this)closeTeamModal()">
       <div class="modal">
         <button class="modal-close" onclick="closeTeamModal()">✕</button>
@@ -1290,7 +1289,8 @@
       payments: [],
       conversations: [],
       currentConversation: null,
-      currentMessages: []
+      currentMessages: [],
+      realtimeChannel: null
     };
 
     window.showPage = showPage;
@@ -1433,6 +1433,8 @@
       const team = state.teams.find(t => t.id === teamId);
       if (!team) return;
 
+      unsubscribeMessagesRealtime();
+
       state.activeTeam = team;
       localStorage.setItem('coachpro_active_team_id', team.id);
       hydrateActiveTeam();
@@ -1457,6 +1459,9 @@
     function renderNoTeamState() {
       document.getElementById('sidebar-team-name').textContent = 'Aucune équipe';
       document.getElementById('sidebar-team-cat').textContent = 'Crée une équipe pour commencer';
+      state.currentConversation = null;
+      state.currentMessages = [];
+      unsubscribeMessagesRealtime();
     }
 
     async function loadTeamData(teamId) {
@@ -1576,6 +1581,8 @@
         await openConversation(state.conversations[0].id);
       } else {
         state.currentConversation = null;
+        state.currentMessages = [];
+        unsubscribeMessagesRealtime();
         document.getElementById('messages-area').innerHTML = `<div class="empty-note">Aucune conversation pour le moment.</div>`;
         document.getElementById('current-conversation-title').textContent = 'Sélectionne une conversation';
         document.getElementById('current-conversation-sub').textContent = 'Aucun fil actif';
@@ -1599,6 +1606,64 @@
 
       state.currentMessages = data || [];
       renderMessagesArea();
+    }
+
+    function unsubscribeMessagesRealtime() {
+      if (state.realtimeChannel) {
+        supabase.removeChannel(state.realtimeChannel);
+        state.realtimeChannel = null;
+      }
+    }
+
+    async function appendRealtimeMessage(newMessage) {
+      if (!state.currentConversation) return;
+      if (newMessage.conversation_id !== state.currentConversation.id) return;
+
+      const alreadyExists = state.currentMessages.some(msg => msg.id === newMessage.id);
+      if (alreadyExists) return;
+
+      const { data: senderProfile, error } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .eq('id', newMessage.sender_id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error loading sender profile:', error);
+      }
+
+      state.currentMessages.push({
+        ...newMessage,
+        sender: senderProfile || null
+      });
+
+      state.currentMessages.sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+
+      renderMessagesArea();
+    }
+
+    function subscribeToConversationMessages(conversationId) {
+      unsubscribeMessagesRealtime();
+
+      state.realtimeChannel = supabase
+        .channel(`messages:${conversationId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `conversation_id=eq.${conversationId}`
+          },
+          async (payload) => {
+            await appendRealtimeMessage(payload.new);
+          }
+        )
+        .subscribe((status) => {
+          console.log('Coach realtime status:', status);
+        });
     }
 
     function renderDashboard() {
@@ -2181,6 +2246,7 @@
       document.getElementById('current-conversation-sub').textContent = conv.type === 'team' ? 'Chat général de l’équipe' : 'Conversation directe';
 
       await loadMessages(conversationId);
+      subscribeToConversationMessages(conversationId);
     }
 
     async function openGeneralChat() {
@@ -2220,7 +2286,6 @@
         if (error) throw error;
 
         input.value = '';
-        await loadMessages(state.currentConversation.id);
 
       } catch (error) {
         console.error(error);
@@ -2258,6 +2323,7 @@
     }
 
     async function logout() {
+      unsubscribeMessagesRealtime();
       await supabase.auth.signOut();
       window.location.href = '/';
     }
