@@ -88,12 +88,15 @@ body::before{content:'';position:fixed;width:600px;height:600px;background:radia
 </div>
 
 <script type="module">
-  import { signIn, signUp, getSession, createTeam } from './src/supabase.js'
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+  const SUPABASE_URL = 'https://jjythzsnubqevzjzrzio.supabase.co'
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqeXRoenNudWJxZXZ6anpyemlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTg3MDksImV4cCI6MjA5MDQzNDcwOX0.oINviaV_LTZEoOOlRLYU2V2yeFTQhdUHjjRdaHyu5mo'
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
   // Rediriger si déjà connecté
-  getSession().then(session => {
-    if (session) window.location.href = './index.html'
-  })
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) window.location.href = './index.html'
 
   window.switchTab = function(tab) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
@@ -111,7 +114,8 @@ body::before{content:'';position:fixed;width:600px;height:600px;background:radia
     btn.innerHTML = '<span class="spinner"></span>Connexion...'
     btn.disabled = true
     try {
-      await signIn(email, password)
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
       window.location.href = './index.html'
     } catch(e) {
       showError('Email ou mot de passe incorrect.')
@@ -131,12 +135,26 @@ body::before{content:'';position:fixed;width:600px;height:600px;background:radia
     btn.innerHTML = '<span class="spinner"></span>Création...'
     btn.disabled = true
     try {
-      const { user } = await signUp(email, password, name)
-      // Créer l'équipe automatiquement
-      if (user) await createTeam({ name: teamName, category: 'Senior A', season: '2025/2026' })
-      showSuccess('✅ Compte créé ! Vérifiez votre email pour confirmer.')
+      // 1. Créer le compte
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: name } }
+      })
+      if (error) throw error
+
+      // 2. Sauvegarder le nom d'équipe en localStorage pour après confirmation email
+      localStorage.setItem('pending_team', teamName)
+      localStorage.setItem('pending_name', name)
+
+      // 3. Afficher succès — pas de redirection, l'utilisateur doit confirmer son email
+      showSuccess('✅ Compte créé ! Vérifiez votre email pour confirmer, puis connectez-vous.')
       btn.innerHTML = 'Créer mon compte gratuit'
       btn.disabled = false
+
+      // Basculer vers l'onglet connexion après 3 secondes
+      setTimeout(() => switchTab('login'), 3000)
+
     } catch(e) {
       showError(e.message || 'Erreur lors de l\'inscription.')
       btn.innerHTML = 'Créer mon compte gratuit'
