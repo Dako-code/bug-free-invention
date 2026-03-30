@@ -1834,12 +1834,20 @@ function subscribeToAttendanceRealtime(teamId) {
               </div>
 
               <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-                <button class="btn btn-ghost" onclick="openEditSessionModal('${item.id}')">
-                  Modifier
-                </button>
-                <button class="btn btn-ghost" onclick="deleteSession('${item.id}')">
-                  Supprimer
-                </button>
+  ${item.type === 'match' ? `
+    <button class="btn btn-ghost" onclick="openMatchViewModal('${item.id}')">
+      Voir le match
+    </button>
+  ` : ''}
+
+  <button class="btn btn-ghost" onclick="openEditSessionModal('${item.id}')">
+    Modifier
+  </button>
+
+  <button class="btn btn-ghost" onclick="deleteSession('${item.id}')">
+    Supprimer
+  </button>
+</div>
               </div>
             </div>
 
