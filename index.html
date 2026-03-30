@@ -2301,23 +2301,216 @@ async function deleteSession(id) {
   await loadSessions(state.activeTeam.id);
   renderDashboard();
 }
+function closeMatchModal() {
+  document.getElementById('match-modal-overlay').classList.remove('open');
+}
+
 function closeMatchViewModal() {
   document.getElementById('match-view-modal-overlay').classList.remove('open');
+}
+
+function renderMatchPlayersStatsRows(existingStats = []) {
+  const tbody = document.getElementById('match-players-stats-body');
+
+  if (!state.teamMembers.length) {
+    tbody.innerHTML = `<tr><td colspan="4" class="empty-note">Aucun joueur.</td></tr>`;
+    return;
+  }
+
+  const statsMap = new Map(
+    existingStats.map(row => [row.team_member_id, row])
+  );
+
+  tbody.innerHTML = state.teamMembers.map(member => {
+    const stat = statsMap.get(member.id);
+
+    return `
+      <tr>
+        <td>${escapeHtml(member.player?.full_name || 'Joueur')}</td>
+
+        <td>
+          <input
+            class="form-input"
+            type="number"
+            min="0"
+            value="${Number(stat?.goals || 0)}"
+            id="match-goals-${member.id}"
+          >
+        </td>
+
+        <td>
+          <input
+            class="form-input"
+            type="number"
+            min="0"
+            value="${Number(stat?.assists || 0)}"
+            id="match-assists-${member.id}"
+          >
+        </td>
+
+        <td>
+          <input
+            class="form-input"
+            type="number"
+            min="0"
+            value="${Number(stat?.goals_conceded || 0)}"
+            id="match-conceded-${member.id}"
+          >
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function populateMatchManOfTheMatchSelect(selectedTeamMemberId = '') {
+  const select = document.getElementById('match-man-of-the-match');
+
+  select.innerHTML = `
+    <option value="">—</option>
+    ${state.teamMembers.map(member => `
+      <option value="${member.id}" ${String(selectedTeamMemberId) === String(member.id) ? 'selected' : ''}>
+        ${escapeHtml(member.player?.full_name || 'Joueur')}
+      </option>
+    `).join('')}
+  `;
+}
+
+async function openMatchModal(sessionId) {
+  try {
+    clearNotice('match-modal-notice');
+
+    document.getElementById('match-session-id').value = sessionId;
+    document.getElementById('match-report-id').value = '';
+    document.getElementById('match-modal-title').textContent = 'Renseigner le match';
+
+    document.getElementById('match-opponent').value = '';
+    document.getElementById('match-score-for').value = 0;
+    document.getElementById('match-score-against').value = 0;
+
+    populateMatchManOfTheMatchSelect();
+    renderMatchPlayersStatsRows([]);
+
+    const { data: report, error: reportError } = await supabase
+      .from('match_reports')
+      .select('*')
+      .eq('session_id', sessionId)
+      .maybeSingle();
+
+    if (reportError) throw reportError;
+
+    if (report) {
+      document.getElementById('match-report-id').value = report.id;
+      document.getElementById('match-modal-title').textContent = 'Modifier le match';
+      document.getElementById('match-opponent').value = report.opponent || '';
+      document.getElementById('match-score-for').value = Number(report.score_for || 0);
+      document.getElementById('match-score-against').value = Number(report.score_against || 0);
+
+      const { data: statsRows, error: statsError } = await supabase
+        .from('match_player_stats')
+        .select('*')
+        .eq('match_report_id', report.id);
+
+      if (statsError) throw statsError;
+
+      populateMatchManOfTheMatchSelect(report.man_of_the_match_team_member_id || '');
+      renderMatchPlayersStatsRows(statsRows || []);
+    }
+
+    document.getElementById('match-modal-overlay').classList.add('open');
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message || 'Impossible de charger le formulaire du match.');
+  }
+}
+
+async function saveMatch() {
+  const sessionId = document.getElementById('match-session-id').value;
+  const reportId = document.getElementById('match-report-id').value;
+  const opponent = document.getElementById('match-opponent').value.trim();
+  const scoreFor = Number(document.getElementById('match-score-for').value || 0);
+  const scoreAgainst = Number(document.getElementById('match-score-against').value || 0);
+  const manOfTheMatchId = document.getElementById('match-man-of-the-match').value || null;
+
+  if (!sessionId) {
+    showNotice('match-modal-notice', 'error', 'Session introuvable.');
+    return;
+  }
+
+  if (!opponent) {
+    showNotice('match-modal-notice', 'error', 'Le nom de l’adversaire est obligatoire.');
+    return;
+  }
+
+  try {
+    let finalReportId = reportId;
+
+    if (reportId) {
+      const { error: updateError } = await supabase
+        .from('match_reports')
+        .update({
+          opponent,
+          score_for: scoreFor,
+          score_against: scoreAgainst,
+          man_of_the_match_team_member_id: manOfTheMatchId
+        })
+        .eq('id', reportId);
+
+      if (updateError) throw updateError;
+    } else {
+      const { data: insertedReport, error: insertError } = await supabase
+        .from('match_reports')
+        .insert({
+          session_id: sessionId,
+          team_id: state.activeTeam.id,
+          opponent,
+          score_for: scoreFor,
+          score_against: scoreAgainst,
+          man_of_the_match_team_member_id: manOfTheMatchId
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      finalReportId = insertedReport.id;
+      document.getElementById('match-report-id').value = finalReportId;
+    }
+
+    const rows = state.teamMembers.map(member => ({
+      match_report_id: finalReportId,
+      team_member_id: member.id,
+      goals: Number(document.getElementById(`match-goals-${member.id}`)?.value || 0),
+      assists: Number(document.getElementById(`match-assists-${member.id}`)?.value || 0),
+      goals_conceded: Number(document.getElementById(`match-conceded-${member.id}`)?.value || 0),
+      is_man_of_the_match: String(manOfTheMatchId) === String(member.id)
+    }));
+
+    const { error: upsertError } = await supabase
+      .from('match_player_stats')
+      .upsert(rows, {
+        onConflict: 'match_report_id,team_member_id'
+      });
+
+    if (upsertError) throw upsertError;
+
+    showNotice('match-modal-notice', 'success', 'Match enregistré avec succès.');
+
+    setTimeout(() => {
+      closeMatchModal();
+    }, 500);
+
+  } catch (error) {
+    console.error(error);
+    showNotice('match-modal-notice', 'error', error.message || 'Impossible d’enregistrer le match.');
+  }
 }
 
 async function openMatchViewModal(sessionId) {
   try {
     const { data: report, error: reportError } = await supabase
       .from('match_reports')
-      .select(`
-        *,
-        man_of_the_match:team_members!match_reports_man_of_the_match_team_member_id_fkey (
-          id,
-          player:profiles!team_members_player_profile_id_fkey (
-            full_name
-          )
-        )
-      `)
+      .select('*')
       .eq('session_id', sessionId)
       .maybeSingle();
 
@@ -2331,13 +2524,12 @@ async function openMatchViewModal(sessionId) {
       return;
     }
 
-    const { data: stats, error: statsError } = await supabase
+    const { data: statsRows, error: statsError } = await supabase
       .from('match_player_stats')
       .select(`
         *,
         team_member:team_members!match_player_stats_team_member_id_fkey (
           id,
-          position,
           player:profiles!team_members_player_profile_id_fkey (
             full_name
           )
@@ -2347,40 +2539,39 @@ async function openMatchViewModal(sessionId) {
 
     if (statsError) throw statsError;
 
-    const rows = stats || [];
+    const rows = statsRows || [];
 
-    const scorers = rows.filter(r => Number(r.goals || 0) > 0);
-    const assisters = rows.filter(r => Number(r.assists || 0) > 0);
-    const conceded = rows.filter(r => Number(r.goals_conceded || 0) > 0);
+    const scorers = rows.filter(row => Number(row.goals || 0) > 0);
+    const assisters = rows.filter(row => Number(row.assists || 0) > 0);
+    const conceded = rows.filter(row => Number(row.goals_conceded || 0) > 0);
+    const motm = rows.find(row => row.is_man_of_the_match);
 
     const scorersHtml = scorers.length
-      ? scorers.map(r => `
+      ? scorers.map(row => `
           <div class="list-item">
-            <div class="list-title">${escapeHtml(r.team_member?.player?.full_name || 'Joueur')}</div>
-            <div class="list-sub">${r.goals} but(s)</div>
+            <div class="list-title">${escapeHtml(row.team_member?.player?.full_name || 'Joueur')}</div>
+            <div class="list-sub">${row.goals} but(s)</div>
           </div>
         `).join('')
       : `<div class="empty-note">Aucun buteur.</div>`;
 
     const assistersHtml = assisters.length
-      ? assisters.map(r => `
+      ? assisters.map(row => `
           <div class="list-item">
-            <div class="list-title">${escapeHtml(r.team_member?.player?.full_name || 'Joueur')}</div>
-            <div class="list-sub">${r.assists} passe(s) décisive(s)</div>
+            <div class="list-title">${escapeHtml(row.team_member?.player?.full_name || 'Joueur')}</div>
+            <div class="list-sub">${row.assists} passe(s) décisive(s)</div>
           </div>
         `).join('')
       : `<div class="empty-note">Aucun passeur décisif.</div>`;
 
     const concededHtml = conceded.length
-      ? conceded.map(r => `
+      ? conceded.map(row => `
           <div class="list-item">
-            <div class="list-title">${escapeHtml(r.team_member?.player?.full_name || 'Joueur')}</div>
-            <div class="list-sub">${r.goals_conceded} but(s) encaissé(s)</div>
+            <div class="list-title">${escapeHtml(row.team_member?.player?.full_name || 'Joueur')}</div>
+            <div class="list-sub">${row.goals_conceded} but(s) encaissé(s)</div>
           </div>
         `).join('')
       : `<div class="empty-note">Aucun but encaissé enregistré.</div>`;
-
-    const motmName = report.man_of_the_match?.player?.full_name || '—';
 
     document.getElementById('match-view-content').innerHTML = `
       <div class="grid-2" style="margin-bottom:1rem">
@@ -2388,30 +2579,34 @@ async function openMatchViewModal(sessionId) {
           <div class="card-header">
             <span class="card-title">Résultat</span>
           </div>
+
           <div class="list">
             <div class="list-item">
               <div class="list-title">${escapeHtml(state.activeTeam?.name || 'Mon équipe')} ${report.score_for} - ${report.score_against} ${escapeHtml(report.opponent)}</div>
-              <div class="list-sub">Homme du match : ${escapeHtml(motmName)}</div>
+              <div class="list-sub">Homme du match : ${escapeHtml(motm?.team_member?.player?.full_name || '—')}</div>
             </div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Résumé rapide</span>
+            <span class="card-title">Résumé</span>
           </div>
+
           <div class="list">
             <div class="list-item">
               <div class="list-title">Adversaire</div>
               <div class="list-sub">${escapeHtml(report.opponent)}</div>
             </div>
+
             <div class="list-item">
               <div class="list-title">Score</div>
               <div class="list-sub">${report.score_for} - ${report.score_against}</div>
             </div>
+
             <div class="list-item">
               <div class="list-title">Homme du match</div>
-              <div class="list-sub">${escapeHtml(motmName)}</div>
+              <div class="list-sub">${escapeHtml(motm?.team_member?.player?.full_name || '—')}</div>
             </div>
           </div>
         </div>
@@ -2439,7 +2634,7 @@ async function openMatchViewModal(sessionId) {
 
       <div class="card" style="margin-top:1rem">
         <div class="card-header">
-          <span class="card-title">Gardien / buts encaissés</span>
+          <span class="card-title">Buts encaissés</span>
         </div>
         <div class="list">
           ${concededHtml}
