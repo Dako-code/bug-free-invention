@@ -1062,6 +1062,10 @@
       </div>
 
       <div class="page" id="page-stats">
+        <div class="stat-value" id="stats-goals">0</div>
+<div class="stat-value" id="stats-assists">0</div>
+<div class="stat-value" id="stats-matches">0</div>
+<div class="stat-value" id="stats-minutes">0</div>
         <div class="page-header">
           <div class="page-title">Statistiques</div>
           <div class="page-desc">Statistiques agrégées de l’équipe</div>
@@ -2116,10 +2120,15 @@ function renderStats() {
   const totalMatches = state.stats.reduce((sum, row) => sum + Number(row.matches_played || 0), 0);
   const totalConceded = state.stats.reduce((sum, row) => sum + Number(row.goals_conceded || 0), 0);
 
-  document.getElementById('stats-goals').textContent = totalGoals;
-  document.getElementById('stats-assists').textContent = totalAssists;
-  document.getElementById('stats-matches').textContent = totalMatches;
-  document.getElementById('stats-minutes').textContent = totalConceded;
+const elGoals = document.getElementById('stats-goals');
+const elAssists = document.getElementById('stats-assists');
+const elMatches = document.getElementById('stats-matches');
+const elConceded = document.getElementById('stats-minutes');
+
+if (elGoals) elGoals.textContent = totalGoals;
+if (elAssists) elAssists.textContent = totalAssists;
+if (elMatches) elMatches.textContent = totalMatches;
+if (elConceded) elConceded.textContent = totalConceded;
 
   const tbody = document.getElementById('stats-table-body');
   const topScorersList = document.getElementById('top-scorers-list');
