@@ -3541,35 +3541,50 @@ async function saveSession() {
 
   } else {
 
-    await supabase
-      .from('sessions')
-      .insert({
-        team_id: state.activeTeam.id,
-        created_by: state.sessionUser.id,
-        title,
-        type,
-        scheduled_at,
-        duration_minutes: duration,
-        location,
-        notes
-      });
-    if (!id) {
-  const playerIds = state.teamMembers
-    .map(member => member.player_profile_id)
-    .filter(Boolean);
-
-  await createNotificationsForProfiles(playerIds, {
+    const { error: insertSessionError } = await supabase
+  .from('sessions')
+  .insert({
     team_id: state.activeTeam.id,
-    type: 'session_created',
-    title: 'Nouvelle session',
-    content: `${title} • ${translateSessionType(type)} • ${formatDateTime(scheduled_at)}`,
-    metadata: {
-      session_title: title,
-      session_type: type,
-      scheduled_at
-    }
+    created_by: state.sessionUser.id,
+    title,
+    type,
+    scheduled_at,
+    duration_minutes: duration,
+    location,
+    notes
   });
+
+if (insertSessionError) {
+  throw insertSessionError;
 }
+
+const { data: membersForNotif, error: membersForNotifError } = await supabase
+  .from('team_members')
+  .select('player_profile_id')
+  .eq('team_id', state.activeTeam.id)
+  .not('player_profile_id', 'is', null);
+
+if (membersForNotifError) {
+  throw membersForNotifError;
+}
+
+const playerIds = [...new Set(
+  (membersForNotif || [])
+    .map(member => member.player_profile_id)
+    .filter(Boolean)
+)];
+
+await createNotificationsForProfiles(playerIds, {
+  team_id: state.activeTeam.id,
+  type: 'session_created',
+  title: 'Nouvelle session',
+  content: `${title} • ${translateSessionType(type)} • ${formatDateTime(scheduled_at)}`,
+  metadata: {
+    session_title: title,
+    session_type: type,
+    scheduled_at
+  }
+});
   }
 
   closeSessionModal();
