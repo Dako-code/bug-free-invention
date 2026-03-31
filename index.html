@@ -2175,6 +2175,10 @@ async function fetchProfile(userId, attempts = 8, delayMs = 400) {
       state.teamMembers = data || [];
       renderRoster();
       populateConversationPlayerSelect();
+
+      if (state.matchReports?.length) {
+  renderMatches();
+}
     }
 
 async function loadSessions(teamId) {
