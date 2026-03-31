@@ -1030,16 +1030,6 @@
   flex-wrap: wrap;
   margin-top: 1rem;
 }
-
-@media (max-width: 1000px) {
-  .calendar-grid,
-  .calendar-weekdays {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .player-session-detail-grid {
-    grid-template-columns: 1fr;
-  }
   .modal-overlay {
   display: none;
   position: fixed;
@@ -1084,6 +1074,16 @@
   font-size: 1.2rem;
   cursor: pointer;
 }
+@media (max-width: 1000px) {
+  .calendar-grid,
+  .calendar-weekdays {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .player-session-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
 @keyframes notifPulse {
   0% { transform: scale(1); }
   40% { transform: scale(1.08); }
@@ -1374,7 +1374,7 @@
 
     <nav>
       <div class="nav-section">Joueur</div>
-      <div class="nav-item active" onclick="('dashboard', this)"><span class="nav-icon">⚡</span>Dashboard</div>
+      <div class="nav-item active" onclick="showPage('dashboard', this)"><span class="nav-icon">⚡</span>Dashboard</div>
       <div class="nav-item" onclick="showPage('schedule', this)"><span class="nav-icon">📅</span>Prochains rendez-vous</div>
       <div class="nav-item" onclick="showPage('performance', this)"><span class="nav-icon">📊</span>Performances</div>
       <div class="nav-item" onclick="showPage('messages', this)"><span class="nav-icon">💬</span>Messages</div>
@@ -2995,7 +2995,7 @@ async function sendMessage() {
     console.error(error);
     alert(error.message || "Impossible d'envoyer le message.");
   }
-
+}
 function changePlayerCalendarMonth(delta) {
   const next = new Date(state.calendarCursor);
   next.setMonth(next.getMonth() + delta);
