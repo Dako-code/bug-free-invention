@@ -2141,17 +2141,20 @@ async function fetchProfile(userId, attempts = 8, delayMs = 400) {
     }
 
     async function loadTeamData(teamId) {
-      await Promise.all([
-        loadTeamMembers(teamId),
-        loadSessions(teamId),
-        loadMatchReports(teamId),
-        loadPayments(teamId),
-        loadConversations(teamId)
-      ]);
+  await loadTeamMembers(teamId);
 
-      await loadStatsForTeam();
-      renderDashboard();
-    }
+  await Promise.all([
+    loadSessions(teamId),
+    loadMatchReports(teamId),
+    loadPayments(teamId),
+    loadConversations(teamId)
+  ]);
+
+  await loadStatsForTeam();
+  renderMatches();
+  renderStats();
+  renderDashboard();
+}
 
     async function loadTeamMembers(teamId) {
       const { data, error } = await supabase
