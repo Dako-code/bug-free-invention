@@ -958,6 +958,43 @@
 .top-row.third {
   opacity: 0.85;
 }
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  transition: 0.25s;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* couleurs */
+.stat-card.green { border-left: 4px solid #3dff7a; }
+.stat-card.blue { border-left: 4px solid #4da6ff; }
+.stat-card.purple { border-left: 4px solid #b066ff; }
+.stat-card.red { border-left: 4px solid #ff5c5c; }
+
+.stat-card.win { border-left: 4px solid #00ff99; }
+.stat-card.draw { border-left: 4px solid #ffaa00; }
+.stat-card.loss { border-left: 4px solid #ff4444; }
   </style>
 </head>
 <body>
@@ -1131,37 +1168,100 @@
           </div>
         </div>
       </div>
+<div class="page" id="page-stats">
 
-      <div class="page" id="page-stats">
-        <div class="page-header">
-          <div class="page-title">Statistiques</div>
-          <div class="page-desc">Statistiques agrégées de l’équipe</div>
-        </div>
+  <div class="section-header">
+    <div>
+      <div class="page-title">Statistiques</div>
+      <div class="page-desc">Analyse des performances de l’équipe</div>
+    </div>
+  </div>
 
-        <div class="grid-4" style="margin-bottom:1.5rem">
-          <div class="stat-card">
-            <div class="stat-label">Buts cumulés</div>
-            <div class="stat-value" id="stats-goals">0</div>
-            <div class="stat-sub">Saison</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Passes cumulées</div>
-            <div class="stat-value" id="stats-assists">0</div>
-            <div class="stat-sub">Saison</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Matchs cumulés</div>
-            <div class="stat-value" id="stats-matches">0</div>
-            <div class="stat-sub">Somme</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Minutes cumulées</div>
-            <div class="stat-value" id="stats-minutes">0</div>
-            <div class="stat-sub">Somme</div>
-          </div>
-        </div>
+  <!-- CARTES STATS -->
+  <div class="stats-grid">
 
-       <div class="card" style="margin-bottom:1.5rem">
+    <div class="stat-card green">
+      <div class="stat-label">Buts marqués</div>
+      <div class="stat-value" id="stats-goals">0</div>
+    </div>
+
+    <div class="stat-card blue">
+      <div class="stat-label">Passes décisives</div>
+      <div class="stat-value" id="stats-assists">0</div>
+    </div>
+
+    <div class="stat-card purple">
+      <div class="stat-label">Matchs joués</div>
+      <div class="stat-value" id="stats-matches">0</div>
+    </div>
+
+    <div class="stat-card red">
+      <div class="stat-label">Buts encaissés</div>
+      <div class="stat-value" id="stats-conceded">0</div>
+    </div>
+
+    <div class="stat-card win">
+      <div class="stat-label">Victoires</div>
+      <div class="stat-value" id="stats-wins">0</div>
+    </div>
+
+    <div class="stat-card draw">
+      <div class="stat-label">Matchs nuls</div>
+      <div class="stat-value" id="stats-draws">0</div>
+    </div>
+
+    <div class="stat-card loss">
+      <div class="stat-label">Défaites</div>
+      <div class="stat-value" id="stats-losses">0</div>
+    </div>
+
+  </div>
+
+  <!-- TABLEAU JOUEURS -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-header">
+      <span class="card-title">Statistiques joueurs</span>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Joueur</th>
+          <th>Buts</th>
+          <th>Passes</th>
+          <th>Encaissés</th>
+          <th>Matchs</th>
+          <th>MVP</th>
+          <th>Poste</th>
+        </tr>
+      </thead>
+      <tbody id="stats-table-body">
+        <tr>
+          <td colspan="7" class="empty-note">Aucune statistique.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TOP JOUEURS -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-header">
+      <span class="card-title">Meilleurs buteurs</span>
+    </div>
+    <div id="top-scorers-list"></div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <div class="card-header">
+      <span class="card-title">Meilleurs passeurs</span>
+    </div>
+    <div id="top-assisters-list"></div>
+  </div>
+
+</div>
+        
+
+       <div class="card" ="margin-bottom:1.5rem">
   <div class="card-header">
     <span class="card-title">Détail par joueur</span>
   </div>
@@ -2222,6 +2322,13 @@ function renderStats() {
   const totalAssists = state.stats.reduce((sum, row) => sum + Number(row.assists || 0), 0);
   const totalMatches = state.stats.reduce((sum, row) => sum + Number(row.matches_played || 0), 0);
   const totalConceded = state.stats.reduce((sum, row) => sum + Number(row.goals_conceded || 0), 0);
+  const totalWins = state.matches?.filter(m => m.result === 'win').length || 0;
+  const totalDraws = state.matches?.filter(m => m.result === 'draw').length || 0;
+  const totalLosses = state.matches?.filter(m => m.result === 'loss').length || 0;
+
+document.getElementById('stats-wins').textContent = totalWins;
+document.getElementById('stats-draws').textContent = totalDraws;
+document.getElementById('stats-losses').textContent = totalLosses;
 
   const elGoals = document.getElementById('stats-goals');
   const elAssists = document.getElementById('stats-assists');
