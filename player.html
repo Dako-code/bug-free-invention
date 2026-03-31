@@ -2113,7 +2113,7 @@ async function loadAttendanceRateForPlayer() {
           `).join('')
         : `<div class="empty-note">Aucun message.</div>`;
     }
-   async function loadNotifications() {
+  async function loadNotifications() {
   if (!state.sessionUser?.id) return;
 
   const { data, error } = await supabase
@@ -2133,25 +2133,29 @@ async function loadAttendanceRateForPlayer() {
   state.notifications = data || [];
   state.unreadNotificationsCount = state.notifications.filter(n => !n.is_read).length;
 
+  // 👉 DECLARATION ICI (IMPORTANT)
+  const newest = state.notifications[0];
+
   const pill = document.getElementById('notifications-pill');
   if (pill) {
     pill.textContent = `Notifications : ${state.unreadNotificationsCount}`;
   }
-if (pill && newest && !previousIds.has(newest.id) && state.lastNotificationIds.size > 0) {
-  pill.classList.remove('notifications-pulse');
-  void pill.offsetWidth;
-  pill.classList.add('notifications-pulse');
-}
+
   renderNotificationsPanel();
 
-  const newest = state.notifications[0];
-
+  // 👉 UTILISATION APRES DECLARATION
   if (
     newest &&
     !previousIds.has(newest.id) &&
     state.lastNotificationIds.size > 0
   ) {
     showNotificationToast(newest.title, newest.content);
+
+    if (pill) {
+      pill.classList.remove('notifications-pulse');
+      void pill.offsetWidth;
+      pill.classList.add('notifications-pulse');
+    }
   }
 
   state.lastNotificationIds = new Set(state.notifications.map(n => n.id));
