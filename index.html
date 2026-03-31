@@ -1650,39 +1650,13 @@ const state = {
     window.closeMatchModal = closeMatchModal;
     window.saveMatch = saveMatch;
     
-boot();
+init();
 
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (session?.user) {
-    console.log('SESSION RESTORED');
-    await init();
-  }
-});
-
-async function waitForSession(attempts = 10, delayMs = 400) {
-  for (let i = 0; i < attempts; i++) {
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (session?.user) {
-      return session;
-    }
-
-    await new Promise(resolve => setTimeout(resolve, delayMs));
-  }
-
-  return null;
-}
-
-async function boot() {
-  await init();
-}
-    
 async function init() {
   try {
-    const session = await waitForSession();
+    const { data: { session } } = await supabase.auth.getSession();
 
     if (!session?.user) {
-      console.warn('Aucune session récupérée après attente.');
       window.location.href = '/';
       return;
     }
@@ -1708,7 +1682,6 @@ async function init() {
       const allowed = ['active', 'trialing'];
 
       if (!state.subscription || !allowed.includes(state.subscription.status)) {
-        console.warn('Coach non-owner sans abonnement actif détecté.');
         alert("Ton abonnement coach n'est pas actif.");
         await logout();
         return;
