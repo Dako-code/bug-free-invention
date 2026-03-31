@@ -1398,6 +1398,8 @@
         state.profile = profile;
         hydrateProfile(profile);
         await loadPlayerData(session.user.id);
+        await loadNotifications();
+        subscribeToNotificationsRealtime();
 
       } catch (error) {
         console.error(error);
@@ -2076,14 +2078,16 @@ async function loadAttendanceRateForPlayer() {
     return;
   }
 
-  state.notifications = data || [];
-  state.unreadNotificationsCount = state.notifications.filter(n => !n.is_read).length;
+ state.notifications = data || [];
+state.unreadNotificationsCount = state.notifications.filter(n => !n.is_read).length;
 
-  const pill = document.getElementById('notifications-pill');
-  if (pill) {
-    pill.textContent = `Notifications : ${state.unreadNotificationsCount}`;
-  }
+const pill = document.getElementById('notifications-pill');
+if (pill) {
+  pill.textContent = `Notifications : ${state.unreadNotificationsCount}`;
 }
+
+renderNotificationsPanel();
+    }
 
     async function loadPayments(userId) {
       const { data: payments, error } = await supabase
@@ -2588,6 +2592,8 @@ function subscribeToNotificationsRealtime() {
     }
 
    async function logout() {
+  unsubscribeNotificationsRealtime();
+  closeNotificationsPanel();
   unsubscribeMessagesRealtime();
   unsubscribeTeamRealtime();
   await supabase.auth.signOut();
