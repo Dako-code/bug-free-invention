@@ -995,7 +995,212 @@
 .session-highlight-pulse {
   animation: sessionPulse 1.2s ease;
 }
+.calendar-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.6rem;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.35rem 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.6rem;
+}
+
+.calendar-cell {
+  min-height: 130px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  transition: 0.18s ease;
+}
+
+.calendar-cell:hover {
+  border-color: var(--border2);
+}
+
+.calendar-cell.other-month {
+  opacity: 0.35;
+}
+
+.calendar-cell.today {
+  border-color: rgba(61,255,122,0.35);
+  box-shadow: 0 0 0 1px rgba(61,255,122,0.14);
+}
+
+.calendar-day-number {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.calendar-events-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.calendar-mini-event {
+  border-radius: 12px;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  transition: 0.16s ease;
+}
+
+.calendar-mini-event:hover {
+  transform: translateY(-1px);
+  border-color: var(--border2);
+}
+
+.calendar-mini-event.training {
+  border-left: 4px solid var(--green);
+}
+
+.calendar-mini-event.match {
+  border-left: 4px solid var(--orange);
+}
+
+.calendar-mini-event.meeting,
+.calendar-mini-event.tournament {
+  border-left: 4px solid var(--blue);
+}
+
+.calendar-mini-title {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.calendar-mini-sub {
+  color: var(--muted);
+  margin-top: 0.12rem;
+}
+
+.calendar-more {
+  font-size: 0.68rem;
+  color: var(--muted2);
+  margin-top: 0.15rem;
+}
+
+.session-detail-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.session-detail-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.session-detail-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.session-detail-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.session-detail-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.session-detail-kpi {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.8rem;
+}
+
+.session-detail-kpi-label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.session-detail-kpi-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 0.25rem;
+}
+
+.session-detail-people {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.session-detail-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.session-detail-line:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.session-detail-line-label {
+  font-size: 0.76rem;
+  color: var(--muted2);
+}
+
+.session-detail-line-value {
+  font-size: 0.8rem;
+  color: var(--text);
+  text-align: right;
+}
+
+@media (max-width: 1000px) {
+  .calendar-grid,
+  .calendar-weekdays {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .session-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
 @keyframes sessionPulse {
   0% {
     transform: scale(1);
@@ -1700,14 +1905,20 @@
         </div>
 
         <div class="card">
-          <div class="card-header">
-            <span class="card-title">Planning</span>
-          </div>
-          <div class="list" id="sessions-list">
-            <div class="empty-note">Aucune session.</div>
-          </div>
-        </div>
-      </div>
+  <div class="card-header">
+    <span class="card-title">Calendrier</span>
+
+    <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-ghost" onclick="changeCalendarMonth(-1)">←</button>
+      <div class="topbar-pill" id="calendar-month-label">—</div>
+      <button class="btn btn-ghost" onclick="changeCalendarMonth(1)">→</button>
+    </div>
+  </div>
+
+  <div id="sessions-calendar">
+    <div class="empty-note">Aucune session.</div>
+  </div>
+</div>
 <div class="page" id="page-stats">
 
   <div class="section-header">
@@ -2164,6 +2375,8 @@ const state = {
   toastTimeout: null,
   lastNotificationIds: new Set(),
   highlightedSessionId: null,
+  calendarCursor: new Date(),
+selectedSessionId: null,
 };
     window.showPage = showPage;
     window.logout = logout;
@@ -2198,6 +2411,9 @@ const state = {
     window.toggleNotificationsPanel = toggleNotificationsPanel;
     window.markAllNotificationsAsRead = markAllNotificationsAsRead;
     window.handleNotificationClick = handleNotificationClick;
+    window.changeCalendarMonth = changeCalendarMonth;
+window.openSessionDetailModal = openSessionDetailModal;
+window.closeSessionDetailModal = closeSessionDetailModal;
 init();
 
 async function init() {
@@ -3148,83 +3364,215 @@ function renderDashboard() {
       `).join('');
     }
 
- function renderSessions() {
-  const list = document.getElementById('sessions-list');
+function renderSessions() {
+  const box = document.getElementById('sessions-calendar');
+  if (!box) return;
+
   const reportedMatchSessionIds = new Set(
-  state.matchReports.map(report => report.session_id)
-);
+    state.matchReports.map(report => report.session_id)
+  );
 
-const visibleSessions = state.sessions.filter(item => {
-  if (item.type !== 'match') return true;
-  return !reportedMatchSessionIds.has(item.id);
-});
+  const visibleSessions = state.sessions.filter(item => {
+    if (item.type !== 'match') return true;
+    return !reportedMatchSessionIds.has(item.id);
+  });
 
-  list.innerHTML = visibleSessions.length
-  ? visibleSessions.map(item => {
-        const attendance = item.attendance || [];
+  const cursor = new Date(state.calendarCursor);
+  const year = cursor.getFullYear();
+  const month = cursor.getMonth();
 
-        const present = attendance.filter(a => a.status === 'present');
-        const absent = attendance.filter(a => a.status === 'absent');
-        const late = attendance.filter(a => a.status === 'late');
+  const monthLabel = new Intl.DateTimeFormat('fr-FR', {
+    month: 'long',
+    year: 'numeric'
+  }).format(new Date(year, month, 1));
 
-        const respondedIds = new Set(attendance.map(a => a.player_profile_id));
-        const pending = state.teamMembers.filter(
-          member => !respondedIds.has(member.player_profile_id)
-        );
+  const monthLabelEl = document.getElementById('calendar-month-label');
+  if (monthLabelEl) {
+    monthLabelEl.textContent = monthLabel;
+  }
 
-        return `
-                    <div
-            class="list-item ${state.highlightedSessionId === item.id ? 'session-highlight' : ''}"
-            data-session-id="${item.id}"
-          >
-            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap">
-              <div>
-                <div class="list-title">${escapeHtml(item.title)}</div>
-                <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
-                <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
+  const firstDayOfMonth = new Date(year, month, 1);
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+
+  const startOffset = (firstDayOfMonth.getDay() + 6) % 7;
+  const gridStart = new Date(year, month, 1 - startOffset);
+
+  const days = Array.from({ length: 42 }, (_, i) => {
+    const d = new Date(gridStart);
+    d.setDate(gridStart.getDate() + i);
+    return d;
+  });
+
+  const sessionsByDay = new Map();
+
+  for (const session of visibleSessions) {
+    const key = new Date(session.scheduled_at).toDateString();
+    if (!sessionsByDay.has(key)) {
+      sessionsByDay.set(key, []);
+    }
+    sessionsByDay.get(key).push(session);
+  }
+
+  const weekdays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+  box.innerHTML = `
+    <div class="calendar-shell">
+      <div class="calendar-weekdays">
+        ${weekdays.map(day => `<div class="calendar-weekday">${day}</div>`).join('')}
+      </div>
+
+      <div class="calendar-grid">
+        ${days.map(day => {
+          const key = day.toDateString();
+          const daySessions = (sessionsByDay.get(key) || [])
+            .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
+
+          const isOtherMonth = day.getMonth() !== month;
+          const today = new Date();
+          const isToday =
+            day.getFullYear() === today.getFullYear() &&
+            day.getMonth() === today.getMonth() &&
+            day.getDate() === today.getDate();
+
+          return `
+            <div class="calendar-cell ${isOtherMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}">
+              <div class="calendar-day-number">${day.getDate()}</div>
+
+              <div class="calendar-events-mini">
+                ${daySessions.slice(0, 3).map(session => `
+                  <div class="calendar-mini-event ${session.type}" onclick="openSessionDetailModal('${session.id}')">
+                    <div class="calendar-mini-title">${escapeHtml(session.title)}</div>
+                    <div class="calendar-mini-sub">${formatTimeOnly(session.scheduled_at)} · ${translateSessionType(session.type)}</div>
+                  </div>
+                `).join('')}
+
+                ${daySessions.length > 3 ? `<div class="calendar-more">+ ${daySessions.length - 3} autre(s)</div>` : ''}
               </div>
-
-             <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-  ${item.type === 'match' ? `
-    <button class="btn btn-primary" onclick="openMatchModal('${item.id}')">
-      Renseigner match
-    </button>
-
-    <button class="btn btn-ghost" onclick="openMatchViewModal('${item.id}')">
-      Voir le match
-    </button>
-  ` : ''}
-
-  <button class="btn btn-ghost" onclick="openEditSessionModal('${item.id}')">
-    Modifier
-  </button>
-
-  <button class="btn btn-ghost" onclick="deleteSession('${item.id}')">
-    Supprimer
-  </button>
-</div>
-              </div>
             </div>
-
-            <div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap">
-              <span class="badge badge-green">Présents : ${present.length}</span>
-              <span class="badge badge-red">Absents : ${absent.length}</span>
-              <span class="badge badge-orange">Retards : ${late.length}</span>
-              <span class="badge badge-blue">Sans réponse : ${pending.length}</span>
-            </div>
-
-            <div style="margin-top:.8rem;font-size:.78rem;color:var(--muted2)">
-              <div><strong>Présents :</strong> ${present.length ? present.map(a => escapeHtml(a.player?.full_name || 'Joueur')).join(', ') : '—'}</div>
-              <div><strong>Absents :</strong> ${absent.length ? absent.map(a => escapeHtml(a.player?.full_name || 'Joueur')).join(', ') : '—'}</div>
-              <div><strong>En retard :</strong> ${late.length ? late.map(a => escapeHtml(a.player?.full_name || 'Joueur')).join(', ') : '—'}</div>
-              <div><strong>Sans réponse :</strong> ${pending.length ? pending.map(m => escapeHtml(m.player?.full_name || 'Joueur')).join(', ') : '—'}</div>
-            </div>
-          </div>
-        `;
-      }).join('')
-    : `<div class="empty-note">Aucune session à afficher.</div>`;
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+function changeCalendarMonth(delta) {
+  const next = new Date(state.calendarCursor);
+  next.setMonth(next.getMonth() + delta);
+  state.calendarCursor = next;
+  renderSessions();
 }
 
+function closeSessionDetailModal() {
+  document.getElementById('session-detail-modal-overlay')?.classList.remove('open');
+}
+
+function openSessionDetailModal(sessionId) {
+  state.selectedSessionId = sessionId;
+
+  const session = state.sessions.find(item => item.id === sessionId);
+  if (!session) return;
+
+  const attendance = session.attendance || [];
+
+  const present = attendance.filter(a => a.status === 'present');
+  const absent = attendance.filter(a => a.status === 'absent');
+  const late = attendance.filter(a => a.status === 'late');
+
+  const respondedIds = new Set(attendance.map(a => a.player_profile_id));
+  const pending = state.teamMembers.filter(
+    member => !respondedIds.has(member.player_profile_id)
+  );
+
+  const content = document.getElementById('session-detail-content');
+  if (!content) return;
+
+  content.innerHTML = `
+    <div class="session-detail-grid">
+      <div class="session-detail-box">
+        <div class="session-detail-title">${escapeHtml(session.title)}</div>
+        <div class="session-detail-sub">${translateSessionType(session.type)} · ${formatDateTime(session.scheduled_at)}</div>
+        <div class="session-detail-sub">📍 ${escapeHtml(session.location || 'Lieu non précisé')}</div>
+        <div class="session-detail-sub">⏱️ ${Number(session.duration_minutes || 0)} min</div>
+        <div class="session-detail-sub" style="margin-top:.6rem">${escapeHtml(session.notes || 'Aucune note')}</div>
+
+        <div class="session-detail-kpis">
+          <div class="session-detail-kpi">
+            <div class="session-detail-kpi-label">Présents</div>
+            <div class="session-detail-kpi-value">${present.length}</div>
+          </div>
+
+          <div class="session-detail-kpi">
+            <div class="session-detail-kpi-label">Absents</div>
+            <div class="session-detail-kpi-value">${absent.length}</div>
+          </div>
+
+          <div class="session-detail-kpi">
+            <div class="session-detail-kpi-label">En retard</div>
+            <div class="session-detail-kpi-value">${late.length}</div>
+          </div>
+
+          <div class="session-detail-kpi">
+            <div class="session-detail-kpi-label">Sans réponse</div>
+            <div class="session-detail-kpi-value">${pending.length}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="session-detail-box">
+        <div class="card-title" style="margin-bottom:.8rem">Réponses</div>
+
+        <div class="session-detail-people">
+          <div class="session-detail-line">
+            <div class="session-detail-line-label">Présents</div>
+            <div class="session-detail-line-value">
+              ${present.length ? present.map(a => escapeHtml(a.player?.full_name || 'Joueur')).join(', ') : '—'}
+            </div>
+          </div>
+
+          <div class="session-detail-line">
+            <div class="session-detail-line-label">Absents</div>
+            <div class="session-detail-line-value">
+              ${absent.length ? absent.map(a => escapeHtml(a.player?.full_name || 'Joueur')).join(', ') : '—'}
+            </div>
+          </div>
+
+          <div class="session-detail-line">
+            <div class="session-detail-line-label">Retards</div>
+            <div class="session-detail-line-value">
+              ${late.length ? late.map(a => escapeHtml(a.player?.full_name || 'Joueur')).join(', ') : '—'}
+            </div>
+          </div>
+
+          <div class="session-detail-line">
+            <div class="session-detail-line-label">Sans réponse</div>
+            <div class="session-detail-line-value">
+              ${pending.length ? pending.map(m => escapeHtml(m.player?.full_name || 'Joueur')).join(', ') : '—'}
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem">
+          <button class="btn btn-ghost" onclick="closeSessionDetailModal()">Fermer</button>
+          <button class="btn btn-ghost" onclick="openEditSessionModal('${session.id}'); closeSessionDetailModal();">Modifier</button>
+          ${session.type === 'match' ? `
+            <button class="btn btn-primary" onclick="openMatchModal('${session.id}'); closeSessionDetailModal();">
+              Renseigner match
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('session-detail-modal-overlay')?.classList.add('open');
+}
+
+function formatTimeOnly(dateValue) {
+  return new Intl.DateTimeFormat('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date(dateValue));
+}
 function renderStats() {
   const totalGoals = state.matchReports.reduce(
   (sum, match) => sum + Number(match.score_for || 0),
@@ -3981,7 +4329,7 @@ const rows = state.teamMembers.map(member => ({
 
     if (upsertError) throw upsertError;
 
-   sshowNotice('match-modal-notice', 'success', 'Match enregistré avec succès.');
+   showNotice('match-modal-notice', 'success', 'Match enregistré avec succès.');
 
 await loadMatchReports(state.activeTeam.id);
 await loadSessions(state.activeTeam.id);
@@ -4708,6 +5056,20 @@ async function logout() {
 <div class="notif-toast" id="notif-toast">
   <div class="notif-toast-title" id="notif-toast-title">Nouvelle notification</div>
   <div class="notif-toast-text" id="notif-toast-text">—</div>
+</div>
+    <div class="modal-overlay" id="session-detail-modal-overlay" onclick="if(event.target===this)closeSessionDetailModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSessionDetailModal()">✕</button>
+    <div class="modal-title">Détail de la session</div>
+
+    <div id="session-detail-content">
+      <div class="empty-note">Aucune session sélectionnée.</div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeSessionDetailModal()">Fermer</button>
+    </div>
+  </div>
 </div>
 </body>
 </html>
