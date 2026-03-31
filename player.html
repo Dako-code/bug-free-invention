@@ -2325,7 +2325,8 @@ function scheduleRealtimeRefresh() {
         loadStats(state.membership.id),
         loadMessagesPreview(state.sessionUser.id),
         loadPayments(state.sessionUser.id),
-        loadConversations(state.sessionUser.id)
+        loadConversations(state.sessionUser.id),
+        loadNotifications()
       ]);
     } catch (error) {
       console.error('Player realtime refresh error:', error);
