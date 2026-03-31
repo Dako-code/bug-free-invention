@@ -1194,6 +1194,71 @@
 .match-loss {
   color: #ff5c5c;
 }
+    .match-detail {
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  animation: fadeIn 0.2s ease;
+}
+
+.match-detail.hidden {
+  display: none;
+}
+
+.match-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.match-detail-title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.match-detail-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--green);
+}
+
+.match-detail-info {
+  font-size: 0.8rem;
+  color: var(--muted2);
+  margin-top: 0.2rem;
+}
+
+.match-detail-stats {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.match-detail-badge {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 @media (max-width: 1000px) {
   .calendar-grid,
   .calendar-weekdays {
@@ -1855,12 +1920,20 @@
   <div class="section-header">
     <div>
       <div class="page-title">Matchs</div>
-      <div class="page-desc">Résumés, score final et statistiques marquantes</div>
+      <div class="page-desc">Liste chronologique des matchs de l’équipe</div>
     </div>
   </div>
 
-  <div class="list" id="matches-list">
-    <div class="empty-note">Aucun match renseigné.</div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Matchs</span>
+    </div>
+
+    <div id="matches-list" class="matches-list">
+      <div class="empty-note">Aucun match.</div>
+    </div>
+
+    <div id="match-detail" class="match-detail hidden"></div>
   </div>
 </div>
       <div class="page" id="page-sessions">
@@ -2378,6 +2451,8 @@ selectedSessionId: null,
     window.changeCalendarMonth = changeCalendarMonth;
 window.openSessionDetailModal = openSessionDetailModal;
 window.closeSessionDetailModal = closeSessionDetailModal;
+    window.openMatchModal = openMatchModal;
+    window.openMatchDetail = openMatchDetail;
 init();
 
 async function init() {
@@ -4823,117 +4898,128 @@ async function logout() {
     }
    function renderMatches() {
   const list = document.getElementById('matches-list');
+  const detail = document.getElementById('match-detail');
 
   if (!list) return;
 
   if (!state.matchReports.length) {
     list.innerHTML = `<div class="empty-note">Aucun match renseigné.</div>`;
+    if (detail) {
+      detail.classList.add('hidden');
+      detail.innerHTML = '';
+    }
     return;
   }
 
-  list.innerHTML = state.matchReports.map(report => {
-    const statsRows = report.match_player_stats || [];
+  const sorted = [...state.matchReports].sort((a, b) => {
+    const dateA = new Date(a.created_at || 0).getTime();
+    const dateB = new Date(b.created_at || 0).getTime();
+    return dateB - dateA;
+  });
 
-    const scorers = statsRows.filter(row => Number(row.goals || 0) > 0);
-    const assisters = statsRows.filter(row => Number(row.assists || 0) > 0);
-    const conceded = statsRows.filter(row => Number(row.goals_conceded || 0) > 0);
-    const motm = statsRows.find(row => row.is_man_of_the_match);
+  window.matchesCache = sorted;
 
-    const findMember = (teamMemberId) => {
-      return state.teamMembers.find(m => m.id === teamMemberId);
-    };
+  list.innerHTML = sorted.map(match => {
+    const scoreFor = Number(match.score_for || 0);
+    const scoreAgainst = Number(match.score_against || 0);
 
-    const findMemberName = (teamMemberId) => {
-      return findMember(teamMemberId)?.player?.full_name || 'Joueur';
-    };
+    let result = '➖';
+    let resultClass = 'match-draw';
 
-    const totalGoals = scorers.reduce((sum, row) => sum + Number(row.goals || 0), 0);
-    const totalConceded = conceded.reduce((sum, row) => sum + Number(row.goals_conceded || 0), 0);
-
-    const renderRows = (rows, valueKey, emptyText) => {
-      if (!rows.length) {
-        return `<div class="match-empty">${emptyText}</div>`;
-      }
-
-      return rows
-        .sort((a, b) => Number(b[valueKey] || 0) - Number(a[valueKey] || 0))
-        .map(row => `
-          <div class="match-stat-row">
-            <div style="display:flex;align-items:center;gap:.7rem">
-              <div class="avatar" style="background:rgba(61,255,122,.12);color:var(--green)">
-                ${getInitials(findMemberName(row.team_member_id))}
-              </div>
-              <div>
-                <div class="match-player-name">${escapeHtml(findMemberName(row.team_member_id))}</div>
-              </div>
-            </div>
-            <div class="match-stat-badge">${Number(row[valueKey] || 0)}</div>
-          </div>
-        `)
-        .join('');
-    };
+    if (scoreFor > scoreAgainst) {
+      result = '✅';
+      resultClass = 'match-win';
+    } else if (scoreFor < scoreAgainst) {
+      result = '❌';
+      resultClass = 'match-loss';
+    }
 
     return `
-      <div class="match-card">
-        <div class="match-top">
-          <div>
-            <div class="match-title">${escapeHtml(state.activeTeam?.name || 'Mon équipe')} vs ${escapeHtml(report.opponent)}</div>
-            <div class="match-subtitle">Match renseigné • équipe active</div>
-          </div>
-
-          <div class="match-score-box">
-            <div class="match-score-label">Score final</div>
-            <div class="match-score-value">${report.score_for} - ${report.score_against}</div>
-          </div>
-        </div>
-
-        <div class="match-highlight-grid">
-          <div class="match-highlight">
-            <div class="match-highlight-label">Adversaire</div>
-            <div class="match-highlight-value">${escapeHtml(report.opponent)}</div>
-          </div>
-
-          <div class="match-highlight match-motm">
-            <div class="match-highlight-label">Homme du match</div>
-            <div class="match-highlight-value">${escapeHtml(motm ? findMemberName(motm.team_member_id) : '—')}</div>
-          </div>
-
-          <div class="match-highlight">
-            <div class="match-highlight-label">Buts marqués</div>
-            <div class="match-highlight-value">${totalGoals}</div>
-          </div>
-
-          <div class="match-highlight">
-            <div class="match-highlight-label">Buts encaissés</div>
-            <div class="match-highlight-value">${totalConceded}</div>
-          </div>
-        </div>
-
-        <div class="match-sections">
-          <div class="match-section-box">
-            <div class="match-section-title">Buteurs</div>
-            ${renderRows(scorers, 'goals', 'Aucun buteur enregistré.')}
-          </div>
-
-          <div class="match-section-box">
-            <div class="match-section-title">Passeurs décisifs</div>
-            ${renderRows(assisters, 'assists', 'Aucun passeur enregistré.')}
-          </div>
-        </div>
-
-        <div class="match-section-box">
-          <div class="match-section-title">Gardien / buts encaissés</div>
-          ${renderRows(conceded, 'goals_conceded', 'Aucun but encaissé enregistré.')}
-        </div>
-
-        <div style="display:flex;justify-content:flex-end;gap:.5rem;flex-wrap:wrap">
-          <button class="btn btn-ghost" onclick="openMatchModal('${report.session_id}')">
-            Modifier le match
-          </button>
-        </div>
+      <div class="match-row" onclick="openMatchDetail('${match.id}')">
+        <div class="match-date">${formatDate(match.created_at)}</div>
+        <div class="match-opponent">vs ${escapeHtml(match.opponent || 'Adversaire')}</div>
+        <div class="match-score">${scoreFor} - ${scoreAgainst}</div>
+        <div class="match-result ${resultClass}">${result}</div>
       </div>
     `;
   }).join('');
+
+  if (detail) {
+    detail.classList.add('hidden');
+    detail.innerHTML = '';
+  }
+}
+    function openMatchDetail(matchId) {
+  const match = window.matchesCache?.find(m => m.id === matchId);
+  if (!match) return;
+
+  const container = document.getElementById('match-detail');
+  if (!container) return;
+
+  const statsRows = match.match_player_stats || [];
+
+  const scorers = statsRows.filter(row => Number(row.goals || 0) > 0);
+  const assisters = statsRows.filter(row => Number(row.assists || 0) > 0);
+  const conceded = statsRows.filter(row => Number(row.goals_conceded || 0) > 0);
+  const motm = statsRows.find(row => row.is_man_of_the_match);
+
+  const findMember = (teamMemberId) => {
+    return state.teamMembers.find(m => m.id === teamMemberId);
+  };
+
+  const findMemberName = (teamMemberId) => {
+    return findMember(teamMemberId)?.player?.full_name || 'Joueur';
+  };
+
+  const goalsFor = Number(match.score_for || 0);
+  const goalsAgainst = Number(match.score_against || 0);
+
+  const renderNames = (rows, key, suffix, fallback) => {
+    if (!rows.length) return fallback;
+
+    return rows
+      .map(row => `${escapeHtml(findMemberName(row.team_member_id))} (${Number(row[key] || 0)} ${suffix})`)
+      .join(', ');
+  };
+
+  container.innerHTML = `
+    <div class="match-detail-header">
+      <div>
+        <div class="match-detail-title">
+          ${escapeHtml(state.activeTeam?.name || 'Mon équipe')} vs ${escapeHtml(match.opponent || 'Adversaire')}
+        </div>
+        <div class="match-detail-info">
+          ${formatDateTime(match.created_at)}
+        </div>
+      </div>
+
+      <div class="match-detail-score">
+        ${goalsFor} - ${goalsAgainst}
+      </div>
+    </div>
+
+    <div class="match-detail-stats">
+      <div class="match-detail-badge">⚽ Buteurs : ${scorers.length ? renderNames(scorers, 'goals', 'but', 'Aucun') : 'Aucun'}</div>
+      <div class="match-detail-badge">🎯 Passeurs : ${assisters.length ? renderNames(assisters, 'assists', 'passe', 'Aucun') : 'Aucun'}</div>
+      <div class="match-detail-badge">🛡️ Encaissés : ${conceded.length ? renderNames(conceded, 'goals_conceded', 'but', 'Aucun') : 'Aucun'}</div>
+      <div class="match-detail-badge">🏅 Homme du match : ${motm ? escapeHtml(findMemberName(motm.team_member_id)) : '—'}</div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="document.getElementById('match-detail').classList.add('hidden')">
+        Fermer
+      </button>
+      <button class="btn btn-primary" onclick="openMatchModal('${match.session_id}')">
+        Modifier le match
+      </button>
+    </div>
+  `;
+
+  container.classList.remove('hidden');
+  container.scrollIntoView({
+    behavior: 'smooth',
+    block: 'nearest'
+  });
 }
   </script>
 
