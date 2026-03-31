@@ -2275,9 +2275,9 @@ function renderStats() {
   const totalAssists = state.stats.reduce((sum, row) => sum + Number(row.assists || 0), 0);
   const totalMatches = state.stats.reduce((sum, row) => sum + Number(row.matches_played || 0), 0);
   const totalConceded = state.stats.reduce((sum, row) => sum + Number(row.goals_conceded || 0), 0);
-  const totalWins = state.matches?.filter(m => m.result === 'win').length || 0;
-  const totalDraws = state.matches?.filter(m => m.result === 'draw').length || 0;
-  const totalLosses = state.matches?.filter(m => m.result === 'loss').length || 0;
+  const totalWins = state.matchReports.filter(m => Number(m.score_for || 0) > Number(m.score_against || 0)).length;
+const totalDraws = state.matchReports.filter(m => Number(m.score_for || 0) === Number(m.score_against || 0)).length;
+const totalLosses = state.matchReports.filter(m => Number(m.score_for || 0) < Number(m.score_against || 0)).length;
 
 document.getElementById('stats-wins').textContent = totalWins;
 document.getElementById('stats-draws').textContent = totalDraws;
