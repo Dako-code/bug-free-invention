@@ -2536,6 +2536,105 @@ async function loadSessions(teamId) {
       state.currentMessages = data || [];
       renderMessagesArea();
     }
+    function toggleNotificationsPanel() {
+  state.notificationsPanelOpen = !state.notificationsPanelOpen;
+  renderNotificationsPanel();
+}
+
+function closeNotificationsPanel() {
+  state.notificationsPanelOpen = false;
+  renderNotificationsPanel();
+}
+
+function renderNotificationsPanel() {
+  const panel = document.getElementById('notifications-panel');
+  const list = document.getElementById('notifications-list');
+
+  if (!panel || !list) return;
+
+  panel.classList.toggle('open', state.notificationsPanelOpen);
+
+  if (!state.notifications.length) {
+    list.innerHTML = `<div class="empty-note">Aucune notification.</div>`;
+    return;
+  }
+
+  list.innerHTML = state.notifications.map(notification => `
+    <div
+      class="notification-item ${notification.is_read ? '' : 'unread'}"
+      onclick="handleNotificationClick('${notification.id}', '${notification.type}', '${encodeURIComponent(JSON.stringify(notification.metadata || {}))}')"
+    >
+      <div class="notification-title">${escapeHtml(notification.title || 'Notification')}</div>
+      <div class="notification-content">${escapeHtml(notification.content || '')}</div>
+      <div class="notification-meta">${formatShortDate(notification.created_at)}</div>
+    </div>
+  `).join('');
+}
+
+async function markNotificationAsRead(notificationId) {
+  const { error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('id', notificationId);
+
+  if (error) {
+    console.error('markNotificationAsRead error:', error);
+    return;
+  }
+
+  await loadNotifications();
+  renderNotificationsPanel();
+}
+
+async function markAllNotificationsAsRead() {
+  if (!state.sessionUser?.id) return;
+
+  const { error } = await supabase
+    .from('notifications')
+    .update({ is_read: true })
+    .eq('profile_id', state.sessionUser.id)
+    .eq('is_read', false);
+
+  if (error) {
+    console.error('markAllNotificationsAsRead error:', error);
+    return;
+  }
+
+  await loadNotifications();
+  renderNotificationsPanel();
+}
+
+async function handleNotificationClick(notificationId, type, rawMetadata) {
+  try {
+    await markNotificationAsRead(notificationId);
+
+    const metadata = rawMetadata ? JSON.parse(decodeURIComponent(rawMetadata)) : {};
+
+    closeNotificationsPanel();
+
+    if (type === 'session_created') {
+      showPage('sessions', document.querySelector(`.nav-item[onclick*="showPage('sessions'"]`));
+      return;
+    }
+
+    if (type === 'match_reported') {
+      showPage('matches', document.querySelector(`.nav-item[onclick*="showPage('matches'"]`));
+      return;
+    }
+
+    if (type === 'message_received') {
+      showPage('messages', document.querySelector(`.nav-item[onclick*="showPage('messages'"]`));
+      return;
+    }
+
+    if (type === 'payment_created') {
+      showPage('payments', document.querySelector(`.nav-item[onclick*="showPage('payments'"]`));
+      return;
+    }
+  } catch (error) {
+    console.error('handleNotificationClick error:', error);
+  }
+}
 
     function unsubscribeMessagesRealtime() {
       if (state.realtimeChannel) {
