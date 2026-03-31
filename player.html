@@ -1965,6 +1965,29 @@ async function loadAttendanceRateForPlayer() {
           `).join('')
         : `<div class="empty-note">Aucun message.</div>`;
     }
+    async function loadNotifications() {
+  if (!state.sessionUser?.id) return;
+
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('profile_id', state.sessionUser.id)
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (error) {
+    console.error('loadNotifications error:', error);
+    return;
+  }
+
+  state.notifications = data || [];
+  state.unreadNotificationsCount = state.notifications.filter(n => !n.is_read).length;
+
+  const pill = document.getElementById('notifications-pill');
+  if (pill) {
+    pill.textContent = `Notifications : ${state.unreadNotificationsCount}`;
+  }
+}
 
     async function loadPayments(userId) {
       const { data: payments, error } = await supabase
