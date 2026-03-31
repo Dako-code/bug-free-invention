@@ -1030,7 +1030,7 @@
   flex-wrap: wrap;
   margin-top: 1rem;
 }
-  .modal-overlay {
+    .modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
@@ -2996,6 +2996,7 @@ async function sendMessage() {
     alert(error.message || "Impossible d'envoyer le message.");
   }
 }
+
 function changePlayerCalendarMonth(delta) {
   const next = new Date(state.calendarCursor);
   next.setMonth(next.getMonth() + delta);
