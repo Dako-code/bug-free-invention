@@ -2639,7 +2639,9 @@ async function openConversation(conversationId) {
       area.scrollTop = area.scrollHeight;
     }
     async function createNotificationsForProfiles(profileIds, payload) {
-  if (!profileIds?.length) return;
+  if (!profileIds?.length) {
+    return;
+  }
 
   const rows = profileIds.map(profileId => ({
     profile_id: profileId,
@@ -2655,7 +2657,7 @@ async function openConversation(conversationId) {
     .insert(rows);
 
   if (error) {
-    console.error('Notification insert error:', error);
+    throw error;
   }
 }
     async function markConversationAsRead(conversationId) {
