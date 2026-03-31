@@ -2777,6 +2777,11 @@ async function handleNotificationClick(notificationId, type, rawMetadata) {
       }
       return;
     }
+    
+        if (type === 'attendance_response') {
+      showPage('sessions', document.querySelector(`.nav-item[onclick*="showPage('sessions'"]`));
+      return;
+    }
 
     if (type === 'payment_created') {
       showPage('payments', document.querySelector(`.nav-item[onclick*="showPage('payments'"]`));
