@@ -1283,7 +1283,46 @@ function attendanceBadgeClass(status) {
     matches
   });
 }
+async function loadAttendanceRateForPlayer() {
+  if (!state.sessionUser?.id || !state.membership?.team_id) {
+    return 0;
+  }
 
+  const { data: sessions, error: sessionsError } = await supabase
+    .from('sessions')
+    .select('id')
+    .eq('team_id', state.membership.team_id);
+
+  if (sessionsError) {
+    console.error('Sessions load error:', sessionsError);
+    return 0;
+  }
+
+  const allSessions = sessions || [];
+
+  if (!allSessions.length) {
+    return 0;
+  }
+
+  const sessionIds = allSessions.map(session => session.id);
+
+  const { data: attendanceRows, error: attendanceError } = await supabase
+    .from('attendance')
+    .select('session_id, status')
+    .eq('player_profile_id', state.sessionUser.id)
+    .in('session_id', sessionIds);
+
+  if (attendanceError) {
+    console.error('Attendance rate load error:', attendanceError);
+    return 0;
+  }
+
+  const answered = (attendanceRows || []).filter(row =>
+    ['present', 'late', 'absent'].includes(row.status)
+  ).length;
+
+  return Math.round((answered / allSessions.length) * 100);
+}
     async function loadMessagesPreview(userId) {
       const { data: participantRows, error: participantError } = await supabase
         .from('conversation_participants')
