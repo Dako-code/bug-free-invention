@@ -1464,13 +1464,13 @@
 .top-row.third {
   opacity: 0.85;
 }
-.stats-grid {
+#page-stats .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1rem;
 }
 
-.stat-card {
+#page-stats .stat-card {
   padding: 1rem;
   border-radius: 14px;
   border: 1px solid var(--border);
@@ -1478,64 +1478,29 @@
   transition: 0.25s;
 }
 
-.stat-card:hover {
+#page-stats .stat-card:hover {
   transform: translateY(-3px);
 }
-.stats-section {
-  margin-bottom: 1.5rem;
-}
 
-.stats-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.9rem;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.stats-section-title {
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted2);
-}
-
-.stats-section-subtitle {
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-
-.stats-group-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 1rem;
-}
-
-.stats-group-card + .stats-group-card {
-  margin-top: 1rem;
-}
-.stat-label {
+#page-stats .stat-label {
   font-size: 0.8rem;
   color: var(--muted);
 }
 
-.stat-value {
+#page-stats .stat-value {
   font-size: 1.8rem;
   font-weight: 700;
+  font-family: 'Bebas Neue', sans-serif;
 }
 
-/* couleurs */
-.stat-card.green { border-left: 4px solid #3dff7a; }
-.stat-card.blue { border-left: 4px solid #4da6ff; }
-.stat-card.purple { border-left: 4px solid #b066ff; }
-.stat-card.red { border-left: 4px solid #ff5c5c; }
+#page-stats .stat-card.green { border-left: 4px solid #3dff7a; }
+#page-stats .stat-card.blue { border-left: 4px solid #4da6ff; }
+#page-stats .stat-card.purple { border-left: 4px solid #b066ff; }
+#page-stats .stat-card.red { border-left: 4px solid #ff5c5c; }
 
-.stat-card.win { border-left: 4px solid #00ff99; }
-.stat-card.draw { border-left: 4px solid #ffaa00; }
-.stat-card.loss { border-left: 4px solid #ff4444; }
+#page-stats .stat-card.win { border-left: 4px solid #00ff99; }
+#page-stats .stat-card.draw { border-left: 4px solid #ffaa00; }
+#page-stats .stat-card.loss { border-left: 4px solid #ff4444; }
     .form-row-badges {
   display: flex;
   gap: 0.6rem;
