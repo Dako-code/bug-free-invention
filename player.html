@@ -1041,6 +1041,50 @@
     grid-template-columns: 1fr;
   }
 }
+    .modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  padding: 1.6rem;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
 @keyframes notifPulse {
   0% { transform: scale(1); }
   40% { transform: scale(1.08); }
@@ -1282,7 +1326,7 @@
       }
 
       .grid-2,
-      .chat-layout
+      .chat-layout,
       .player-stats-grid {
         grid-template-columns: 1fr;
       }
@@ -1331,7 +1375,7 @@
 
     <nav>
       <div class="nav-section">Joueur</div>
-      <div class="nav-item active" onclick="showPage('dashboard', this)"><span class="nav-icon">⚡</span>Dashboard</div>
+      <div class="nav-item active" onclick="('dashboard', this)"><span class="nav-icon">⚡</span>Dashboard</div>
       <div class="nav-item" onclick="showPage('schedule', this)"><span class="nav-icon">📅</span>Prochains rendez-vous</div>
       <div class="nav-item" onclick="showPage('performance', this)"><span class="nav-icon">📊</span>Performances</div>
       <div class="nav-item" onclick="showPage('messages', this)"><span class="nav-icon">💬</span>Messages</div>
@@ -2952,6 +2996,88 @@ async function sendMessage() {
     console.error(error);
     alert(error.message || "Impossible d'envoyer le message.");
   }
+
+function changePlayerCalendarMonth(delta) {
+  const next = new Date(state.calendarCursor);
+  next.setMonth(next.getMonth() + delta);
+  state.calendarCursor = next;
+
+  if (state.membership?.team_id) {
+    loadUpcomingSessions(state.membership.team_id);
+  }
+}
+
+function closePlayerSessionDetailModal() {
+  document
+    .getElementById('player-session-detail-modal-overlay')
+    ?.classList.remove('open');
+}
+
+function openPlayerSessionDetailModal(sessionId) {
+  state.selectedSessionId = sessionId;
+
+  const session = state.upcomingSessions.find(item => item.id === sessionId);
+  if (!session) return;
+
+  loadPlayerAttendanceMap([session.id]).then(attendanceMap => {
+    const status = attendanceMap.get(session.id);
+    const content = document.getElementById('player-session-detail-content');
+
+    if (!content) return;
+
+    content.innerHTML = `
+      <div class="player-session-detail-grid">
+        <div class="player-session-detail-box">
+          <div class="player-session-detail-title">${escapeHtml(session.title)}</div>
+          <div class="player-session-detail-sub">
+            ${translateSessionType(session.type)} · ${formatDateTime(session.scheduled_at)}
+          </div>
+          <div class="player-session-detail-sub">
+            📍 ${escapeHtml(session.location || 'Lieu non précisé')}
+          </div>
+          <div class="player-session-detail-sub">
+            ⏱️ ${Number(session.duration_minutes || 0)} min
+          </div>
+          <div class="player-session-detail-sub" style="margin-top:.6rem">
+            ${escapeHtml(session.notes || 'Aucune note pour ce rendez-vous.')}
+          </div>
+        </div>
+
+        <div class="player-session-detail-box">
+          <div class="card-title" style="margin-bottom:.8rem">Ma réponse</div>
+
+          <div style="margin-bottom:1rem">
+            <span class="badge ${attendanceBadgeClass(status)}">
+              ${attendanceLabel(status)}
+            </span>
+          </div>
+
+          <div class="player-response-actions">
+            <button class="btn btn-primary" onclick="respondToSessionFromModal('${session.id}', 'present')">
+              Je viens
+            </button>
+
+            <button class="btn btn-ghost" onclick="respondToSessionFromModal('${session.id}', 'absent')">
+              Je ne viens pas
+            </button>
+
+            <button class="btn btn-ghost" onclick="respondToSessionFromModal('${session.id}', 'late')">
+              En retard
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document
+      .getElementById('player-session-detail-modal-overlay')
+      ?.classList.add('open');
+  });
+}
+
+async function respondToSessionFromModal(sessionId, status) {
+  await respondToSession(sessionId, status);
+  openPlayerSessionDetailModal(sessionId);
 }
 
     function showPage(id, el) {
