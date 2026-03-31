@@ -2325,6 +2325,29 @@ async function loadSessions(teamId) {
         document.getElementById('current-conversation-sub').textContent = 'Aucun fil actif';
       }
     }
+    async function loadNotifications() {
+  if (!state.sessionUser?.id) return;
+
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('profile_id', state.sessionUser.id)
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (error) {
+    console.error('loadNotifications error:', error);
+    return;
+  }
+
+  state.notifications = data || [];
+  state.unreadNotificationsCount = state.notifications.filter(n => !n.is_read).length;
+
+  const pill = document.getElementById('notifications-pill');
+  if (pill) {
+    pill.textContent = `Notifications : ${state.unreadNotificationsCount}`;
+  }
+}
     async function loadUnreadCountsForConversations(conversationIds) {
   if (!conversationIds?.length || !state.sessionUser?.id) {
     return new Map();
