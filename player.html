@@ -841,26 +841,34 @@
         </div>
 
         <div class="grid-2">
-          <div class="card">
-            <div class="card-header">
-              <span class="card-title">Mes statistiques</span>
-            </div>
-            <div class="list">
-              <div class="list-item">
-                <div class="list-title">Buts</div>
-                <div class="list-sub" id="perf-goals">--</div>
-              </div>
-              <div class="list-item">
-                <div class="list-title">Passes décisives</div>
-                <div class="list-sub" id="perf-assists">--</div>
-              </div>
-              <div class="list-item">
-                <div class="list-title">Matchs joués</div>
-                <div class="list-sub" id="perf-matches">--</div>
-              </div>
-            </div>
-          </div>
+        <div class="card">
+  <div class="card-header">
+    <span class="card-title">Mes statistiques</span>
+  </div>
 
+  <div class="player-stats-grid">
+    <div class="player-stat-card goals-card">
+      <div class="player-stat-icon">⚽</div>
+      <div class="player-stat-number" id="perf-goals">--</div>
+      <div class="player-stat-name">Buts marqués</div>
+      <div class="player-stat-desc">Total de buts sur les matchs enregistrés</div>
+    </div>
+
+    <div class="player-stat-card assists-card">
+      <div class="player-stat-icon">🎯</div>
+      <div class="player-stat-number" id="perf-assists">--</div>
+      <div class="player-stat-name">Passes décisives</div>
+      <div class="player-stat-desc">Passes décisives cette saison</div>
+    </div>
+
+    <div class="player-stat-card matches-card">
+      <div class="player-stat-icon">🏟️</div>
+      <div class="player-stat-number" id="perf-matches">--</div>
+      <div class="player-stat-name">Matchs joués</div>
+      <div class="player-stat-desc">Présences prises en compte</div>
+    </div>
+  </div>
+</div>
           <div class="card">
             <div class="card-header">
               <span class="card-title">Régularité</span>
