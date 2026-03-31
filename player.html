@@ -1257,7 +1257,11 @@
   currentMessages: [],
   realtimeChannel: null,
   teamRealtimeChannel: null,
-  refreshTimeout: null
+  refreshTimeout: null,
+  unreadCounts: new Map(),
+  notifications: [],
+  unreadNotificationsCount: 0,
+  notificationsChannel: null,
 };
     window.respondToSession = respondToSession;
     window.showPage = showPage;
@@ -1872,6 +1876,50 @@ async function loadAttendanceRateForPlayer() {
   ).length;
 
   return Math.round((answered / allSessions.length) * 100);
+}
+    async function loadUnreadCountsForConversations(conversationIds) {
+  if (!conversationIds?.length || !state.sessionUser?.id) {
+    return new Map();
+  }
+
+  const { data: messages, error: messagesError } = await supabase
+    .from('messages')
+    .select('id, conversation_id, sender_id')
+    .in('conversation_id', conversationIds);
+
+  if (messagesError) {
+    console.error('Unread messages load error:', messagesError);
+    return new Map();
+  }
+
+  const otherMessages = (messages || []).filter(
+    msg => msg.sender_id !== state.sessionUser.id
+  );
+
+  if (!otherMessages.length) {
+    return new Map();
+  }
+
+  const { data: reads, error: readsError } = await supabase
+    .from('message_reads')
+    .select('message_id')
+    .eq('profile_id', state.sessionUser.id)
+    .in('message_id', otherMessages.map(msg => msg.id));
+
+  if (readsError) {
+    console.error('Unread reads load error:', readsError);
+    return new Map();
+  }
+
+  const readIds = new Set((reads || []).map(r => r.message_id));
+  const map = new Map();
+
+  for (const msg of otherMessages) {
+    if (readIds.has(msg.id)) continue;
+    map.set(msg.conversation_id, (map.get(msg.conversation_id) || 0) + 1);
+  }
+
+  return map;
 }
     async function loadMessagesPreview(userId) {
       const { data: participantRows, error: participantError } = await supabase
