@@ -4294,7 +4294,7 @@ async function openMatchViewModal(sessionId) {
       document.getElementById('conversation-title').value = `Général — ${state.activeTeam?.name || 'Équipe'}`;
     }
 
-  async function sendMessage() {
+ async function sendMessage() {
   if (!state.currentConversation) {
     alert('Sélectionne une conversation.');
     return;
@@ -4315,27 +4315,6 @@ async function openMatchViewModal(sessionId) {
       });
 
     if (messageError) throw messageError;
-
-    const { data: participants, error: participantsError } = await supabase
-      .from('conversation_participants')
-      .select('profile_id')
-      .eq('conversation_id', state.currentConversation.id);
-
-    if (participantsError) throw participantsError;
-
-    const recipientIds = (participants || [])
-      .map(row => row.profile_id)
-      .filter(profileId => profileId !== state.sessionUser.id);
-
-    await createNotificationsForProfiles(recipientIds, {
-      team_id: state.activeTeam?.id || null,
-      type: 'message_received',
-      title: 'Nouveau message',
-      content: `${state.currentConversation.title || 'Conversation'} • ${content}`,
-      metadata: {
-        conversation_id: state.currentConversation.id
-      }
-    });
 
     input.value = '';
 
