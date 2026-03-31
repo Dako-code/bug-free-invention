@@ -3097,6 +3097,26 @@ document.getElementById('stats-losses').textContent = totalLosses;
         showNotice('team-modal-notice', 'error', error.message || "Impossible de créer l'équipe.");
       }
     }
+    async function createNotificationsForProfiles(profileIds, payload) {
+  if (!profileIds?.length) return;
+
+  const rows = profileIds.map(profileId => ({
+    profile_id: profileId,
+    team_id: payload.team_id || null,
+    type: payload.type,
+    title: payload.title,
+    content: payload.content || '',
+    metadata: payload.metadata || {}
+  }));
+
+  const { error } = await supabase
+    .from('notifications')
+    .insert(rows);
+
+  if (error) {
+    console.error('Notification insert error:', error);
+  }
+}
 async function createPlayer() {
   if (!state.activeTeam) {
     showNotice('player-modal-notice', 'error', "Aucune équipe active.");
