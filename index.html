@@ -1144,45 +1144,72 @@
 .matches-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .match-row {
   display: grid;
-  grid-template-columns: 80px 1fr 80px 40px;
+  grid-template-columns: 70px 1fr 80px 40px;
   align-items: center;
-  padding: 8px 10px;
-  border-radius: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
   background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
-  font-size: 0.85rem;
-  transition: 0.2s;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .match-row:hover {
-  background: rgba(61,255,122,0.06);
+  background: rgba(61,255,122,0.07);
+  transform: translateY(-2px);
 }
 
+/* ligne colorée à gauche selon résultat */
+.match-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
+}
+
+.match-row.win::before { background: #3dff7a; }
+.match-row.draw::before { background: #ffaa00; }
+.match-row.loss::before { background: #ff5c5c; }
+
+/* DATE */
 .match-date {
+  font-size: 0.7rem;
   color: var(--muted2);
-  font-size: 0.75rem;
+  font-weight: 500;
 }
 
+/* ADVERSAIRE */
 .match-opponent {
   font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
 }
 
+/* SCORE */
 .match-score {
   text-align: center;
-  font-weight: 700;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
 }
 
+/* RESULT ICON */
 .match-result {
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
-/* couleurs */
+/* couleurs résultat */
 .match-win {
   color: #3dff7a;
 }
@@ -4935,7 +4962,7 @@ async function logout() {
     }
 
     return `
-      <div class="match-row" onclick="openMatchDetail('${match.id}')">
+     <div class="match-row ${resultClass.replace('match-', '')}" onclick="openMatchDetail('${match.id}')">
         <div class="match-date">${formatDate(match.created_at)}</div>
         <div class="match-opponent">vs ${escapeHtml(match.opponent || 'Adversaire')}</div>
         <div class="match-score">${scoreFor} - ${scoreAgainst}</div>
