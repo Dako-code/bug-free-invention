@@ -2681,35 +2681,56 @@ async function openConversation(conversationId) {
   }
 }
 
-    async function sendMessage() {
-      if (!state.currentConversation) {
-        alert('Sélectionne une conversation.');
-        return;
+async function sendMessage() {
+  if (!state.currentConversation) {
+    alert('Sélectionne une conversation.');
+    return;
+  }
+
+  const input = document.getElementById('message-input');
+  const content = input.value.trim();
+
+  if (!content) return;
+
+  try {
+    const { error: messageError } = await supabase
+      .from('messages')
+      .insert({
+        conversation_id: state.currentConversation.id,
+        sender_id: state.sessionUser.id,
+        content
+      });
+
+    if (messageError) throw messageError;
+
+    const { data: participants, error: participantsError } = await supabase
+      .from('conversation_participants')
+      .select('profile_id')
+      .eq('conversation_id', state.currentConversation.id);
+
+    if (participantsError) throw participantsError;
+
+    const recipientIds = (participants || [])
+      .map(row => row.profile_id)
+      .filter(profileId => profileId !== state.sessionUser.id);
+
+    await createNotificationsForProfiles(recipientIds, {
+      team_id: state.membership?.team_id || null,
+      type: 'message_received',
+      title: 'Nouveau message',
+      content: `${state.currentConversation.title || 'Conversation'} • ${content}`,
+      metadata: {
+        conversation_id: state.currentConversation.id
       }
+    });
 
-      const input = document.getElementById('message-input');
-      const content = input.value.trim();
+    input.value = '';
 
-      if (!content) return;
-
-      try {
-        const { error } = await supabase
-          .from('messages')
-          .insert({
-            conversation_id: state.currentConversation.id,
-            sender_id: state.sessionUser.id,
-            content
-          });
-
-        if (error) throw error;
-
-        input.value = '';
-
-      } catch (error) {
-        console.error(error);
-        alert(error.message || "Impossible d'envoyer le message.");
-      }
-    }
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "Impossible d'envoyer le message.");
+  }
+}
 
     function showPage(id, el) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
