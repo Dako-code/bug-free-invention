@@ -2279,7 +2279,10 @@ const visibleSessions = state.sessions.filter(item => {
 }
 
 function renderStats() {
-  const totalGoals = state.stats.reduce((sum, row) => sum + Number(row.goals || 0), 0);
+  const totalGoals = state.matchReports.reduce(
+  (sum, match) => sum + Number(match.score_for || 0),
+  0
+);
   const totalAssists = state.stats.reduce((sum, row) => sum + Number(row.assists || 0), 0);
   const totalMatches = state.stats.reduce((sum, row) => sum + Number(row.matches_played || 0), 0);
   const totalConceded = state.matchReports.reduce(
