@@ -1646,7 +1646,9 @@ const state = {
   currentConversation: null,
   currentMessages: [],
   realtimeChannel: null,
-  attendanceRealtimeChannel: null
+  attendanceRealtimeChannel: null,
+  teamRealtimeChannel: null,
+  teamRefreshTimeout: null,
 };
     window.showPage = showPage;
     window.logout = logout;
@@ -1807,12 +1809,14 @@ async function fetchProfile(userId, attempts = 8, delayMs = 400) {
 
   unsubscribeMessagesRealtime();
   unsubscribeAttendanceRealtime();
+  unsubscribeTeamRealtime();
 
   state.activeTeam = team;
   localStorage.setItem('coachpro_active_team_id', team.id);
   hydrateActiveTeam();
 
   subscribeToAttendanceRealtime(team.id);
+   subscribeToTeamRealtime(team.id);
 
   await loadTeamData(team.id);
 }
@@ -2056,6 +2060,81 @@ async function loadSessions(teamId) {
     supabase.removeChannel(state.attendanceRealtimeChannel);
     state.attendanceRealtimeChannel = null;
   }
+}
+    function unsubscribeTeamRealtime() {
+  if (state.teamRealtimeChannel) {
+    supabase.removeChannel(state.teamRealtimeChannel);
+    state.teamRealtimeChannel = null;
+  }
+}
+
+function scheduleCoachRealtimeRefresh() {
+  if (state.teamRefreshTimeout) {
+    clearTimeout(state.teamRefreshTimeout);
+  }
+
+  state.teamRefreshTimeout = setTimeout(async () => {
+    if (!state.activeTeam) return;
+
+    try {
+      await Promise.all([
+        loadSessions(state.activeTeam.id),
+        loadMatchReports(state.activeTeam.id),
+        loadPayments(state.activeTeam.id),
+        loadConversations(state.activeTeam.id)
+      ]);
+
+      await loadStatsForTeam();
+      renderDashboard();
+    } catch (error) {
+      console.error('Coach realtime refresh error:', error);
+    }
+  }, 250);
+}
+
+function subscribeToTeamRealtime(teamId) {
+  unsubscribeTeamRealtime();
+
+  state.teamRealtimeChannel = supabase
+    .channel(`coach-team-live:${teamId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'sessions',
+        filter: `team_id=eq.${teamId}`
+      },
+      () => {
+        scheduleCoachRealtimeRefresh();
+      }
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'match_reports',
+        filter: `team_id=eq.${teamId}`
+      },
+      () => {
+        scheduleCoachRealtimeRefresh();
+      }
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'match_player_stats'
+      },
+      () => {
+        scheduleCoachRealtimeRefresh();
+      }
+    )
+    .subscribe((status) => {
+      console.log('Coach team realtime status:', status);
+    });
 }
 
 function subscribeToAttendanceRealtime(teamId) {
@@ -3309,6 +3388,7 @@ async function openMatchViewModal(sessionId) {
 async function logout() {
   unsubscribeMessagesRealtime();
   unsubscribeAttendanceRealtime();
+  unsubscribeTeamRealtime();
   await supabase.auth.signOut();
   window.location.href = '/';
 }
