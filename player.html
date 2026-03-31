@@ -845,7 +845,48 @@
     .notifications-pulse {
   animation: notifPulse 0.6s ease;
 }
+.session-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.45rem;
+}
 
+.session-type-badge.training {
+  background: rgba(61,255,122,0.12);
+  color: var(--green);
+}
+
+.session-type-badge.match {
+  background: rgba(255,145,0,0.12);
+  color: var(--orange);
+}
+
+.session-type-badge.meeting,
+.session-type-badge.tournament {
+  background: rgba(64,196,255,0.12);
+  color: var(--blue);
+}
+
+.calendar-day-badge {
+  margin-left: 0.5rem;
+  font-size: 0.68rem;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.calendar-event-meta-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 0.45rem;
+}
 @keyframes notifPulse {
   0% { transform: scale(1); }
   40% { transform: scale(1.08); }
@@ -1683,7 +1724,7 @@
       year: 'numeric'
     }).format(new Date(sessionsForDay[0].scheduled_at));
 
-    const eventsHtml = sessionsForDay
+        const eventsHtml = sessionsForDay
       .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))
       .map(session => {
         const timeLabel = new Intl.DateTimeFormat('fr-FR', {
@@ -1697,8 +1738,23 @@
           <div class="calendar-event-card">
             <div class="calendar-event-left">
               <div class="calendar-event-title">${escapeHtml(session.title)}</div>
-              <div class="calendar-event-sub">${translateSessionType(session.type)} · ${escapeHtml(session.location || 'Lieu non précisé')}</div>
-              <div class="calendar-event-sub">Durée : ${Number(session.duration_minutes || 0)} min</div>
+
+              <div class="calendar-event-meta-row">
+                <span class="session-type-badge ${sessionTypeClass(session.type)}">
+                  ${translateSessionType(session.type)}
+                </span>
+                <span class="badge ${attendanceBadgeClass(status)}">
+                  ${attendanceLabel(status)}
+                </span>
+              </div>
+
+              <div class="calendar-event-sub" style="margin-top:.45rem">
+                📍 ${escapeHtml(session.location || 'Lieu non précisé')}
+              </div>
+
+              <div class="calendar-event-sub">
+                ⏱️ ${Number(session.duration_minutes || 0)} min
+              </div>
 
               <div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
                 <button class="btn btn-primary" onclick="respondToSession('${session.id}', 'present')">
@@ -1712,10 +1768,6 @@
                 <button class="btn btn-ghost" onclick="respondToSession('${session.id}', 'late')">
                   En retard
                 </button>
-
-                <span class="badge ${attendanceBadgeClass(status)}">
-                  ${attendanceLabel(status)}
-                </span>
               </div>
             </div>
 
@@ -1724,9 +1776,14 @@
         `;
       }).join('');
 
+        const relativeLabel = relativeDayLabel(sessionsForDay[0].scheduled_at);
+
     return `
       <div class="calendar-day-group">
-        <div class="calendar-day-title">${formattedDay}</div>
+        <div class="calendar-day-title">
+          ${formattedDay}
+          ${relativeLabel ? `<span class="calendar-day-badge">${relativeLabel}</span>` : ''}
+        </div>
         <div class="calendar-events">
           ${eventsHtml}
         </div>
@@ -2323,6 +2380,32 @@ function showNotificationToast(title, text) {
   state.toastTimeout = setTimeout(() => {
     toast.classList.remove('show');
   }, 3200);
+}
+    function sessionTypeClass(type) {
+  const map = {
+    training: 'training',
+    match: 'match',
+    meeting: 'meeting',
+    tournament: 'tournament'
+  };
+
+  return map[type] || 'training';
+}
+
+function relativeDayLabel(dateValue) {
+  const target = new Date(dateValue);
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  const sameDay = (a, b) =>
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+
+  if (sameDay(target, today)) return "Aujourd'hui";
+  if (sameDay(target, tomorrow)) return 'Demain';
+  return '';
 }
 function renderNotificationsPanel() {
   const panel = document.getElementById('notifications-panel');
