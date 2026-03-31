@@ -1040,6 +1040,8 @@
     </div>
   </div>
 </div>
+             </div>
+      </div>
 
       <div class="page" id="page-messages">
         <div class="page-header">
@@ -1508,11 +1510,21 @@ function attendanceBadgeClass(status) {
   return map[status] || 'badge-blue';
 }
 async function loadStats(teamMemberId) {
-  try {
-    const perfGoalsEl = document.getElementById('perf-goals');
-    const perfAssistsEl = document.getElementById('perf-assists');
-    const perfMatchesEl = document.getElementById('perf-matches');
+  const statGoalsEl = document.getElementById('stat-goals');
+  const statAssistsEl = document.getElementById('stat-assists');
+  const statAttendanceEl = document.getElementById('stat-attendance');
+  const statRatingEl = document.getElementById('stat-rating');
 
+  const perfGoalsEl = document.getElementById('perf-goals');
+  const perfAssistsEl = document.getElementById('perf-assists');
+  const perfMatchesEl = document.getElementById('perf-matches');
+  const perfAttendanceLabelEl = document.getElementById('perf-attendance-label');
+  const perfAttendanceFillEl = document.getElementById('perf-attendance-fill');
+  const perfAttendanceMessageEl = document.getElementById('perf-attendance-message');
+
+  const activityBox = document.getElementById('activity-timeline');
+
+  try {
     const { data: statsRows, error: statsError } = await supabase
       .from('match_player_stats')
       .select(`
@@ -1567,20 +1579,40 @@ async function loadStats(teamMemberId) {
       }
     }
 
-    const rating = 0;
+    if (statGoalsEl) statGoalsEl.textContent = goals;
+    if (statAssistsEl) statAssistsEl.textContent = assists;
+    if (statAttendanceEl) statAttendanceEl.textContent = `${attendance}%`;
+    if (statRatingEl) statRatingEl.textContent = '—';
 
-    document.getElementById('stat-goals').textContent = goals;
-    document.getElementById('stat-assists').textContent = assists;
-    document.getElementById('stat-attendance').textContent = `${attendance}%`;
-    document.getElementById('stat-rating').textContent = '—';
+    if (perfGoalsEl) perfGoalsEl.textContent = goals;
+    if (perfAssistsEl) perfAssistsEl.textContent = assists;
+    if (perfMatchesEl) perfMatchesEl.textContent = matches;
 
-    document.getElementById('perf-goals').textContent = `${goals} but(s)`;
-    document.getElementById('perf-assists').textContent = `${assists} passe(s) décisive(s)`;
-    document.getElementById('perf-matches').textContent = `${matches} match(s)`;
-    document.getElementById('perf-attendance-label').textContent = `${attendance}%`;
-    document.getElementById('perf-attendance-fill').style.width = `${Math.max(0, Math.min(attendance, 100))}%`;
+    if (perfAttendanceLabelEl) {
+      perfAttendanceLabelEl.textContent = `${attendance}%`;
+    }
 
-    const activityBox = document.getElementById('activity-timeline');
+    if (perfAttendanceFillEl) {
+      perfAttendanceFillEl.style.width = `${Math.max(0, Math.min(attendance, 100))}%`;
+
+      if (attendance < 50) {
+        perfAttendanceFillEl.style.background = '#ff4d4d';
+      } else if (attendance < 80) {
+        perfAttendanceFillEl.style.background = '#ffb300';
+      } else {
+        perfAttendanceFillEl.style.background = 'var(--green)';
+      }
+    }
+
+    if (perfAttendanceMessageEl) {
+      if (attendance < 50) {
+        perfAttendanceMessageEl.textContent = "Ce n'est pas sérieux, il faut commencer à y mettre du sien !";
+      } else if (attendance < 80) {
+        perfAttendanceMessageEl.textContent = "C'est bien, mais faut continuer à venir.";
+      } else {
+        perfAttendanceMessageEl.textContent = "Continue à être régulier !";
+      }
+    }
 
     const items = [];
 
@@ -1620,59 +1652,36 @@ async function loadStats(teamMemberId) {
       `);
     }
 
-    activityBox.innerHTML = items.length
-      ? `<div class="list">${items.join('')}</div>`
-      : `<div class="empty-note">Aucune activité récente.</div>`;
-    if (perfGoalsEl) perfGoalsEl.textContent = goals;
-    if (perfAssistsEl) perfAssistsEl.textContent = assists;
-    if (perfMatchesEl) perfMatchesEl.textContent = matches;
-
+    if (activityBox) {
+      activityBox.innerHTML = items.length
+        ? `<div class="list">${items.join('')}</div>`
+        : `<div class="empty-note">Aucune activité récente.</div>`;
+    }
 
   } catch (error) {
     console.error('loadStats error:', error);
-const statGoalsEl = document.getElementById('stat-goals');
-const statAssistsEl = document.getElementById('stat-assists');
-const statAttendanceEl = document.getElementById('stat-attendance');
-const statRatingEl = document.getElementById('stat-rating');
 
-const perfGoalsEl = document.getElementById('perf-goals');
-const perfAssistsEl = document.getElementById('perf-assists');
-const perfMatchesEl = document.getElementById('perf-matches');
-const perfAttendanceLabelEl = document.getElementById('perf-attendance-label');
-const perfAttendanceFillEl = document.getElementById('perf-attendance-fill');
-const perfAttendanceMessageEl = document.getElementById('perf-attendance-message');
+    if (statGoalsEl) statGoalsEl.textContent = '--';
+    if (statAssistsEl) statAssistsEl.textContent = '--';
+    if (statAttendanceEl) statAttendanceEl.textContent = '--%';
+    if (statRatingEl) statRatingEl.textContent = '--';
 
-if (statGoalsEl) statGoalsEl.textContent = goals;
-if (statAssistsEl) statAssistsEl.textContent = assists;
-if (statAttendanceEl) statAttendanceEl.textContent = `${attendance}%`;
-if (statRatingEl) statRatingEl.textContent = '—';
+    if (perfGoalsEl) perfGoalsEl.textContent = '--';
+    if (perfAssistsEl) perfAssistsEl.textContent = '--';
+    if (perfMatchesEl) perfMatchesEl.textContent = '--';
 
-if (perfGoalsEl) perfGoalsEl.textContent = goals;
-if (perfAssistsEl) perfAssistsEl.textContent = assists;
-if (perfMatchesEl) perfMatchesEl.textContent = matches;
-if (perfAttendanceLabelEl) perfAttendanceLabelEl.textContent = `${attendance}%`;
-if (perfAttendanceFillEl) perfAttendanceFillEl.style.width = `${Math.max(0, Math.min(attendance, 100))}%`;
-if (perfRatingLabelEl) perfRatingLabelEl.textContent = '—';
-if (perfRatingFillEl) perfRatingFillEl.style.width = '0%';
-    document.getElementById('activity-timeline').innerHTML =
-      `<div class="empty-note">Impossible de charger les statistiques.</div>`;
- if (attendance < 50) {
-    perfAttendanceFillEl.style.background = '#ff4d4d';
-  } else if (attendance < 80) {
-    perfAttendanceFillEl.style.background = '#ffb300';
-  } else {
-    perfAttendanceFillEl.style.background = 'var(--green)';
-  }
-}
+    if (perfAttendanceLabelEl) perfAttendanceLabelEl.textContent = '--%';
+    if (perfAttendanceFillEl) {
+      perfAttendanceFillEl.style.width = '0%';
+      perfAttendanceFillEl.style.background = 'var(--green)';
+    }
+    if (perfAttendanceMessageEl) {
+      perfAttendanceMessageEl.textContent = 'Impossible de calculer la présence.';
+    }
 
-if (perfAttendanceMessageEl) {
-  if (attendance < 50) {
-    perfAttendanceMessageEl.textContent = "Ce n'est pas sérieux, il faut commencer à y mettre du sien !";
-  } else if (attendance < 80) {
-    perfAttendanceMessageEl.textContent = "C'est bien, mais faut continuer à venir.";
-  } else {
-    perfAttendanceMessageEl.textContent = "Continue à être régulier !";
-  }
+    if (activityBox) {
+      activityBox.innerHTML = `<div class="empty-note">Impossible de charger les statistiques.</div>`;
+    }
   }
 }
 async function loadAttendanceRateForPlayer() {
