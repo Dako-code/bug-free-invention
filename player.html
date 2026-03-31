@@ -1401,6 +1401,7 @@
         hydrateProfile(profile);
         await loadPlayerData(session.user.id);
         await loadNotifications();
+        renderNotificationsPanel();
         subscribeToNotificationsRealtime();
 
       } catch (error) {
@@ -2118,49 +2119,84 @@ renderNotificationsPanel();
         : `<div class="empty-note">Aucun paiement enregistré.</div>`;
     }
 
-    async function loadConversations(userId) {
-      const { data: participantRows, error: partError } = await supabase
-        .from('conversation_participants')
-        .select('conversation_id')
-        .eq('profile_id', userId);
+  async function loadConversations(userId, preserveCurrent = true) {
+  const { data: participantRows, error: partError } = await supabase
+    .from('conversation_participants')
+    .select('conversation_id')
+    .eq('profile_id', userId);
 
-      if (partError) throw partError;
+  if (partError) throw partError;
 
-      const ids = (participantRows || []).map(r => r.conversation_id);
+  const ids = (participantRows || []).map(r => r.conversation_id);
 
-      if (!ids.length) {
-        state.conversations = [];
-        state.currentConversation = null;
-        state.currentMessages = [];
-        unsubscribeMessagesRealtime();
-        document.getElementById('conversation-list').innerHTML = `<div class="empty-note">Aucune conversation.</div>`;
-        document.getElementById('messages-area').innerHTML = `<div class="empty-note">Aucune conversation.</div>`;
-        return;
-      }
+  if (!ids.length) {
+    state.conversations = [];
+    state.currentConversation = null;
+    state.currentMessages = [];
+    unsubscribeMessagesRealtime();
+    document.getElementById('conversation-list').innerHTML = `<div class="empty-note">Aucune conversation.</div>`;
+    document.getElementById('messages-area').innerHTML = `<div class="empty-note">Aucune conversation.</div>`;
+    document.getElementById('current-conversation-title').textContent = 'Sélectionne une conversation';
+    document.getElementById('current-conversation-sub').textContent = 'Aucun fil actif';
+    return;
+  }
 
-      const { data, error } = await supabase
-        .from('conversations')
-        .select('*')
-        .in('id', ids)
-        .order('created_at', { ascending: false });
+  const { data, error } = await supabase
+    .from('conversations')
+    .select('*')
+    .in('id', ids)
+    .order('created_at', { ascending: false });
 
-      if (error) throw error;
+  if (error) throw error;
 
-      state.conversations = data || [];
+  state.conversations = data || [];
+
+  state.unreadCounts = await loadUnreadCountsForConversations(
+    state.conversations.map(c => c.id)
+  );
+
+  renderConversationList();
+
+  if (!state.conversations.length) {
+    state.currentConversation = null;
+    state.currentMessages = [];
+    unsubscribeMessagesRealtime();
+    document.getElementById('messages-area').innerHTML = `<div class="empty-note">Aucune conversation.</div>`;
+    document.getElementById('current-conversation-title').textContent = 'Sélectionne une conversation';
+    document.getElementById('current-conversation-sub').textContent = 'Aucun fil actif';
+    return;
+  }
+
+  if (preserveCurrent && state.currentConversation) {
+    const stillExists = state.conversations.find(c => c.id === state.currentConversation.id);
+
+    if (stillExists) {
+      state.currentConversation = stillExists;
       renderConversationList();
-
-      if (state.currentConversation) {
-        const stillExists = state.conversations.find(c => c.id === state.currentConversation.id);
-        if (stillExists) {
-          await openConversation(stillExists.id);
-          return;
-        }
-      }
-
-      if (state.conversations.length) {
-        await openConversation(state.conversations[0].id);
-      }
+      return;
     }
+  }
+
+  state.currentConversation = state.conversations[0];
+  renderConversationList();
+
+  document.getElementById('current-conversation-title').textContent =
+    state.currentConversation.title || (state.currentConversation.type === 'team' ? 'Général' : 'Conversation');
+
+  document.getElementById('current-conversation-sub').textContent =
+    state.currentConversation.type === 'team'
+      ? 'Chat général de l’équipe'
+      : 'Conversation directe';
+
+  await loadMessages(state.currentConversation.id);
+  subscribeToConversationMessages(state.currentConversation.id);
+  await markConversationAsRead(state.currentConversation.id);
+
+  state.unreadCounts = await loadUnreadCountsForConversations(
+    state.conversations.map(c => c.id)
+  );
+  renderConversationList();
+}
 function toggleNotificationsPanel() {
   state.notificationsPanelOpen = !state.notificationsPanelOpen;
   renderNotificationsPanel();
@@ -2467,24 +2503,28 @@ function subscribeToNotificationsRealtime() {
         });
     }
 
-    async function openConversation(conversationId) {
-      const conv = state.conversations.find(c => c.id === conversationId);
-      if (!conv) return;
+async function openConversation(conversationId) {
+  const conv = state.conversations.find(c => c.id === conversationId);
+  if (!conv) return;
 
-      state.currentConversation = conv;
-      renderConversationList();
+  state.currentConversation = conv;
+  renderConversationList();
 
-      document.getElementById('current-conversation-title').textContent =
-        conv.title || (conv.type === 'team' ? 'Général' : 'Conversation');
+  document.getElementById('current-conversation-title').textContent =
+    conv.title || (conv.type === 'team' ? 'Général' : 'Conversation');
 
-      document.getElementById('current-conversation-sub').textContent =
-        conv.type === 'team' ? 'Chat général de l’équipe' : 'Conversation directe';
+  document.getElementById('current-conversation-sub').textContent =
+    conv.type === 'team' ? 'Chat général de l’équipe' : 'Conversation directe';
 
-      await loadMessages(conversationId);
-      subscribeToConversationMessages(conversationId);
-      await markConversationAsRead(conversationId);
-      await loadConversations(state.sessionUser.id);
-    }
+  await loadMessages(conversationId);
+  subscribeToConversationMessages(conversationId);
+  await markConversationAsRead(conversationId);
+
+  state.unreadCounts = await loadUnreadCountsForConversations(
+    state.conversations.map(c => c.id)
+  );
+  renderConversationList();
+}
 
     function renderMessagesArea() {
       const area = document.getElementById('messages-area');
