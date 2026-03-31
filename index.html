@@ -975,7 +975,42 @@
 .stat-card:hover {
   transform: translateY(-3px);
 }
+.stats-section {
+  margin-bottom: 1.5rem;
+}
 
+.stats-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stats-section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted2);
+}
+
+.stats-section-subtitle {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.stats-group-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1rem;
+}
+
+.stats-group-card + .stats-group-card {
+  margin-top: 1rem;
+}
 .stat-label {
   font-size: 0.8rem;
   color: var(--muted);
