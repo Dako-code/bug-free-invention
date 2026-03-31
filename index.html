@@ -1260,53 +1260,6 @@
 
 </div>
         
-
-       <div class="card" ="margin-bottom:1.5rem">
-  <div class="card-header">
-    <span class="card-title">Détail par joueur</span>
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Joueur</th>
-          <th>Buts</th>
-          <th>Passes</th>
-          <th>Buts encaissés</th>
-          <th>Matchs</th>
-          <th>Homme du match</th>
-          <th>Poste</th>
-        </tr>
-      </thead>
-      <tbody id="stats-table-body">
-        <tr>
-          <td colspan="7" class="empty-note">Aucune statistique.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<div class="grid-2">
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Meilleurs buteurs</span>
-    </div>
-    <div class="list" id="top-scorers-list">
-      <div class="empty-note">Aucun buteur.</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Meilleurs passeurs</span>
-    </div>
-    <div class="list" id="top-assisters-list">
-      <div class="empty-note">Aucun passeur.</div>
-    </div>
-  </div>
-</div>
-</div>
       <div class="page" id="page-messages">
         <div class="section-header">
           <div>
@@ -2333,7 +2286,7 @@ document.getElementById('stats-losses').textContent = totalLosses;
   const elGoals = document.getElementById('stats-goals');
   const elAssists = document.getElementById('stats-assists');
   const elMatches = document.getElementById('stats-matches');
-  const elConceded = document.getElementById('stats-minutes');
+  const elConceded = document.getElementById('stats-conceded');
 
   if (elGoals) elGoals.textContent = totalGoals;
   if (elAssists) elAssists.textContent = totalAssists;
