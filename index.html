@@ -2118,6 +2118,8 @@ async function init() {
 
     hydrateSubscription();
     await loadTeams();
+    await loadNotifications();
+    subscribeToNotificationsRealtime();
 
   } catch (error) {
     console.error(error);
