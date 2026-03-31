@@ -3764,6 +3764,8 @@ async function openMatchViewModal(sessionId) {
 
       await loadMessages(conversationId);
       subscribeToConversationMessages(conversationId);
+      await markConversationAsRead(conversationId);
+      await loadConversations(state.activeTeam.id);
     }
 
     async function openGeneralChat() {
