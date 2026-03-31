@@ -1655,6 +1655,23 @@ if (perfRatingLabelEl) perfRatingLabelEl.textContent = '—';
 if (perfRatingFillEl) perfRatingFillEl.style.width = '0%';
     document.getElementById('activity-timeline').innerHTML =
       `<div class="empty-note">Impossible de charger les statistiques.</div>`;
+ if (attendance < 50) {
+    perfAttendanceFillEl.style.background = '#ff4d4d';
+  } else if (attendance < 80) {
+    perfAttendanceFillEl.style.background = '#ffb300';
+  } else {
+    perfAttendanceFillEl.style.background = 'var(--green)';
+  }
+}
+
+if (perfAttendanceMessageEl) {
+  if (attendance < 50) {
+    perfAttendanceMessageEl.textContent = "Ce n'est pas sérieux, il faut commencer à y mettre du sien !";
+  } else if (attendance < 80) {
+    perfAttendanceMessageEl.textContent = "C'est bien, mais faut continuer à venir.";
+  } else {
+    perfAttendanceMessageEl.textContent = "Continue à être régulier !";
+  }
   }
 }
 async function loadAttendanceRateForPlayer() {
