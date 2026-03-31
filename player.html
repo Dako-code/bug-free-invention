@@ -805,6 +805,52 @@
   color: var(--muted);
   margin-top: 0.45rem;
 }
+    .notif-toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-left: 4px solid var(--green);
+  border-radius: 16px;
+  padding: 0.9rem 1rem;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  z-index: 1300;
+  display: none;
+  transform: translateY(12px);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.notif-toast.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.notif-toast-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.notif-toast-text {
+  font-size: 0.76rem;
+  color: var(--muted2);
+  margin-top: 0.25rem;
+  line-height: 1.45;
+}
+    .notifications-pulse {
+  animation: notifPulse 0.6s ease;
+}
+
+@keyframes notifPulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
 
 @media (max-width: 1100px) {
   .chat-layout {
@@ -1360,6 +1406,8 @@
   unreadNotificationsCount: 0,
   notificationsChannel: null,
   notificationsPanelOpen: false,
+  toastTimeout: null,
+  lastNotificationIds: new Set(),
 };
     window.respondToSession = respondToSession;
     window.showPage = showPage;
@@ -2065,7 +2113,7 @@ async function loadAttendanceRateForPlayer() {
           `).join('')
         : `<div class="empty-note">Aucun message.</div>`;
     }
-    async function loadNotifications() {
+   async function loadNotifications() {
   if (!state.sessionUser?.id) return;
 
   const { data, error } = await supabase
@@ -2080,16 +2128,34 @@ async function loadAttendanceRateForPlayer() {
     return;
   }
 
- state.notifications = data || [];
-state.unreadNotificationsCount = state.notifications.filter(n => !n.is_read).length;
+  const previousIds = new Set(state.notifications.map(n => n.id));
 
-const pill = document.getElementById('notifications-pill');
-if (pill) {
-  pill.textContent = `Notifications : ${state.unreadNotificationsCount}`;
+  state.notifications = data || [];
+  state.unreadNotificationsCount = state.notifications.filter(n => !n.is_read).length;
+
+  const pill = document.getElementById('notifications-pill');
+  if (pill) {
+    pill.textContent = `Notifications : ${state.unreadNotificationsCount}`;
+  }
+if (pill && newest && !previousIds.has(newest.id) && state.lastNotificationIds.size > 0) {
+  pill.classList.remove('notifications-pulse');
+  void pill.offsetWidth;
+  pill.classList.add('notifications-pulse');
 }
+  renderNotificationsPanel();
 
-renderNotificationsPanel();
-    }
+  const newest = state.notifications[0];
+
+  if (
+    newest &&
+    !previousIds.has(newest.id) &&
+    state.lastNotificationIds.size > 0
+  ) {
+    showNotificationToast(newest.title, newest.content);
+  }
+
+  state.lastNotificationIds = new Set(state.notifications.map(n => n.id));
+}
 
     async function loadPayments(userId) {
       const { data: payments, error } = await supabase
@@ -2206,7 +2272,26 @@ function closeNotificationsPanel() {
   state.notificationsPanelOpen = false;
   renderNotificationsPanel();
 }
+function showNotificationToast(title, text) {
+  const toast = document.getElementById('notif-toast');
+  const toastTitle = document.getElementById('notif-toast-title');
+  const toastText = document.getElementById('notif-toast-text');
 
+  if (!toast || !toastTitle || !toastText) return;
+
+  toastTitle.textContent = title || 'Nouvelle notification';
+  toastText.textContent = text || '';
+
+  toast.classList.add('show');
+
+  if (state.toastTimeout) {
+    clearTimeout(state.toastTimeout);
+  }
+
+  state.toastTimeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3200);
+}
 function renderNotificationsPanel() {
   const panel = document.getElementById('notifications-panel');
   const list = document.getElementById('notifications-list');
@@ -2264,7 +2349,6 @@ async function markAllNotificationsAsRead() {
   await loadNotifications();
   renderNotificationsPanel();
 }
-
 async function handleNotificationClick(notificationId, type, rawMetadata) {
   try {
     await markNotificationAsRead(notificationId);
@@ -2274,17 +2358,24 @@ async function handleNotificationClick(notificationId, type, rawMetadata) {
     closeNotificationsPanel();
 
     if (type === 'session_created') {
-      showPage('schedule', document.querySelector(`.nav-item[onclick*="showPage('schedule'"]`));
+      showPage('sessions', document.querySelector(`.nav-item[onclick*="showPage('sessions'"]`));
       return;
     }
 
     if (type === 'match_reported') {
-      showPage('performance', document.querySelector(`.nav-item[onclick*="showPage('performance'"]`));
+      showPage('matches', document.querySelector(`.nav-item[onclick*="showPage('matches'"]`));
       return;
     }
 
     if (type === 'message_received') {
       showPage('messages', document.querySelector(`.nav-item[onclick*="showPage('messages'"]`));
+
+      if (metadata?.conversation_id) {
+        const exists = state.conversations.find(c => c.id === metadata.conversation_id);
+        if (exists) {
+          await openConversation(metadata.conversation_id);
+        }
+      }
       return;
     }
 
@@ -2699,5 +2790,9 @@ async function openConversation(conversationId) {
         .replaceAll("'", '&#039;');
     }
   </script>
+  <div class="notif-toast" id="notif-toast">
+  <div class="notif-toast-title" id="notif-toast-title">Nouvelle notification</div>
+  <div class="notif-toast-text" id="notif-toast-text">—</div>
+</div>
 </body>
 </html>
