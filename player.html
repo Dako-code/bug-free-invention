@@ -2177,6 +2177,8 @@ function subscribeToTeamRealtime(teamId) {
 
       await loadMessages(conversationId);
       subscribeToConversationMessages(conversationId);
+      await markConversationAsRead(conversationId);
+      await loadConversations(state.sessionUser.id);
     }
 
     function renderMessagesArea() {
