@@ -1239,38 +1239,50 @@ function attendanceBadgeClass(status) {
 
   return map[status] || 'badge-blue';
 }
-    async function loadStats(teamMemberId) {
-      const { data, error } = await supabase
-        .from('player_stats')
-        .select('*')
-        .eq('team_member_id', teamMemberId)
-        .order('updated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+  async function loadStats(teamMemberId) {
+  const { data: rows, error } = await supabase
+    .from('match_player_stats')
+    .select(`
+      goals,
+      assists,
+      goals_conceded,
+      is_man_of_the_match
+    `)
+    .eq('team_member_id', teamMemberId);
 
-      if (error) throw error;
+  if (error) throw error;
 
-      const goals = data?.goals ?? 0;
-      const assists = data?.assists ?? 0;
-      const matches = data?.matches_played ?? 0;
-      const minutes = data?.minutes_played ?? 0;
-      const attendance = Number(data?.attendance_rate ?? 0);
-      const rating = Number(data?.avg_rating ?? 0);
+  const statsRows = rows || [];
 
-      document.getElementById('stat-goals').textContent = goals;
-      document.getElementById('stat-assists').textContent = assists;
-      document.getElementById('stat-attendance').textContent = `${attendance || 0}%`;
-      document.getElementById('stat-rating').textContent = rating ? rating.toFixed(1) : '—';
+  const goals = statsRows.reduce((sum, row) => sum + Number(row.goals || 0), 0);
+  const assists = statsRows.reduce((sum, row) => sum + Number(row.assists || 0), 0);
+  const conceded = statsRows.reduce((sum, row) => sum + Number(row.goals_conceded || 0), 0);
+  const matches = statsRows.length;
 
-      document.getElementById('perf-goals').textContent = `${goals} but(s)`;
-      document.getElementById('perf-assists').textContent = `${assists} passe(s) décisive(s)`;
-      document.getElementById('perf-matches').textContent = `${matches} match(s)`;
-      document.getElementById('perf-minutes').textContent = `${minutes} minute(s)`;
-      document.getElementById('perf-attendance-label').textContent = `${attendance || 0}%`;
-      document.getElementById('perf-attendance-fill').style.width = `${Math.max(0, Math.min(attendance, 100))}%`;
-      document.getElementById('perf-rating-label').textContent = rating ? rating.toFixed(1) : '—';
-      document.getElementById('perf-rating-fill').style.width = `${Math.max(0, Math.min((rating / 10) * 100, 100))}%`;
-    }
+  const attendanceRate = await loadAttendanceRateForPlayer();
+  const avgRating = 0;
+
+  document.getElementById('stat-goals').textContent = goals;
+  document.getElementById('stat-assists').textContent = assists;
+  document.getElementById('stat-attendance').textContent = `${attendanceRate}%`;
+  document.getElementById('stat-rating').textContent = avgRating ? avgRating.toFixed(1) : '—';
+
+  document.getElementById('perf-goals').textContent = `${goals} but(s)`;
+  document.getElementById('perf-assists').textContent = `${assists} passe(s) décisive(s)`;
+  document.getElementById('perf-matches').textContent = `${matches} match(s)`;
+  document.getElementById('perf-minutes').textContent = '—';
+  document.getElementById('perf-attendance-label').textContent = `${attendanceRate}%`;
+  document.getElementById('perf-attendance-fill').style.width = `${Math.max(0, Math.min(attendanceRate, 100))}%`;
+  document.getElementById('perf-rating-label').textContent = avgRating ? avgRating.toFixed(1) : '—';
+  document.getElementById('perf-rating-fill').style.width = `${Math.max(0, Math.min((avgRating / 10) * 100, 100))}%`;
+
+  renderRecentActivity({
+    goals,
+    assists,
+    conceded,
+    matches
+  });
+}
 
     async function loadMessagesPreview(userId) {
       const { data: participantRows, error: participantError } = await supabase
