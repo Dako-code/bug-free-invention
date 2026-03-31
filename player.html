@@ -2196,6 +2196,26 @@ function subscribeToTeamRealtime(teamId) {
 
       area.scrollTop = area.scrollHeight;
     }
+    async function createNotificationsForProfiles(profileIds, payload) {
+  if (!profileIds?.length) return;
+
+  const rows = profileIds.map(profileId => ({
+    profile_id: profileId,
+    team_id: payload.team_id || null,
+    type: payload.type,
+    title: payload.title,
+    content: payload.content || '',
+    metadata: payload.metadata || {}
+  }));
+
+  const { error } = await supabase
+    .from('notifications')
+    .insert(rows);
+
+  if (error) {
+    console.error('Notification insert error:', error);
+  }
+}
 
     async function sendMessage() {
       if (!state.currentConversation) {
