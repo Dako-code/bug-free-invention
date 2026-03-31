@@ -1360,6 +1360,10 @@ function attendanceBadgeClass(status) {
 }
 async function loadStats(teamMemberId) {
   try {
+    const perfGoalsEl = document.getElementById('perf-goals');
+    const perfAssistsEl = document.getElementById('perf-assists');
+    const perfMatchesEl = document.getElementById('perf-matches');
+
     const { data: statsRows, error: statsError } = await supabase
       .from('match_player_stats')
       .select(`
@@ -1472,23 +1476,38 @@ async function loadStats(teamMemberId) {
     activityBox.innerHTML = items.length
       ? `<div class="list">${items.join('')}</div>`
       : `<div class="empty-note">Aucune activité récente.</div>`;
+    if (perfGoalsEl) perfGoalsEl.textContent = goals;
+    if (perfAssistsEl) perfAssistsEl.textContent = assists;
+    if (perfMatchesEl) perfMatchesEl.textContent = matches;
+
 
   } catch (error) {
     console.error('loadStats error:', error);
+const statGoalsEl = document.getElementById('stat-goals');
+const statAssistsEl = document.getElementById('stat-assists');
+const statAttendanceEl = document.getElementById('stat-attendance');
+const statRatingEl = document.getElementById('stat-rating');
 
-    document.getElementById('stat-goals').textContent = '--';
-    document.getElementById('stat-assists').textContent = '--';
-    document.getElementById('stat-attendance').textContent = '--%';
-    document.getElementById('stat-rating').textContent = '--';
+const perfGoalsEl = document.getElementById('perf-goals');
+const perfAssistsEl = document.getElementById('perf-assists');
+const perfMatchesEl = document.getElementById('perf-matches');
+const perfAttendanceLabelEl = document.getElementById('perf-attendance-label');
+const perfAttendanceFillEl = document.getElementById('perf-attendance-fill');
+const perfRatingLabelEl = document.getElementById('perf-rating-label');
+const perfRatingFillEl = document.getElementById('perf-rating-fill');
 
-    document.getElementById('perf-goals').textContent = '--';
-    document.getElementById('perf-assists').textContent = '--';
-    document.getElementById('perf-matches').textContent = '--';
-    document.getElementById('perf-attendance-label').textContent = '--%';
-    document.getElementById('perf-attendance-fill').style.width = '0%';
-    document.getElementById('perf-rating-label').textContent = '--';
-    document.getElementById('perf-rating-fill').style.width = '0%';
+if (statGoalsEl) statGoalsEl.textContent = goals;
+if (statAssistsEl) statAssistsEl.textContent = assists;
+if (statAttendanceEl) statAttendanceEl.textContent = `${attendance}%`;
+if (statRatingEl) statRatingEl.textContent = '—';
 
+if (perfGoalsEl) perfGoalsEl.textContent = goals;
+if (perfAssistsEl) perfAssistsEl.textContent = assists;
+if (perfMatchesEl) perfMatchesEl.textContent = matches;
+if (perfAttendanceLabelEl) perfAttendanceLabelEl.textContent = `${attendance}%`;
+if (perfAttendanceFillEl) perfAttendanceFillEl.style.width = `${Math.max(0, Math.min(attendance, 100))}%`;
+if (perfRatingLabelEl) perfRatingLabelEl.textContent = '—';
+if (perfRatingFillEl) perfRatingFillEl.style.width = '0%';
     document.getElementById('activity-timeline').innerHTML =
       `<div class="empty-note">Impossible de charger les statistiques.</div>`;
   }
