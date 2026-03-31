@@ -2466,15 +2466,16 @@ async function loadSessions(teamId) {
     console.error('loadNotifications error:', error);
     return;
   }
+state.notifications = data || [];
+state.unreadNotificationsCount = state.notifications.filter(n => !n.is_read).length;
 
-  state.notifications = data || [];
-  state.unreadNotificationsCount = state.notifications.filter(n => !n.is_read).length;
-
-  const pill = document.getElementById('notifications-pill');
-  if (pill) {
-    pill.textContent = `Notifications : ${state.unreadNotificationsCount}`;
-  }
+const pill = document.getElementById('notifications-pill');
+if (pill) {
+  pill.textContent = `Notifications : ${state.unreadNotificationsCount}`;
 }
+
+renderNotificationsPanel(); 
+    }
     async function loadUnreadCountsForConversations(conversationIds) {
   if (!conversationIds?.length || !state.sessionUser?.id) {
     return new Map();
