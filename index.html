@@ -1141,7 +1141,59 @@
   color: var(--text);
   text-align: right;
 }
+.matches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
+.match-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 80px 40px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  transition: 0.2s;
+}
+
+.match-row:hover {
+  background: rgba(61,255,122,0.06);
+}
+
+.match-date {
+  color: var(--muted2);
+  font-size: 0.75rem;
+}
+
+.match-opponent {
+  font-weight: 600;
+}
+
+.match-score {
+  text-align: center;
+  font-weight: 700;
+}
+
+.match-result {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* couleurs */
+.match-win {
+  color: #3dff7a;
+}
+
+.match-draw {
+  color: #ffaa00;
+}
+
+.match-loss {
+  color: #ff5c5c;
+}
 @media (max-width: 1000px) {
   .calendar-grid,
   .calendar-weekdays {
