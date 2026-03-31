@@ -755,6 +755,54 @@
   background: rgba(255,145,0,0.10);
   border-color: rgba(255,145,0,0.18);
 }
+    .attendance-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.attendance-top {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.attendance-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--text);
+}
+
+.attendance-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted2);
+}
+
+.attendance-bar {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+
+.attendance-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--green);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.attendance-message {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+  padding-top: 0.2rem;
+}
     @media (max-width: 1100px) {
       .grid-4 {
         grid-template-columns: repeat(2, 1fr);
@@ -973,33 +1021,25 @@
   </div>
 </div>
           <div class="card">
-            <div class="card-header">
-              <span class="card-title">Régularité</span>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:1rem">
-              <div>
-                <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px">
-                  <span>Présence</span>
-                  <span id="perf-attendance-label">--%</span>
-                </div>
-                <div style="height:6px;background:var(--border);border-radius:999px;overflow:hidden">
-                  <div id="perf-attendance-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--green2),var(--green))"></div>
-                </div>
-              </div>
+  <div class="card-header">
+    <span class="card-title">Régularité</span>
+  </div>
 
-              <div>
-                <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px">
-                  <span>Note moyenne</span>
-                  <span id="perf-rating-label">--</span>
-                </div>
-                <div style="height:6px;background:var(--border);border-radius:999px;overflow:hidden">
-                  <div id="perf-rating-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--green2),var(--green))"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="attendance-box">
+    <div class="attendance-top">
+      <div class="attendance-value" id="perf-attendance-label">--%</div>
+      <div class="attendance-label">Présence</div>
+    </div>
+
+    <div class="attendance-bar">
+      <div class="attendance-fill" id="perf-attendance-fill"></div>
+    </div>
+
+    <div class="attendance-message" id="perf-attendance-message">
+      —
+    </div>
+  </div>
+</div>
 
       <div class="page" id="page-messages">
         <div class="page-header">
@@ -1204,8 +1244,6 @@
       document.getElementById('perf-matches').textContent = '--';
       document.getElementById('perf-attendance-label').textContent = '--%';
       document.getElementById('perf-attendance-fill').style.width = '0%';
-      document.getElementById('perf-rating-label').textContent = '--';
-      document.getElementById('perf-rating-fill').style.width = '0%';
 
       state.currentConversation = null;
       state.currentMessages = [];
@@ -1541,8 +1579,6 @@ async function loadStats(teamMemberId) {
     document.getElementById('perf-matches').textContent = `${matches} match(s)`;
     document.getElementById('perf-attendance-label').textContent = `${attendance}%`;
     document.getElementById('perf-attendance-fill').style.width = `${Math.max(0, Math.min(attendance, 100))}%`;
-    document.getElementById('perf-rating-label').textContent = '—';
-    document.getElementById('perf-rating-fill').style.width = '0%';
 
     const activityBox = document.getElementById('activity-timeline');
 
@@ -1604,8 +1640,6 @@ const perfAssistsEl = document.getElementById('perf-assists');
 const perfMatchesEl = document.getElementById('perf-matches');
 const perfAttendanceLabelEl = document.getElementById('perf-attendance-label');
 const perfAttendanceFillEl = document.getElementById('perf-attendance-fill');
-const perfRatingLabelEl = document.getElementById('perf-rating-label');
-const perfRatingFillEl = document.getElementById('perf-rating-fill');
 
 if (statGoalsEl) statGoalsEl.textContent = goals;
 if (statAssistsEl) statAssistsEl.textContent = assists;
