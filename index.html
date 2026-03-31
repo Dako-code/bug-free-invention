@@ -1940,6 +1940,10 @@ const state = {
   attendanceRealtimeChannel: null,
   teamRealtimeChannel: null,
   teamRefreshTimeout: null,
+  unreadCounts: new Map(),
+notifications: [],
+unreadNotificationsCount: 0,
+notificationsChannel: null,
 };
     window.showPage = showPage;
     window.logout = logout;
