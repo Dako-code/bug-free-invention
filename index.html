@@ -2155,7 +2155,6 @@ async function fetchProfile(userId, attempts = 8, delayMs = 400) {
   renderStats();
   renderDashboard();
 }
-
     async function loadTeamMembers(teamId) {
       const { data, error } = await supabase
         .from('team_members')
