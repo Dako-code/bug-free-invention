@@ -1845,32 +1845,6 @@ async function respondToSession(sessionId, status) {
       if (insertError) throw insertError;
     }
 
-    const session = state.upcomingSessions.find(item => item.id === sessionId);
-
-    if (state.team?.coach_id) {
-      const responseLabel = attendanceLabel(status);
-      const sessionTitle = session?.title || 'Session';
-      const sessionDate = session?.scheduled_at ? formatDateTime(session.scheduled_at) : '';
-
-      const { error: notifError } = await supabase
-        .from('notifications')
-        .insert({
-          profile_id: state.team.coach_id,
-          team_id: state.membership?.team_id || null,
-          type: 'attendance_response',
-          title: 'Réponse joueur',
-          content: `${state.profile?.full_name || 'Un joueur'} : ${responseLabel} • ${sessionTitle}${sessionDate ? ` • ${sessionDate}` : ''}`,
-          metadata: {
-            session_id: sessionId,
-            player_profile_id: state.sessionUser.id,
-            player_name: state.profile?.full_name || 'Joueur',
-            response_status: status
-          }
-        });
-
-      if (notifError) throw notifError;
-    }
-
     await loadUpcomingSessions(state.membership.team_id);
 
   } catch (error) {
@@ -1878,7 +1852,6 @@ async function respondToSession(sessionId, status) {
     alert(error.message || "Impossible d'enregistrer la réponse.");
   }
 }
-
 function attendanceLabel(status) {
   const map = {
     present: 'Je viens',
