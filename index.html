@@ -2473,8 +2473,11 @@ function scheduleCoachRealtimeRefresh() {
         loadConversations(state.activeTeam.id)
       ]);
 
-      await loadStatsForTeam();
-      renderDashboard();
+     await loadStatsForTeam();
+
+renderMatches();
+renderStats();
+renderDashboard();
     } catch (error) {
       console.error('Coach realtime refresh error:', error);
     }
@@ -3575,14 +3578,36 @@ const rows = state.teamMembers.map(member => ({
 
     if (upsertError) throw upsertError;
 
-    showNotice('match-modal-notice', 'success', 'Match enregistré avec succès.');
-    await loadMatchReports(state.activeTeam.id);
-    await loadSessions(state.activeTeam.id);
+   sshowNotice('match-modal-notice', 'success', 'Match enregistré avec succès.');
 
-    setTimeout(() => {
-      closeMatchModal();
-      
-    }, 500);
+await loadMatchReports(state.activeTeam.id);
+await loadSessions(state.activeTeam.id);
+await loadStatsForTeam();
+
+renderMatches();
+renderStats();
+renderDashboard();
+
+const playerIds = state.teamMembers
+  .map(member => member.player_profile_id)
+  .filter(Boolean);
+
+await createNotificationsForProfiles(playerIds, {
+  team_id: state.activeTeam.id,
+  type: 'match_reported',
+  title: 'Match renseigné',
+  content: `${state.activeTeam?.name || 'Ton équipe'} ${scoreFor} - ${scoreAgainst} ${opponent}`,
+  metadata: {
+    session_id: sessionId,
+    opponent,
+    score_for: scoreFor,
+    score_against: scoreAgainst
+  }
+});
+
+setTimeout(() => {
+  closeMatchModal();
+}, 500);
 
   } catch (error) {
     console.error(error);
