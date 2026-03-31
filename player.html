@@ -892,14 +892,17 @@
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const state = {
-      sessionUser: null,
-      profile: null,
-      membership: null,
-      team: null,
-      conversations: [],
-      currentConversation: null,
-      currentMessages: [],
-      realtimeChannel: null
+  sessionUser: null,
+  profile: null,
+  membership: null,
+  team: null,
+  conversations: [],
+  currentConversation: null,
+  currentMessages: [],
+  realtimeChannel: null,
+  teamRealtimeChannel: null,
+  refreshTimeout: null
+};
     };
     window.respondToSession = respondToSession;
     window.showPage = showPage;
@@ -968,12 +971,14 @@
       }
 
       state.membership = membership;
+      subscribeToTeamRealtime(membership.team_id);
 
       const { data: team, error: teamError } = await supabase
         .from('teams')
         .select('*')
         .eq('id', membership.team_id)
         .maybeSingle();
+      
 
       if (teamError) console.error(teamError);
 
@@ -1042,6 +1047,7 @@
       state.currentConversation = null;
       state.currentMessages = [];
       unsubscribeMessagesRealtime();
+      unsubscribeTeamRealtime();
     }
 
     function fillMembership(membership, team) {
@@ -1091,7 +1097,7 @@
       }
     }
 
-  async function loadUpcomingSessions(teamId) {
+ async function loadUpcomingSessions(teamId) {
   const nowIso = new Date().toISOString();
 
   const { data: sessions, error } = await supabase
@@ -1100,21 +1106,35 @@
     .eq('team_id', teamId)
     .gte('scheduled_at', nowIso)
     .order('scheduled_at', { ascending: true })
-    .limit(20);
+    .limit(50);
 
   if (error) throw error;
+
+  const { data: reports, error: reportsError } = await supabase
+    .from('match_reports')
+    .select('session_id')
+    .eq('team_id', teamId);
+
+  if (reportsError) throw reportsError;
+
+  const reportedSessionIds = new Set((reports || []).map(report => report.session_id));
+
+  const visibleSessions = (sessions || []).filter(session => {
+    if (session.type !== 'match') return true;
+    return !reportedSessionIds.has(session.id);
+  });
 
   const nextSessionBox = document.getElementById('next-session-box');
   const scheduleList = document.getElementById('schedule-list');
 
-  if (!sessions || !sessions.length) {
+  if (!visibleSessions.length) {
     nextSessionBox.innerHTML = `<div class="empty-note">Aucun rendez-vous à venir.</div>`;
     scheduleList.innerHTML = `<div class="empty-note">Aucun rendez-vous à venir.</div>`;
     return;
   }
 
-  const attendanceMap = await loadPlayerAttendanceMap(sessions.map(s => s.id));
-  const first = sessions[0];
+  const attendanceMap = await loadPlayerAttendanceMap(visibleSessions.map(s => s.id));
+  const first = visibleSessions[0];
   const firstStatus = attendanceMap.get(first.id);
 
   nextSessionBox.innerHTML = `
@@ -1130,7 +1150,7 @@
     </div>
   `;
 
-  scheduleList.innerHTML = sessions.map(session => {
+  scheduleList.innerHTML = visibleSessions.map(session => {
     const status = attendanceMap.get(session.id);
 
     return `
@@ -1569,7 +1589,91 @@ async function loadAttendanceRateForPlayer() {
         state.realtimeChannel = null;
       }
     }
+function unsubscribeTeamRealtime() {
+  if (state.teamRealtimeChannel) {
+    supabase.removeChannel(state.teamRealtimeChannel);
+    state.teamRealtimeChannel = null;
+  }
+}
 
+function scheduleRealtimeRefresh() {
+  if (state.refreshTimeout) {
+    clearTimeout(state.refreshTimeout);
+  }
+
+  state.refreshTimeout = setTimeout(async () => {
+    if (!state.membership || !state.sessionUser) return;
+
+    try {
+      await Promise.all([
+        loadUpcomingSessions(state.membership.team_id),
+        loadStats(state.membership.id),
+        loadMessagesPreview(state.sessionUser.id),
+        loadPayments(state.sessionUser.id),
+        loadConversations(state.sessionUser.id)
+      ]);
+    } catch (error) {
+      console.error('Player realtime refresh error:', error);
+    }
+  }, 250);
+}
+
+function subscribeToTeamRealtime(teamId) {
+  unsubscribeTeamRealtime();
+
+  state.teamRealtimeChannel = supabase
+    .channel(`player-team-live:${teamId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'sessions',
+        filter: `team_id=eq.${teamId}`
+      },
+      () => {
+        scheduleRealtimeRefresh();
+      }
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'match_reports',
+        filter: `team_id=eq.${teamId}`
+      },
+      () => {
+        scheduleRealtimeRefresh();
+      }
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'match_player_stats'
+      },
+      () => {
+        scheduleRealtimeRefresh();
+      }
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'attendance',
+        filter: `player_profile_id=eq.${state.sessionUser.id}`
+      },
+      () => {
+        scheduleRealtimeRefresh();
+      }
+    )
+    .subscribe((status) => {
+      console.log('Player team realtime status:', status);
+    });
+}
     async function appendRealtimeMessage(newMessage) {
       if (!state.currentConversation) return;
       if (newMessage.conversation_id !== state.currentConversation.id) return;
@@ -1700,11 +1804,12 @@ async function loadAttendanceRateForPlayer() {
       document.getElementById('topbar-title').textContent = titles[id] || 'Dashboard';
     }
 
-    async function logout() {
-      unsubscribeMessagesRealtime();
-      await supabase.auth.signOut();
-      window.location.href = '/';
-    }
+   async function logout() {
+  unsubscribeMessagesRealtime();
+  unsubscribeTeamRealtime();
+  await supabase.auth.signOut();
+  window.location.href = '/';
+}
 
     function getInitials(value) {
       return String(value || '')
