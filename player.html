@@ -709,7 +709,6 @@
       <div class="nav-section">Joueur</div>
       <div class="nav-item active" onclick="showPage('dashboard', this)"><span class="nav-icon">⚡</span>Dashboard</div>
       <div class="nav-item" onclick="showPage('schedule', this)"><span class="nav-icon">📅</span>Prochains rendez-vous</div>
-      <div class="nav-item" onclick="showPage('calendar', this)"><span class="nav-icon">🗓️</span>Calendrier</div>
       <div class="nav-item" onclick="showPage('performance', this)"><span class="nav-icon">📊</span>Performances</div>
       <div class="nav-item" onclick="showPage('messages', this)"><span class="nav-icon">💬</span>Messages</div>
       <div class="nav-item" onclick="showPage('payments', this)"><span class="nav-icon">💳</span>Paiements</div>
@@ -827,27 +826,10 @@
 
   <div class="card">
     <div class="card-header">
-      <span class="card-title">Planning</span>
+      <span class="card-title">Planning de l’équipe</span>
     </div>
-    <div class="list" id="schedule-list">
+    <div id="schedule-list">
       <div class="empty-note">Aucun rendez-vous trouvé.</div>
-    </div>
-  </div>
-</div>
-
-<div class="page" id="page-calendar">
-  <div class="page-header">
-    <div class="page-title">Calendrier</div>
-    <div class="page-desc">Vue des prochains entraînements de ton équipe.</div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Prochains entraînements</span>
-    </div>
-
-    <div id="calendar-training-list">
-      <div class="empty-note">Aucun entraînement à venir.</div>
     </div>
   </div>
 </div>
@@ -1111,8 +1093,6 @@
       `;
 
       document.getElementById('schedule-list').innerHTML = `<div class="empty-note">Aucun rendez-vous trouvé.</div>`;
-      state.upcomingSessions = [];
-      document.getElementById('calendar-training-list').innerHTML = `<div class="empty-note">Aucun entraînement à venir.</div>`;
       document.getElementById('messages-preview').innerHTML = `<div class="empty-note">Aucun message.</div>`;
       document.getElementById('payments-list').innerHTML = `<div class="empty-note">Aucun paiement enregistré.</div>`;
       document.getElementById('conversation-list').innerHTML = `<div class="empty-note">Rejoins d’abord une équipe.</div>`;
@@ -1210,8 +1190,8 @@
     if (session.type !== 'match') return true;
     return !reportedSessionIds.has(session.id);
   });
-   state.upcomingSessions = visibleSessions;
-renderTrainingCalendar();
+
+  state.upcomingSessions = visibleSessions;
 
   const nextSessionBox = document.getElementById('next-session-box');
   const scheduleList = document.getElementById('schedule-list');
@@ -1223,6 +1203,7 @@ renderTrainingCalendar();
   }
 
   const attendanceMap = await loadPlayerAttendanceMap(visibleSessions.map(s => s.id));
+
   const first = visibleSessions[0];
   const firstStatus = attendanceMap.get(first.id);
 
@@ -1239,52 +1220,9 @@ renderTrainingCalendar();
     </div>
   `;
 
-  scheduleList.innerHTML = visibleSessions.map(session => {
-    const status = attendanceMap.get(session.id);
-
-    return `
-      <div class="list-item">
-        <div class="list-title">${escapeHtml(session.title)}</div>
-        <div class="list-sub">${translateSessionType(session.type)} · ${formatDateTime(session.scheduled_at)}</div>
-        <div class="list-sub">${escapeHtml(session.location || 'Lieu non précisé')}</div>
-
-        <div style="margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-          <button class="btn btn-primary" onclick="respondToSession('${session.id}', 'present')">
-            Je viens
-          </button>
-
-          <button class="btn btn-ghost" onclick="respondToSession('${session.id}', 'absent')">
-            Je ne viens pas
-          </button>
-
-          <button class="btn btn-ghost" onclick="respondToSession('${session.id}', 'late')">
-            En retard
-          </button>
-
-          <span class="badge ${attendanceBadgeClass(status)}">
-            ${attendanceLabel(status)}
-          </span>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-    function renderTrainingCalendar() {
-  const box = document.getElementById('calendar-training-list');
-  if (!box) return;
-
-  const trainingSessions = (state.upcomingSessions || []).filter(
-    session => session.type === 'training'
-  );
-
-  if (!trainingSessions.length) {
-    box.innerHTML = `<div class="empty-note">Aucun entraînement à venir.</div>`;
-    return;
-  }
-
   const grouped = new Map();
 
-  for (const session of trainingSessions) {
+  for (const session of visibleSessions) {
     const dateKey = new Date(session.scheduled_at).toDateString();
 
     if (!grouped.has(dateKey)) {
@@ -1294,15 +1232,15 @@ renderTrainingCalendar();
     grouped.get(dateKey).push(session);
   }
 
-  const html = Array.from(grouped.entries()).map(([dateKey, sessions]) => {
+  const html = Array.from(grouped.entries()).map(([_, sessionsForDay]) => {
     const formattedDay = new Intl.DateTimeFormat('fr-FR', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric'
-    }).format(new Date(sessions[0].scheduled_at));
+    }).format(new Date(sessionsForDay[0].scheduled_at));
 
-    const eventsHtml = sessions
+    const eventsHtml = sessionsForDay
       .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))
       .map(session => {
         const timeLabel = new Intl.DateTimeFormat('fr-FR', {
@@ -1310,12 +1248,32 @@ renderTrainingCalendar();
           minute: '2-digit'
         }).format(new Date(session.scheduled_at));
 
+        const status = attendanceMap.get(session.id);
+
         return `
           <div class="calendar-event-card">
             <div class="calendar-event-left">
               <div class="calendar-event-title">${escapeHtml(session.title)}</div>
-              <div class="calendar-event-sub">${escapeHtml(session.location || 'Lieu non précisé')}</div>
+              <div class="calendar-event-sub">${translateSessionType(session.type)} · ${escapeHtml(session.location || 'Lieu non précisé')}</div>
               <div class="calendar-event-sub">Durée : ${Number(session.duration_minutes || 0)} min</div>
+
+              <div style="margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+                <button class="btn btn-primary" onclick="respondToSession('${session.id}', 'present')">
+                  Je viens
+                </button>
+
+                <button class="btn btn-ghost" onclick="respondToSession('${session.id}', 'absent')">
+                  Je ne viens pas
+                </button>
+
+                <button class="btn btn-ghost" onclick="respondToSession('${session.id}', 'late')">
+                  En retard
+                </button>
+
+                <span class="badge ${attendanceBadgeClass(status)}">
+                  ${attendanceLabel(status)}
+                </span>
+              </div>
             </div>
 
             <div class="calendar-event-time">${timeLabel}</div>
@@ -1333,8 +1291,9 @@ renderTrainingCalendar();
     `;
   }).join('');
 
-  box.innerHTML = html;
+  scheduleList.innerHTML = html;
 }
+
 async function loadPlayerAttendanceMap(sessionIds) {
   if (!sessionIds.length) {
     return new Map();
