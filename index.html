@@ -1030,6 +1030,41 @@
 .stat-card.win { border-left: 4px solid #00ff99; }
 .stat-card.draw { border-left: 4px solid #ffaa00; }
 .stat-card.loss { border-left: 4px solid #ff4444; }
+    .form-row-badges {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.form-badge {
+  min-width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+}
+
+.form-badge.win {
+  background: rgba(61,255,122,0.12);
+  color: var(--green);
+  border-color: rgba(61,255,122,0.25);
+}
+
+.form-badge.draw {
+  background: rgba(255,145,0,0.12);
+  color: var(--orange);
+  border-color: rgba(255,145,0,0.25);
+}
+
+.form-badge.loss {
+  background: rgba(255,82,82,0.12);
+  color: var(--red);
+  border-color: rgba(255,82,82,0.25);
+}
   </style>
 </head>
 <body>
@@ -1091,7 +1126,7 @@
           <div class="page-desc" id="dashboard-subtitle">Charge tes équipes, joueurs et messages en temps réel.</div>
         </div>
 
- <div class="grid-4" style="margin-bottom:1.5rem">
+<div class="grid-4" style="margin-bottom:1.5rem">
   <div class="stat-card">
     <div class="stat-label">Effectif total</div>
     <div class="stat-value" id="stat-total-players">0</div>
@@ -1111,12 +1146,19 @@
   </div>
 
   <div class="stat-card">
-    <div class="stat-label">Conversations</div>
-    <div class="stat-value" id="stat-recent-messages">0</div>
-    <div class="stat-sub">Fils actifs</div>
+    <div class="stat-label">Différence de buts</div>
+    <div class="stat-value" id="stat-goal-difference">0</div>
+    <div class="stat-sub">Buts pour - buts contre</div>
   </div>
 </div>
-
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-header">
+    <span class="card-title">Forme récente</span>
+  </div>
+  <div id="recent-form-list">
+    <div class="empty-note">Aucun match joué.</div>
+  </div>
+</div>
         <div class="grid-2">
           <div class="card">
             <div class="card-header">
@@ -2211,38 +2253,91 @@ function subscribeToAttendanceRealtime(teamId) {
           console.log('Coach realtime status:', status);
         });
     }
+function renderDashboard() {
+  const upcoming = state.sessions.filter(
+    s => new Date(s.scheduled_at) >= new Date()
+  );
 
-    function renderDashboard() {
-      const upcoming = state.sessions.filter(s => new Date(s.scheduled_at) >= new Date());
-      const pending = state.payments.filter(p => p.status !== 'paid');
+  const pending = state.payments.filter(
+    p => p.status !== 'paid'
+  );
 
-      document.getElementById('stat-total-players').textContent = state.teamMembers.length;
-      document.getElementById('stat-upcoming-sessions').textContent = upcoming.length;
-      document.getElementById('stat-pending-payments').textContent = pending.length;
-      document.getElementById('stat-recent-messages').textContent = state.conversations.length;
+  const totalGoalsFor = state.matchReports.reduce(
+    (sum, match) => sum + Number(match.score_for || 0),
+    0
+  );
 
-      const sList = document.getElementById('dashboard-sessions-list');
-      sList.innerHTML = upcoming.length
-        ? upcoming.slice(0, 5).map(item => `
-            <div class="list-item">
-              <div class="list-title">${escapeHtml(item.title)}</div>
-              <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
-              <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
-            </div>
-          `).join('')
-        : `<div class="empty-note">Aucune session à venir.</div>`;
+  const totalGoalsAgainst = state.matchReports.reduce(
+    (sum, match) => sum + Number(match.score_against || 0),
+    0
+  );
 
-      const pList = document.getElementById('dashboard-payments-list');
-      pList.innerHTML = state.payments.length
-        ? state.payments.slice(0, 5).map(item => `
-            <div class="list-item">
-              <div class="list-title">${escapeHtml(item.label)}</div>
-              <div class="list-sub">${item.player?.full_name ? escapeHtml(item.player.full_name) + ' · ' : ''}${formatAmount(item.amount)}</div>
-              <div class="list-sub">${translatePaymentStatus(item.status)} · échéance ${formatDate(item.due_date)}</div>
-            </div>
-          `).join('')
-        : `<div class="empty-note">Aucun paiement.</div>`;
-    }
+  const goalDifference = totalGoalsFor - totalGoalsAgainst;
+
+  document.getElementById('stat-total-players').textContent = state.teamMembers.length;
+  document.getElementById('stat-upcoming-sessions').textContent = upcoming.length;
+  document.getElementById('stat-pending-payments').textContent = pending.length;
+  document.getElementById('stat-goal-difference').textContent =
+    goalDifference > 0 ? `+${goalDifference}` : String(goalDifference);
+
+  const sList = document.getElementById('dashboard-sessions-list');
+  sList.innerHTML = upcoming.length
+    ? upcoming.slice(0, 5).map(item => `
+        <div class="list-item">
+          <div class="list-title">${escapeHtml(item.title)}</div>
+          <div class="list-sub">${translateSessionType(item.type)} · ${formatDateTime(item.scheduled_at)}</div>
+          <div class="list-sub">${escapeHtml(item.location || 'Lieu non précisé')}</div>
+        </div>
+      `).join('')
+    : `<div class="empty-note">Aucune session à venir.</div>`;
+
+  const pList = document.getElementById('dashboard-payments-list');
+  pList.innerHTML = state.payments.length
+    ? state.payments.slice(0, 5).map(item => `
+        <div class="list-item">
+          <div class="list-title">${escapeHtml(item.label)}</div>
+          <div class="list-sub">${item.player?.full_name ? escapeHtml(item.player.full_name) + ' · ' : ''}${formatAmount(item.amount)}</div>
+          <div class="list-sub">${translatePaymentStatus(item.status)} · échéance ${formatDate(item.due_date)}</div>
+        </div>
+      `).join('')
+    : `<div class="empty-note">Aucun paiement.</div>`;
+
+  renderRecentForm();
+}
+    function renderRecentForm() {
+  const box = document.getElementById('recent-form-list');
+  if (!box) return;
+
+  const recentMatches = [...state.matchReports]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 5);
+
+  if (!recentMatches.length) {
+    box.innerHTML = `<div class="empty-note">Aucun match joué.</div>`;
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="form-row-badges">
+      ${recentMatches.map(match => {
+        const scoreFor = Number(match.score_for || 0);
+        const scoreAgainst = Number(match.score_against || 0);
+
+        const isWin = scoreFor > scoreAgainst;
+        const isDraw = scoreFor === scoreAgainst;
+
+        const label = isWin ? 'V' : isDraw ? 'N' : 'D';
+        const cls = isWin ? 'win' : isDraw ? 'draw' : 'loss';
+
+        return `
+          <div class="form-badge ${cls}" title="${scoreFor} - ${scoreAgainst}">
+            ${label}
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
 
     function renderRoster() {
       const tbody = document.getElementById('roster-table-body');
