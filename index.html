@@ -1065,6 +1065,105 @@
   color: var(--red);
   border-color: rgba(255,82,82,0.25);
 }
+    .match-detail-hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.match-detail-main,
+.match-detail-side {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1rem;
+}
+
+.match-detail-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.match-detail-subtitle {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.match-detail-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.2rem;
+  line-height: 1;
+  color: var(--green);
+  margin-top: 0.7rem;
+}
+
+.match-result-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.7rem;
+}
+
+.match-result-pill.win {
+  background: rgba(61,255,122,0.12);
+  color: var(--green);
+  border: 1px solid rgba(61,255,122,0.22);
+}
+
+.match-result-pill.draw {
+  background: rgba(255,145,0,0.12);
+  color: var(--orange);
+  border: 1px solid rgba(255,145,0,0.22);
+}
+
+.match-result-pill.loss {
+  background: rgba(255,82,82,0.12);
+  color: var(--red);
+  border: 1px solid rgba(255,82,82,0.22);
+}
+
+.match-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.match-meta-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.85rem;
+}
+
+.match-meta-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.match-meta-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+@media (max-width: 900px) {
+  .match-detail-hero,
+  .match-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 </head>
 <body>
@@ -3191,12 +3290,21 @@ async function openMatchViewModal(sessionId) {
       return;
     }
 
+    const { data: sessionData, error: sessionError } = await supabase
+      .from('sessions')
+      .select('*')
+      .eq('id', sessionId)
+      .maybeSingle();
+
+    if (sessionError) throw sessionError;
+
     const { data: statsRows, error: statsError } = await supabase
       .from('match_player_stats')
       .select(`
         *,
         team_member:team_members!match_player_stats_team_member_id_fkey (
           id,
+          position,
           player:profiles!team_members_player_profile_id_fkey (
             full_name
           )
@@ -3213,67 +3321,98 @@ async function openMatchViewModal(sessionId) {
     const conceded = rows.filter(row => Number(row.goals_conceded || 0) > 0);
     const motm = rows.find(row => row.is_man_of_the_match);
 
-    const scorersHtml = scorers.length
-      ? scorers.map(row => `
-          <div class="list-item">
-            <div class="list-title">${escapeHtml(row.team_member?.player?.full_name || 'Joueur')}</div>
-            <div class="list-sub">${row.goals} but(s)</div>
-          </div>
-        `).join('')
-      : `<div class="empty-note">Aucun buteur.</div>`;
+    const scoreFor = Number(report.score_for || 0);
+    const scoreAgainst = Number(report.score_against || 0);
 
-    const assistersHtml = assisters.length
-      ? assisters.map(row => `
-          <div class="list-item">
-            <div class="list-title">${escapeHtml(row.team_member?.player?.full_name || 'Joueur')}</div>
-            <div class="list-sub">${row.assists} passe(s) décisive(s)</div>
-          </div>
-        `).join('')
-      : `<div class="empty-note">Aucun passeur décisif.</div>`;
+    const isWin = scoreFor > scoreAgainst;
+    const isDraw = scoreFor === scoreAgainst;
 
-    const concededHtml = conceded.length
-      ? conceded.map(row => `
-          <div class="list-item">
-            <div class="list-title">${escapeHtml(row.team_member?.player?.full_name || 'Joueur')}</div>
-            <div class="list-sub">${row.goals_conceded} but(s) encaissé(s)</div>
-          </div>
-        `).join('')
-      : `<div class="empty-note">Aucun but encaissé enregistré.</div>`;
+    const resultLabel = isWin ? 'Victoire' : isDraw ? 'Nul' : 'Défaite';
+    const resultClass = isWin ? 'win' : isDraw ? 'draw' : 'loss';
+
+    const renderPlayerList = (items, valueKey, suffix, emptyText) => {
+      if (!items.length) {
+        return `<div class="empty-note">${emptyText}</div>`;
+      }
+
+      return `
+        <div class="list">
+          ${items
+            .sort((a, b) => Number(b[valueKey] || 0) - Number(a[valueKey] || 0))
+            .map(item => `
+              <div class="list-item">
+                <div class="list-title">${escapeHtml(item.team_member?.player?.full_name || 'Joueur')}</div>
+                <div class="list-sub">${Number(item[valueKey] || 0)} ${suffix}</div>
+              </div>
+            `).join('')}
+        </div>
+      `;
+    };
 
     document.getElementById('match-view-content').innerHTML = `
-      <div class="grid-2" style="margin-bottom:1rem">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Résultat</span>
+      <div class="match-detail-hero">
+        <div class="match-detail-main">
+          <div class="match-detail-title">
+            ${escapeHtml(state.activeTeam?.name || 'Mon équipe')} vs ${escapeHtml(report.opponent || 'Adversaire')}
           </div>
 
-          <div class="list">
-            <div class="list-item">
-              <div class="list-title">${escapeHtml(state.activeTeam?.name || 'Mon équipe')} ${report.score_for} - ${report.score_against} ${escapeHtml(report.opponent)}</div>
-              <div class="list-sub">Homme du match : ${escapeHtml(motm?.team_member?.player?.full_name || '—')}</div>
+          <div class="match-detail-subtitle">
+            ${escapeHtml(sessionData?.title || 'Match officiel')}
+          </div>
+
+          <div class="match-detail-score">
+            ${scoreFor} - ${scoreAgainst}
+          </div>
+
+          <div class="match-result-pill ${resultClass}">
+            ${resultLabel}
+          </div>
+
+          <div class="match-meta-grid">
+            <div class="match-meta-box">
+              <div class="match-meta-label">Date</div>
+              <div class="match-meta-value">${formatDateTime(sessionData?.scheduled_at)}</div>
+            </div>
+
+            <div class="match-meta-box">
+              <div class="match-meta-label">Lieu</div>
+              <div class="match-meta-value">${escapeHtml(sessionData?.location || 'Lieu non précisé')}</div>
+            </div>
+
+            <div class="match-meta-box">
+              <div class="match-meta-label">Adversaire</div>
+              <div class="match-meta-value">${escapeHtml(report.opponent || '—')}</div>
+            </div>
+
+            <div class="match-meta-box">
+              <div class="match-meta-label">Homme du match</div>
+              <div class="match-meta-value">${escapeHtml(motm?.team_member?.player?.full_name || '—')}</div>
             </div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Résumé</span>
-          </div>
+        <div class="match-detail-side">
+          <div class="card-title" style="margin-bottom:.8rem">Résumé rapide</div>
 
           <div class="list">
             <div class="list-item">
-              <div class="list-title">Adversaire</div>
-              <div class="list-sub">${escapeHtml(report.opponent)}</div>
+              <div class="list-title">Buts marqués</div>
+              <div class="list-sub">${scoreFor}</div>
             </div>
 
             <div class="list-item">
-              <div class="list-title">Score</div>
-              <div class="list-sub">${report.score_for} - ${report.score_against}</div>
+              <div class="list-title">Buts encaissés</div>
+              <div class="list-sub">${scoreAgainst}</div>
             </div>
 
             <div class="list-item">
-              <div class="list-title">Homme du match</div>
-              <div class="list-sub">${escapeHtml(motm?.team_member?.player?.full_name || '—')}</div>
+              <div class="list-title">Buteurs distincts</div>
+              <div class="list-sub">${scorers.length}</div>
+            </div>
+
+            <div class="list-item">
+              <div class="list-title">Passeurs distincts</div>
+              <div class="list-sub">${assisters.length}</div>
             </div>
           </div>
         </div>
@@ -3284,28 +3423,22 @@ async function openMatchViewModal(sessionId) {
           <div class="card-header">
             <span class="card-title">Buteurs</span>
           </div>
-          <div class="list">
-            ${scorersHtml}
-          </div>
+          ${renderPlayerList(scorers, 'goals', 'but(s)', 'Aucun buteur.')}
         </div>
 
         <div class="card">
           <div class="card-header">
             <span class="card-title">Passeurs décisifs</span>
           </div>
-          <div class="list">
-            ${assistersHtml}
-          </div>
+          ${renderPlayerList(assisters, 'assists', 'passe(s) décisive(s)', 'Aucun passeur décisif.')}
         </div>
       </div>
 
       <div class="card" style="margin-top:1rem">
         <div class="card-header">
-          <span class="card-title">Buts encaissés</span>
+          <span class="card-title">Buts encaissés par joueur</span>
         </div>
-        <div class="list">
-          ${concededHtml}
-        </div>
+        ${renderPlayerList(conceded, 'goals_conceded', 'but(s) encaissé(s)', 'Aucun but encaissé enregistré.')}
       </div>
     `;
 
