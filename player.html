@@ -1353,7 +1353,48 @@
         grid-template-columns: 1fr;
       }
     }
-   
+   .player-stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 1rem !important;
+}
+
+.player-stat-card {
+  position: relative !important;
+  overflow: hidden !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015)) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 20px !important;
+  padding: 1.2rem !important;
+  min-height: 180px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+}
+
+.player-stat-number {
+  font-family: 'Bebas Neue', sans-serif !important;
+  font-size: 3.3rem !important;
+  line-height: 1 !important;
+  color: var(--text) !important;
+  margin-top: 0.8rem !important;
+}
+
+.player-stat-name {
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: var(--muted2) !important;
+  margin-top: 0.7rem !important;
+}
+
+.player-stat-desc {
+  font-size: 0.76rem !important;
+  color: var(--muted) !important;
+  margin-top: 0.35rem !important;
+  line-height: 1.45 !important;
+}
   </style>
 </head>
 <body>
