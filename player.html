@@ -2041,12 +2041,19 @@ async function loadAttendanceRateForPlayer() {
       const box = document.getElementById('conversation-list');
 
      box.innerHTML = state.conversations.length
-  ? state.conversations.map(conv => `
-      <div class="conv-item ${state.currentConversation?.id === conv.id ? 'active' : ''}" onclick="openConversation('${conv.id}')">
-        <div class="conv-title">${escapeHtml(conv.title || (conv.type === 'team' ? 'Général' : 'Conversation'))}</div>
-        <div class="conv-sub">${conv.type === 'team' ? 'Chat général' : 'Conversation directe'}</div>
-      </div>
-    `).join('')
+  ? state.conversations.map(conv => {
+      const unreadCount = state.unreadCounts?.get(conv.id) || 0;
+
+      return `
+        <div class="conv-item ${state.currentConversation?.id === conv.id ? 'active' : ''}" onclick="openConversation('${conv.id}')">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:.7rem">
+            <div class="conv-title">${escapeHtml(conv.title || (conv.type === 'team' ? 'Général' : 'Conversation'))}</div>
+            ${unreadCount > 0 ? `<span class="badge badge-red">${unreadCount}</span>` : ''}
+          </div>
+          <div class="conv-sub">${conv.type === 'team' ? 'Chat général' : 'Conversation directe'}</div>
+        </div>
+      `;
+    }).join('')
   : `<div class="empty-note">Aucune conversation.</div>`;
     }
 
