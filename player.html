@@ -2238,12 +2238,12 @@ async function handleNotificationClick(notificationId, type, rawMetadata) {
     closeNotificationsPanel();
 
     if (type === 'session_created') {
-      showPage('sessions', document.querySelector(`.nav-item[onclick*="showPage('sessions'"]`));
+      showPage('schedule', document.querySelector(`.nav-item[onclick*="showPage('schedule'"]`));
       return;
     }
 
     if (type === 'match_reported') {
-      showPage('matches', document.querySelector(`.nav-item[onclick*="showPage('matches'"]`));
+      showPage('performance', document.querySelector(`.nav-item[onclick*="showPage('performance'"]`));
       return;
     }
 
