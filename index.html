@@ -4204,6 +4204,8 @@ async function openMatchViewModal(sessionId) {
     }
 
 async function logout() {
+  unsubscribeNotificationsRealtime();
+  closeNotificationsPanel();
   unsubscribeMessagesRealtime();
   unsubscribeAttendanceRealtime();
   unsubscribeTeamRealtime();
