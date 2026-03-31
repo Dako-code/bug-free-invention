@@ -1239,49 +1239,142 @@ function attendanceBadgeClass(status) {
 
   return map[status] || 'badge-blue';
 }
-  async function loadStats(teamMemberId) {
-  const { data: rows, error } = await supabase
-    .from('match_player_stats')
-    .select(`
-      goals,
-      assists,
-      goals_conceded,
-      is_man_of_the_match
-    `)
-    .eq('team_member_id', teamMemberId);
+async function loadStats(teamMemberId) {
+  try {
+    const { data: statsRows, error: statsError } = await supabase
+      .from('match_player_stats')
+      .select(`
+        goals,
+        assists,
+        goals_conceded,
+        is_man_of_the_match
+      `)
+      .eq('team_member_id', teamMemberId);
 
-  if (error) throw error;
+    if (statsError) throw statsError;
 
-  const statsRows = rows || [];
+    const rows = statsRows || [];
 
-  const goals = statsRows.reduce((sum, row) => sum + Number(row.goals || 0), 0);
-  const assists = statsRows.reduce((sum, row) => sum + Number(row.assists || 0), 0);
-  const conceded = statsRows.reduce((sum, row) => sum + Number(row.goals_conceded || 0), 0);
-  const matches = statsRows.length;
+    const goals = rows.reduce((sum, row) => sum + Number(row.goals || 0), 0);
+    const assists = rows.reduce((sum, row) => sum + Number(row.assists || 0), 0);
+    const conceded = rows.reduce((sum, row) => sum + Number(row.goals_conceded || 0), 0);
+    const matches = rows.length;
 
-  const attendanceRate = await loadAttendanceRateForPlayer();
-  const avgRating = 0;
+    let attendance = 0;
 
-  document.getElementById('stat-goals').textContent = goals;
-  document.getElementById('stat-assists').textContent = assists;
-  document.getElementById('stat-attendance').textContent = `${attendanceRate}%`;
-  document.getElementById('stat-rating').textContent = avgRating ? avgRating.toFixed(1) : '—';
+    if (state.sessionUser?.id && state.membership?.team_id) {
+      const { data: sessions, error: sessionsError } = await supabase
+        .from('sessions')
+        .select('id')
+        .eq('team_id', state.membership.team_id);
 
-  document.getElementById('perf-goals').textContent = `${goals} but(s)`;
-  document.getElementById('perf-assists').textContent = `${assists} passe(s) décisive(s)`;
-  document.getElementById('perf-matches').textContent = `${matches} match(s)`;
-  document.getElementById('perf-minutes').textContent = '—';
-  document.getElementById('perf-attendance-label').textContent = `${attendanceRate}%`;
-  document.getElementById('perf-attendance-fill').style.width = `${Math.max(0, Math.min(attendanceRate, 100))}%`;
-  document.getElementById('perf-rating-label').textContent = avgRating ? avgRating.toFixed(1) : '—';
-  document.getElementById('perf-rating-fill').style.width = `${Math.max(0, Math.min((avgRating / 10) * 100, 100))}%`;
+      if (sessionsError) {
+        console.error('Sessions load error:', sessionsError);
+      } else {
+        const allSessions = sessions || [];
 
-  renderRecentActivity({
-    goals,
-    assists,
-    conceded,
-    matches
-  });
+        if (allSessions.length) {
+          const sessionIds = allSessions.map(session => session.id);
+
+          const { data: attendanceRows, error: attendanceError } = await supabase
+            .from('attendance')
+            .select('session_id, status')
+            .eq('player_profile_id', state.sessionUser.id)
+            .in('session_id', sessionIds);
+
+          if (attendanceError) {
+            console.error('Attendance load error:', attendanceError);
+          } else {
+            const answered = (attendanceRows || []).filter(row =>
+              ['present', 'late', 'absent'].includes(row.status)
+            ).length;
+
+            attendance = Math.round((answered / allSessions.length) * 100);
+          }
+        }
+      }
+    }
+
+    const rating = 0;
+
+    document.getElementById('stat-goals').textContent = goals;
+    document.getElementById('stat-assists').textContent = assists;
+    document.getElementById('stat-attendance').textContent = `${attendance}%`;
+    document.getElementById('stat-rating').textContent = '—';
+
+    document.getElementById('perf-goals').textContent = `${goals} but(s)`;
+    document.getElementById('perf-assists').textContent = `${assists} passe(s) décisive(s)`;
+    document.getElementById('perf-matches').textContent = `${matches} match(s)`;
+    document.getElementById('perf-minutes').textContent = '—';
+    document.getElementById('perf-attendance-label').textContent = `${attendance}%`;
+    document.getElementById('perf-attendance-fill').style.width = `${Math.max(0, Math.min(attendance, 100))}%`;
+    document.getElementById('perf-rating-label').textContent = '—';
+    document.getElementById('perf-rating-fill').style.width = '0%';
+
+    const activityBox = document.getElementById('activity-timeline');
+
+    const items = [];
+
+    if (matches > 0) {
+      items.push(`
+        <div class="list-item">
+          <div class="list-title">${matches} match(s) joué(s)</div>
+          <div class="list-sub">Calculé depuis les matchs enregistrés par le coach.</div>
+        </div>
+      `);
+    }
+
+    if (goals > 0) {
+      items.push(`
+        <div class="list-item">
+          <div class="list-title">${goals} but(s)</div>
+          <div class="list-sub">Total cumulé sur tes matchs.</div>
+        </div>
+      `);
+    }
+
+    if (assists > 0) {
+      items.push(`
+        <div class="list-item">
+          <div class="list-title">${assists} passe(s) décisive(s)</div>
+          <div class="list-sub">Total cumulé sur tes matchs.</div>
+        </div>
+      `);
+    }
+
+    if (conceded > 0) {
+      items.push(`
+        <div class="list-item">
+          <div class="list-title">${conceded} but(s) encaissé(s)</div>
+          <div class="list-sub">Visible surtout pour le gardien, selon les stats saisies.</div>
+        </div>
+      `);
+    }
+
+    activityBox.innerHTML = items.length
+      ? `<div class="list">${items.join('')}</div>`
+      : `<div class="empty-note">Aucune activité récente.</div>`;
+
+  } catch (error) {
+    console.error('loadStats error:', error);
+
+    document.getElementById('stat-goals').textContent = '--';
+    document.getElementById('stat-assists').textContent = '--';
+    document.getElementById('stat-attendance').textContent = '--%';
+    document.getElementById('stat-rating').textContent = '--';
+
+    document.getElementById('perf-goals').textContent = '--';
+    document.getElementById('perf-assists').textContent = '--';
+    document.getElementById('perf-matches').textContent = '--';
+    document.getElementById('perf-minutes').textContent = '--';
+    document.getElementById('perf-attendance-label').textContent = '--%';
+    document.getElementById('perf-attendance-fill').style.width = '0%';
+    document.getElementById('perf-rating-label').textContent = '--';
+    document.getElementById('perf-rating-fill').style.width = '0%';
+
+    document.getElementById('activity-timeline').innerHTML =
+      `<div class="empty-note">Impossible de charger les statistiques.</div>`;
+  }
 }
 async function loadAttendanceRateForPlayer() {
   if (!state.sessionUser?.id || !state.membership?.team_id) {
