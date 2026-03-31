@@ -8,73 +8,24 @@
 
   <style>
     :root {
-      --bg: #080C0A;
-      --surface: #0F1511;
-      --card: #141C16;
-  if (!state.currentConversation) {
-    alert('Sélectionne une conversation.');
-    return;
-  }
-
-  const input = document.getElementById('message-input');
-  const content = input.value.trim();
-
-  if (!content) return;
-
-  try {
-    const { error: messageError } = await supabase
-      .from('messages')
-      .insert({
-        conversation_id: state.currentConversation.id,
-        sender_id: state.sessionUser.id,
-        content
-      });
-
-    if (messageError) throw messageError;
-
-    const { data: participants, error: participantsError } = await supabase
-      .from('conversation_participants')
-      .select('profile_id')
-      .eq('conversation_id', state.currentConversation.id);
-
-    if (participantsError) throw participantsError;
-
-    const recipientIds = (participants || [])
-      .map(row => row.profile_id)
-      .filter(profileId => profileId !== state.sessionUser.id);
-
-    await createNotificationsForProfiles(recipientIds, {
-      team_id: state.activeTeam?.id || null,
-      type: 'message_received',
-      title: 'Nouveau message',
-      content: `${state.currentConversation.title || 'Conversation'} • ${content}`,
-      metadata: {
-        conversation_id: state.currentConversation.id
-      }
-    });
-
-    input.value = '';
-
-  } catch (error) {
-    console.error(error);
-    alert(error.message || "Impossible d'envoyer le message.");
-  }
+  --bg: #080C0A;
+  --surface: #0F1511;
+  --card: #141C16;
+  --border: #1E2B20;
+  --border2: #243028;
+  --green: #3DFF7A;
+  --green2: #00C853;
+  --green-dim: rgba(61,255,122,0.08);
+  --text: #EDF2EE;
+  --muted: #5A7060;
+  --muted2: #8AAB8F;
+  --red: #FF5252;
+  --orange: #FF9100;
+  --blue: #40C4FF;
+  --yellow: #FFD740;
+  --r: 10px;
+  --r2: 14px;
 }
-      --border: #1E2B20;
-      --border2: #243028;
-      --green: #3DFF7A;
-      --green2: #00C853;
-      --green-dim: rgba(61,255,122,0.08);
-      --text: #EDF2EE;
-      --muted: #5A7060;
-      --muted2: #8AAB8F;
-      --red: #FF5252;
-      --orange: #FF9100;
-      --blue: #40C4FF;
-      --yellow: #FFD740;
-      --r: 10px;
-      --r2: 14px;
-    }
 
     *,
     *::before,
@@ -1929,17 +1880,16 @@
     </div>
   </div>
 
-  <!-- CARTES STATS -->
   <div class="stats-grid">
     <div class="stat-card purple">
       <div class="stat-label">Matchs joués</div>
       <div class="stat-value" id="stats-matches">0</div>
     </div>
+
     <div class="stat-card green">
       <div class="stat-label">Buts marqués</div>
       <div class="stat-value" id="stats-goals">0</div>
     </div>
-
 
     <div class="stat-card red">
       <div class="stat-label">Buts encaissés</div>
@@ -1960,10 +1910,8 @@
       <div class="stat-label">Défaites</div>
       <div class="stat-value" id="stats-losses">0</div>
     </div>
-
   </div>
 
-  <!-- TABLEAU JOUEURS -->
   <div class="card" style="margin-top:20px;">
     <div class="card-header">
       <span class="card-title">Statistiques joueurs</span>
@@ -1989,7 +1937,6 @@
     </table>
   </div>
 
-  <!-- TOP JOUEURS -->
   <div class="card" style="margin-top:20px;">
     <div class="card-header">
       <span class="card-title">Meilleurs buteurs</span>
@@ -2003,7 +1950,6 @@
     </div>
     <div id="top-assisters-list"></div>
   </div>
-
 </div>
         
       <div class="page" id="page-messages">
