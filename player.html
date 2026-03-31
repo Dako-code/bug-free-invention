@@ -1644,21 +1644,24 @@
 
   const attendanceMap = await loadPlayerAttendanceMap(visibleSessions.map(s => s.id));
 
-  const first = visibleSessions[0];
-  const firstStatus = attendanceMap.get(first.id);
+    const nextThree = visibleSessions.slice(0, 3);
 
-  nextSessionBox.innerHTML = `
-    <div class="list-item">
-      <div class="list-title">${escapeHtml(first.title)}</div>
-      <div class="list-sub">${translateSessionType(first.type)} · ${formatDateTime(first.scheduled_at)}</div>
-      <div class="list-sub">${escapeHtml(first.location || 'Lieu non précisé')}</div>
-      <div style="margin-top:.6rem">
-        <span class="badge ${attendanceBadgeClass(firstStatus)}">
-          ${attendanceLabel(firstStatus)}
-        </span>
+  nextSessionBox.innerHTML = nextThree.map(session => {
+    const status = attendanceMap.get(session.id);
+
+    return `
+      <div class="list-item">
+        <div class="list-title">${escapeHtml(session.title)}</div>
+        <div class="list-sub">${translateSessionType(session.type)} · ${formatDateTime(session.scheduled_at)}</div>
+        <div class="list-sub">${escapeHtml(session.location || 'Lieu non précisé')}</div>
+        <div style="margin-top:.6rem">
+          <span class="badge ${attendanceBadgeClass(status)}">
+            ${attendanceLabel(status)}
+          </span>
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  }).join('');
 
   const grouped = new Map();
 
