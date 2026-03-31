@@ -3431,8 +3431,10 @@ box.innerHTML = state.conversations.length
         showNotice('team-modal-notice', 'error', error.message || "Impossible de créer l'équipe.");
       }
     }
-    async function createNotificationsForProfiles(profileIds, payload) {
-  if (!profileIds?.length) return;
+  async function createNotificationsForProfiles(profileIds, payload) {
+  if (!profileIds?.length) {
+    return;
+  }
 
   const rows = profileIds.map(profileId => ({
     profile_id: profileId,
@@ -3448,7 +3450,7 @@ box.innerHTML = state.conversations.length
     .insert(rows);
 
   if (error) {
-    console.error('Notification insert error:', error);
+    throw error;
   }
 }
 async function createPlayer() {
@@ -3539,53 +3541,52 @@ async function saveSession() {
       })
       .eq('id', id);
 
-  } else {
+ } else {
+  const { error: insertSessionError } = await supabase
+    .from('sessions')
+    .insert({
+      team_id: state.activeTeam.id,
+      created_by: state.sessionUser.id,
+      title,
+      type,
+      scheduled_at,
+      duration_minutes: duration,
+      location,
+      notes
+    });
 
-    const { error: insertSessionError } = await supabase
-  .from('sessions')
-  .insert({
+  if (insertSessionError) {
+    throw insertSessionError;
+  }
+
+  const { data: membersForNotif, error: membersForNotifError } = await supabase
+    .from('team_members')
+    .select('player_profile_id')
+    .eq('team_id', state.activeTeam.id)
+    .not('player_profile_id', 'is', null);
+
+  if (membersForNotifError) {
+    throw membersForNotifError;
+  }
+
+  const playerIds = [...new Set(
+    (membersForNotif || [])
+      .map(member => member.player_profile_id)
+      .filter(Boolean)
+  )];
+
+  await createNotificationsForProfiles(playerIds, {
     team_id: state.activeTeam.id,
-    created_by: state.sessionUser.id,
-    title,
-    type,
-    scheduled_at,
-    duration_minutes: duration,
-    location,
-    notes
+    type: 'session_created',
+    title: 'Nouvelle session',
+    content: `${title} • ${translateSessionType(type)} • ${formatDateTime(scheduled_at)}`,
+    metadata: {
+      session_title: title,
+      session_type: type,
+      scheduled_at
+    }
   });
-
-if (insertSessionError) {
-  throw insertSessionError;
 }
-
-const { data: membersForNotif, error: membersForNotifError } = await supabase
-  .from('team_members')
-  .select('player_profile_id')
-  .eq('team_id', state.activeTeam.id)
-  .not('player_profile_id', 'is', null);
-
-if (membersForNotifError) {
-  throw membersForNotifError;
-}
-
-const playerIds = [...new Set(
-  (membersForNotif || [])
-    .map(member => member.player_profile_id)
-    .filter(Boolean)
-)];
-
-await createNotificationsForProfiles(playerIds, {
-  team_id: state.activeTeam.id,
-  type: 'session_created',
-  title: 'Nouvelle session',
-  content: `${title} • ${translateSessionType(type)} • ${formatDateTime(scheduled_at)}`,
-  metadata: {
-    session_title: title,
-    session_type: type,
-    scheduled_at
-  }
-});
-  }
 
   closeSessionModal();
   await loadSessions(state.activeTeam.id);
