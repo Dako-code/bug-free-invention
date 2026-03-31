@@ -4179,81 +4179,83 @@ async function openMatchViewModal(sessionId) {
     console.error('markConversationAsRead error:', error);
   }
 }
-    async function createConversation() {
-      const typeValue = document.getElementById('conversation-type').value;
-      const titleInput = document.getElementById('conversation-title').value.trim();
-      const selectedPlayerId = document.getElementById('conversation-player-select').value;
+   async function createConversation() {
+  const typeValue = document.getElementById('conversation-type').value;
+  const titleInput = document.getElementById('conversation-title').value.trim();
+  const selectedPlayerId = document.getElementById('conversation-player-select').value;
 
-      if (!state.activeTeam) {
-        showNotice('conversation-modal-notice', 'error', 'Aucune équipe active.');
+  if (!state.activeTeam) {
+    showNotice('conversation-modal-notice', 'error', 'Aucune équipe active.');
+    return;
+  }
+
+  try {
+    let payload;
+
+    if (typeValue === 'general') {
+      payload = {
+        team_id: state.activeTeam.id,
+        type: 'team',
+        title: titleInput || `Général — ${state.activeTeam.name}`,
+        created_by: state.sessionUser.id
+      };
+    } else {
+      if (!selectedPlayerId) {
+        showNotice('conversation-modal-notice', 'error', 'Choisis un joueur.');
         return;
       }
 
-      try {
-        let payload;
+      const member = state.teamMembers.find(m => m.player_profile_id === selectedPlayerId);
 
-        if (typeValue === 'general') {
-          payload = {
-            team_id: state.activeTeam.id,
-            type: 'team',
-            title: titleInput || `Général — ${state.activeTeam.name}`,
-            created_by: state.sessionUser.id
-          };
-        } else {
-          if (!selectedPlayerId) {
-            showNotice('conversation-modal-notice', 'error', 'Choisis un joueur.');
-            return;
-          }
-
-          const member = state.teamMembers.find(m => m.player_profile_id === selectedPlayerId);
-
-          payload = {
-            team_id: state.activeTeam.id,
-            type: 'direct',
-            title: titleInput || `Coach ↔ ${member?.player?.full_name || 'Joueur'}`,
-            created_by: state.sessionUser.id
-          };
-        }
-
-        const { data: conv, error } = await supabase
-          .from('conversations')
-          .insert(payload)
-          .select('*')
-          .single();
-
-        if (error) throw error;
-
-        const participants = [
-          { conversation_id: conv.id, profile_id: state.sessionUser.id }
-        ];
-
-        if (typeValue === 'general') {
-          state.teamMembers.forEach(member => {
-            participants.push({
-              conversation_id: conv.id,
-              profile_id: member.player_profile_id
-            });
-          });
-        } else {
-          participants.push({
-            conversation_id: conv.id,
-            profile_id: selectedPlayerId
-          });
-        }
-
-        const { error: partError } = await supabase
-          .from('conversation_participants')
-          .insert(participants);
-
-        if (partError) throw partError;
-
-        closeConversationModal();
-
-      } catch (error) {
-        console.error(error);
-        showNotice('conversation-modal-notice', 'error', error.message || 'Impossible de créer la conversation.');
-      }
+      payload = {
+        team_id: state.activeTeam.id,
+        type: 'direct',
+        title: titleInput || `Coach ↔ ${member?.player?.full_name || 'Joueur'}`,
+        created_by: state.sessionUser.id
+      };
     }
+
+    const { data: conv, error } = await supabase
+      .from('conversations')
+      .insert(payload)
+      .select('*')
+      .single();
+
+    if (error) throw error;
+
+    const participants = [
+      { conversation_id: conv.id, profile_id: state.sessionUser.id }
+    ];
+
+    if (typeValue === 'general') {
+      state.teamMembers.forEach(member => {
+        participants.push({
+          conversation_id: conv.id,
+          profile_id: member.player_profile_id
+        });
+      });
+    } else {
+      participants.push({
+        conversation_id: conv.id,
+        profile_id: selectedPlayerId
+      });
+    }
+
+    const { error: partError } = await supabase
+      .from('conversation_participants')
+      .insert(participants);
+
+    if (partError) throw partError;
+
+    await loadConversations(state.activeTeam.id, false);
+    await openConversation(conv.id);
+    closeConversationModal();
+
+  } catch (error) {
+    console.error(error);
+    showNotice('conversation-modal-notice', 'error', error.message || 'Impossible de créer la conversation.');
+  }
+}
 
    async function openConversation(conversationId) {
   const conv = state.conversations.find(c => c.id === conversationId);
