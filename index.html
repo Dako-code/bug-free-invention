@@ -1144,82 +1144,124 @@
 .matches-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .match-row {
   display: grid;
-  grid-template-columns: 70px 1fr 80px 40px;
+  grid-template-columns: 90px 1fr 110px 46px;
   align-items: center;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.03);
+  gap: 0.8rem;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
 }
 
 .match-row:hover {
-  background: rgba(61,255,122,0.07);
   transform: translateY(-2px);
+  border-color: var(--border2);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.18);
 }
 
-/* ligne colorée à gauche selon résultat */
 .match-row::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  border-radius: 4px 0 0 4px;
+  top: 10px;
+  bottom: 10px;
+  width: 5px;
+  border-radius: 999px;
 }
 
-.match-row.win::before { background: #3dff7a; }
-.match-row.draw::before { background: #ffaa00; }
-.match-row.loss::before { background: #ff5c5c; }
+.match-row.win::before {
+  background: var(--green);
+  box-shadow: 0 0 12px rgba(61,255,122,0.4);
+}
 
-/* DATE */
+.match-row.draw::before {
+  background: var(--orange);
+  box-shadow: 0 0 12px rgba(255,145,0,0.35);
+}
+
+.match-row.loss::before {
+  background: var(--red);
+  box-shadow: 0 0 12px rgba(255,82,82,0.35);
+}
+
 .match-date {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--muted2);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
-/* ADVERSAIRE */
 .match-opponent {
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: 700;
+  font-size: 0.95rem;
   color: var(--text);
 }
 
-/* SCORE */
 .match-score {
   text-align: center;
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.4rem;
-  letter-spacing: 1px;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--text);
 }
 
-/* RESULT ICON */
 .match-result {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
   font-size: 1rem;
+  font-weight: 700;
 }
 
-/* couleurs résultat */
 .match-win {
-  color: #3dff7a;
+  color: var(--green);
+  background: rgba(61,255,122,0.12);
+  border: 1px solid rgba(61,255,122,0.22);
 }
 
 .match-draw {
-  color: #ffaa00;
+  color: var(--orange);
+  background: rgba(255,145,0,0.12);
+  border: 1px solid rgba(255,145,0,0.22);
 }
 
 .match-loss {
-  color: #ff5c5c;
+  color: var(--red);
+  background: rgba(255,82,82,0.12);
+  border: 1px solid rgba(255,82,82,0.22);
+}
+    @media (max-width: 720px) {
+  .match-row {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+    padding: 12px 14px 12px 18px;
+  }
+
+  .match-date,
+  .match-opponent,
+  .match-score,
+  .match-result {
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .match-score {
+    font-size: 1.6rem;
+  }
 }
     .match-detail {
   margin-top: 15px;
