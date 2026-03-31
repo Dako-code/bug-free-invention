@@ -1091,7 +1091,6 @@
       document.getElementById('perf-goals').textContent = '--';
       document.getElementById('perf-assists').textContent = '--';
       document.getElementById('perf-matches').textContent = '--';
-      document.getElementById('perf-minutes').textContent = '--';
       document.getElementById('perf-attendance-label').textContent = '--%';
       document.getElementById('perf-attendance-fill').style.width = '0%';
       document.getElementById('perf-rating-label').textContent = '--';
@@ -1425,7 +1424,6 @@ async function loadStats(teamMemberId) {
     document.getElementById('perf-goals').textContent = `${goals} but(s)`;
     document.getElementById('perf-assists').textContent = `${assists} passe(s) décisive(s)`;
     document.getElementById('perf-matches').textContent = `${matches} match(s)`;
-    document.getElementById('perf-minutes').textContent = '—';
     document.getElementById('perf-attendance-label').textContent = `${attendance}%`;
     document.getElementById('perf-attendance-fill').style.width = `${Math.max(0, Math.min(attendance, 100))}%`;
     document.getElementById('perf-rating-label').textContent = '—';
@@ -1486,7 +1484,6 @@ async function loadStats(teamMemberId) {
     document.getElementById('perf-goals').textContent = '--';
     document.getElementById('perf-assists').textContent = '--';
     document.getElementById('perf-matches').textContent = '--';
-    document.getElementById('perf-minutes').textContent = '--';
     document.getElementById('perf-attendance-label').textContent = '--%';
     document.getElementById('perf-attendance-fill').style.width = '0%';
     document.getElementById('perf-rating-label').textContent = '--';
