@@ -1362,11 +1362,24 @@
       <div class="topbar-title" id="topbar-title">Dashboard</div>
       <div class="topbar-spacer"></div>
       <div class="topbar-pill" id="subscription-pill">Plan coach</div>
-      <div class="topbar-pill" id="notifications-pill">Notifications : 0</div>
+      <div class="topbar-pill" id="notifications-pill" onclick="toggleNotificationsPanel()" style="cursor:pointer">
+  Notifications : 0
+</div>
       <button class="btn btn-ghost" onclick="logout()">Déconnexion</button>
       <button class="btn btn-primary" onclick="topbarAction()">+ Ajouter</button>
     </div>
+<div class="notifications-panel" id="notifications-panel">
+  <div class="notifications-panel-header">
+    <div class="notifications-panel-title">Notifications</div>
+    <button class="btn btn-ghost" style="padding:.35rem .8rem" onclick="markAllNotificationsAsRead()">
+      Tout lire
+    </button>
+  </div>
 
+  <div class="notifications-list" id="notifications-list">
+    <div class="empty-note">Aucune notification.</div>
+  </div>
+</div>
     <div class="content">
       <div class="page active" id="page-dashboard">
         <div class="page-header">
