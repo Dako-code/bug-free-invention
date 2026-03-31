@@ -3219,6 +3219,23 @@ async function saveSession() {
         location,
         notes
       });
+    if (!id) {
+  const playerIds = state.teamMembers
+    .map(member => member.player_profile_id)
+    .filter(Boolean);
+
+  await createNotificationsForProfiles(playerIds, {
+    team_id: state.activeTeam.id,
+    type: 'session_created',
+    title: 'Nouvelle session',
+    content: `${title} • ${translateSessionType(type)} • ${formatDateTime(scheduled_at)}`,
+    metadata: {
+      session_title: title,
+      session_type: type,
+      scheduled_at
+    }
+  });
+}
   }
 
   closeSessionModal();
@@ -3441,6 +3458,22 @@ const rows = state.teamMembers.map(member => ({
     console.error(error);
     showNotice('match-modal-notice', 'error', error.message || 'Impossible d’enregistrer le match.');
   }
+  const playerIds = state.teamMembers
+  .map(member => member.player_profile_id)
+  .filter(Boolean);
+
+await createNotificationsForProfiles(playerIds, {
+  team_id: state.activeTeam.id,
+  type: 'match_reported',
+  title: 'Match renseigné',
+  content: `${state.activeTeam?.name || 'Ton équipe'} ${scoreFor} - ${scoreAgainst} ${opponent}`,
+  metadata: {
+    session_id: sessionId,
+    opponent,
+    score_for: scoreFor,
+    score_against: scoreAgainst
+  }
+});
 }
 
 async function openMatchViewModal(sessionId) {
@@ -3618,6 +3651,28 @@ async function openMatchViewModal(sessionId) {
   } catch (error) {
     console.error(error);
     alert(error.message || 'Impossible de charger le résumé du match.');
+  }
+}
+    async function markConversationAsRead(conversationId) {
+  if (!state.sessionUser?.id || !conversationId) return;
+
+  const unreadMessages = state.currentMessages.filter(
+    msg => msg.sender_id !== state.sessionUser.id
+  );
+
+  if (!unreadMessages.length) return;
+
+  const rows = unreadMessages.map(msg => ({
+    message_id: msg.id,
+    profile_id: state.sessionUser.id
+  }));
+
+  const { error } = await supabase
+    .from('message_reads')
+    .upsert(rows, { onConflict: 'message_id,profile_id' });
+
+  if (error) {
+    console.error('markConversationAsRead error:', error);
   }
 }
     async function createConversation() {
