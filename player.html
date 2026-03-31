@@ -628,7 +628,62 @@
       .grid-4 {
         grid-template-columns: 1fr;
       }
-    }
+    .calendar-day-group {
+  margin-bottom: 1.2rem;
+}
+
+.calendar-day-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 0.7rem;
+}
+
+.calendar-events {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.calendar-event-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.calendar-event-left {
+  min-width: 220px;
+  flex: 1;
+}
+
+.calendar-event-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.calendar-event-sub {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.calendar-event-time {
+  min-width: 110px;
+  text-align: right;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--green);
+}
   </style>
 </head>
 <body>
@@ -652,6 +707,7 @@
       <div class="nav-section">Joueur</div>
       <div class="nav-item active" onclick="showPage('dashboard', this)"><span class="nav-icon">⚡</span>Dashboard</div>
       <div class="nav-item" onclick="showPage('schedule', this)"><span class="nav-icon">📅</span>Prochains rendez-vous</div>
+      <div class="nav-item" onclick="showPage('calendar', this)"><span class="nav-icon">🗓️</span>Calendrier</div>
       <div class="nav-item" onclick="showPage('performance', this)"><span class="nav-icon">📊</span>Performances</div>
       <div class="nav-item" onclick="showPage('messages', this)"><span class="nav-icon">💬</span>Messages</div>
       <div class="nav-item" onclick="showPage('payments', this)"><span class="nav-icon">💳</span>Paiements</div>
@@ -766,6 +822,22 @@
           <div class="page-title">Prochains rendez-vous</div>
           <div class="page-desc">Entraînements, matchs et réunions à venir.</div>
         </div>
+        <div class="page" id="page-calendar">
+  <div class="page-header">
+    <div class="page-title">Calendrier</div>
+    <div class="page-desc">Vue des prochains entraînements de ton équipe.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Prochains entraînements</span>
+    </div>
+
+    <div id="calendar-training-list">
+      <div class="empty-note">Aucun entraînement à venir.</div>
+    </div>
+  </div>
+</div>
 
         <div class="card">
           <div class="card-header">
@@ -891,18 +963,19 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqeXRoenNudWJxZXZ6anpyemlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NTg3MDksImV4cCI6MjA5MDQzNDcwOX0.oINviaV_LTZEoOOlRLYU2V2yeFTQhdUHjjRdaHyu5mo';
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const state = {
+ const state = {
   sessionUser: null,
   profile: null,
   membership: null,
   team: null,
+  upcomingSessions: [],
   conversations: [],
   currentConversation: null,
   currentMessages: [],
   realtimeChannel: null,
   teamRealtimeChannel: null,
   refreshTimeout: null
-  };
+};
     window.respondToSession = respondToSession;
     window.showPage = showPage;
     window.logout = logout;
@@ -1025,6 +1098,8 @@
       `;
 
       document.getElementById('schedule-list').innerHTML = `<div class="empty-note">Aucun rendez-vous trouvé.</div>`;
+      state.upcomingSessions = [];
+      document.getElementById('calendar-training-list').innerHTML = `<div class="empty-note">Aucun entraînement à venir.</div>`;
       document.getElementById('messages-preview').innerHTML = `<div class="empty-note">Aucun message.</div>`;
       document.getElementById('payments-list').innerHTML = `<div class="empty-note">Aucun paiement enregistré.</div>`;
       document.getElementById('conversation-list').innerHTML = `<div class="empty-note">Rejoins d’abord une équipe.</div>`;
@@ -1122,6 +1197,8 @@
     if (session.type !== 'match') return true;
     return !reportedSessionIds.has(session.id);
   });
+   state.upcomingSessions = visibleSessions;
+renderTrainingCalendar();
 
   const nextSessionBox = document.getElementById('next-session-box');
   const scheduleList = document.getElementById('schedule-list');
@@ -1178,6 +1255,72 @@
       </div>
     `;
   }).join('');
+}
+    function renderTrainingCalendar() {
+  const box = document.getElementById('calendar-training-list');
+  if (!box) return;
+
+  const trainingSessions = (state.upcomingSessions || []).filter(
+    session => session.type === 'training'
+  );
+
+  if (!trainingSessions.length) {
+    box.innerHTML = `<div class="empty-note">Aucun entraînement à venir.</div>`;
+    return;
+  }
+
+  const grouped = new Map();
+
+  for (const session of trainingSessions) {
+    const dateKey = new Date(session.scheduled_at).toDateString();
+
+    if (!grouped.has(dateKey)) {
+      grouped.set(dateKey, []);
+    }
+
+    grouped.get(dateKey).push(session);
+  }
+
+  const html = Array.from(grouped.entries()).map(([dateKey, sessions]) => {
+    const formattedDay = new Intl.DateTimeFormat('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).format(new Date(sessions[0].scheduled_at));
+
+    const eventsHtml = sessions
+      .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))
+      .map(session => {
+        const timeLabel = new Intl.DateTimeFormat('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        }).format(new Date(session.scheduled_at));
+
+        return `
+          <div class="calendar-event-card">
+            <div class="calendar-event-left">
+              <div class="calendar-event-title">${escapeHtml(session.title)}</div>
+              <div class="calendar-event-sub">${escapeHtml(session.location || 'Lieu non précisé')}</div>
+              <div class="calendar-event-sub">Durée : ${Number(session.duration_minutes || 0)} min</div>
+            </div>
+
+            <div class="calendar-event-time">${timeLabel}</div>
+          </div>
+        `;
+      }).join('');
+
+    return `
+      <div class="calendar-day-group">
+        <div class="calendar-day-title">${formattedDay}</div>
+        <div class="calendar-events">
+          ${eventsHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  box.innerHTML = html;
 }
 async function loadPlayerAttendanceMap(sessionIds) {
   if (!sessionIds.length) {
@@ -1792,13 +1935,14 @@ function subscribeToTeamRealtime(teamId) {
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
       if (el) el.classList.add('active');
 
-      const titles = {
-        dashboard: 'Dashboard',
-        schedule: 'Prochains rendez-vous',
-        performance: 'Performances',
-        messages: 'Messages',
-        payments: 'Paiements'
-      };
+   const titles = {
+  dashboard: 'Dashboard',
+  schedule: 'Prochains rendez-vous',
+  calendar: 'Calendrier',
+  performance: 'Performances',
+  messages: 'Messages',
+  payments: 'Paiements'
+};
 
       document.getElementById('topbar-title').textContent = titles[id] || 'Dashboard';
     }
