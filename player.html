@@ -1074,102 +1074,7 @@
   font-size: 1.2rem;
   cursor: pointer;
 }
-@media (max-width: 1000px) {
-  .calendar-grid,
-  .calendar-weekdays {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .player-session-detail-grid {
-    grid-template-columns: 1fr;
-  }
-  }
-
-@keyframes notifPulse {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.08); }
-  100% { transform: scale(1); }
-}
-
-@media (max-width: 1100px) {
-  .chat-layout {
-    grid-template-columns: 1fr;
-    height: auto;
-    min-height: 0;
-    max-height: none;
-  }
-
-  .chat-sidebar {
-    max-height: none;
-    height: auto;
-  }
-
-  .chat-thread {
-    height: 65vh;
-    min-height: 65vh;
-    max-height: 65vh;
-  }
-}
-    .send-row input {
-      flex: 1;
-    }
-     .calendar-day-group {
-  margin-bottom: 1.2rem;
-}
-
-.calendar-day-title {
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted2);
-  margin-bottom: 0.7rem;
-}
-
-.calendar-events {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.calendar-event-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.calendar-event-left {
-  min-width: 220px;
-  flex: 1;
-}
-
-.calendar-event-title {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.calendar-event-sub {
-  font-size: 0.76rem;
-  color: var(--muted);
-  margin-top: 0.25rem;
-}
-
-.calendar-event-time {
-  min-width: 110px;
-  text-align: right;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.5rem;
-  line-height: 1;
-  color: var(--green);
-}
-.player-stats-grid {
+    .player-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
@@ -1320,6 +1225,102 @@
   line-height: 1.5;
   padding-top: 0.2rem;
 }
+@media (max-width: 1000px) {
+  .calendar-grid,
+  .calendar-weekdays {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .player-session-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  }
+
+@keyframes notifPulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 1100px) {
+  .chat-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .chat-sidebar {
+    max-height: none;
+    height: auto;
+  }
+
+  .chat-thread {
+    height: 65vh;
+    min-height: 65vh;
+    max-height: 65vh;
+  }
+}
+    .send-row input {
+      flex: 1;
+    }
+     .calendar-day-group {
+  margin-bottom: 1.2rem;
+}
+
+.calendar-day-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 0.7rem;
+}
+
+.calendar-events {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.calendar-event-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.calendar-event-left {
+  min-width: 220px;
+  flex: 1;
+}
+
+.calendar-event-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.calendar-event-sub {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.calendar-event-time {
+  min-width: 110px;
+  text-align: right;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--green);
+}
+
     @media (max-width: 1100px) {
       .grid-4 {
         grid-template-columns: repeat(2, 1fr);
