@@ -2218,6 +2218,32 @@ function subscribeToTeamRealtime(teamId) {
 
       renderMessagesArea();
     }
+    function unsubscribeNotificationsRealtime() {
+  if (state.notificationsChannel) {
+    supabase.removeChannel(state.notificationsChannel);
+    state.notificationsChannel = null;
+  }
+}
+
+function subscribeToNotificationsRealtime() {
+  unsubscribeNotificationsRealtime();
+
+  state.notificationsChannel = supabase
+    .channel(`notifications:${state.sessionUser.id}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'notifications',
+        filter: `profile_id=eq.${state.sessionUser.id}`
+      },
+      async () => {
+        await loadNotifications();
+      }
+    )
+    .subscribe();
+}
 
     function subscribeToConversationMessages(conversationId) {
       unsubscribeMessagesRealtime();
