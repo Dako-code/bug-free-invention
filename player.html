@@ -2216,6 +2216,28 @@ function subscribeToTeamRealtime(teamId) {
     console.error('Notification insert error:', error);
   }
 }
+    async function markConversationAsRead(conversationId) {
+  if (!state.sessionUser?.id || !conversationId) return;
+
+  const unreadMessages = state.currentMessages.filter(
+    msg => msg.sender_id !== state.sessionUser.id
+  );
+
+  if (!unreadMessages.length) return;
+
+  const rows = unreadMessages.map(msg => ({
+    message_id: msg.id,
+    profile_id: state.sessionUser.id
+  }));
+
+  const { error } = await supabase
+    .from('message_reads')
+    .upsert(rows, { onConflict: 'message_id,profile_id' });
+
+  if (error) {
+    console.error('markConversationAsRead error:', error);
+  }
+}
 
     async function sendMessage() {
       if (!state.currentConversation) {
