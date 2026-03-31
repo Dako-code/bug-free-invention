@@ -3512,87 +3512,101 @@ async function createPlayer() {
     }
 
 async function saveSession() {
+  try {
+    const id = document.getElementById('session-edit-id').value;
 
-  const id = document.getElementById('session-edit-id').value;
+    const title = document.getElementById('session-title').value.trim();
+    const type = document.getElementById('session-type').value;
+    const duration = Number(document.getElementById('session-duration').value || 90);
+    const date = document.getElementById('session-date').value;
+    const time = document.getElementById('session-time').value;
+    const location = document.getElementById('session-location').value.trim();
+    const notes = document.getElementById('session-notes').value.trim();
 
-  const title = document.getElementById('session-title').value.trim();
-  const type = document.getElementById('session-type').value;
-  const duration = Number(document.getElementById('session-duration').value || 90);
-  const date = document.getElementById('session-date').value;
-  const time = document.getElementById('session-time').value;
-  const location = document.getElementById('session-location').value.trim();
-  const notes = document.getElementById('session-notes').value.trim();
-
-  if (!title || !date || !time) {
-    alert("Champs obligatoires manquants");
-    return;
-  }
-
-  const scheduled_at = new Date(`${date}T${time}`).toISOString();
-
-  if (id) {
-    await supabase
-      .from('sessions')
-      .update({
-        title,
-        type,
-        scheduled_at,
-        duration_minutes: duration,
-        location,
-        notes
-      })
-      .eq('id', id);
-
- } else {
-  const { error: insertSessionError } = await supabase
-    .from('sessions')
-    .insert({
-      team_id: state.activeTeam.id,
-      created_by: state.sessionUser.id,
-      title,
-      type,
-      scheduled_at,
-      duration_minutes: duration,
-      location,
-      notes
-    });
-
-  if (insertSessionError) {
-    throw insertSessionError;
-  }
-
-  const { data: membersForNotif, error: membersForNotifError } = await supabase
-    .from('team_members')
-    .select('player_profile_id')
-    .eq('team_id', state.activeTeam.id)
-    .not('player_profile_id', 'is', null);
-
-  if (membersForNotifError) {
-    throw membersForNotifError;
-  }
-
-  const playerIds = [...new Set(
-    (membersForNotif || [])
-      .map(member => member.player_profile_id)
-      .filter(Boolean)
-  )];
-
-  await createNotificationsForProfiles(playerIds, {
-    team_id: state.activeTeam.id,
-    type: 'session_created',
-    title: 'Nouvelle session',
-    content: `${title} • ${translateSessionType(type)} • ${formatDateTime(scheduled_at)}`,
-    metadata: {
-      session_title: title,
-      session_type: type,
-      scheduled_at
+    if (!title || !date || !time) {
+      showNotice('session-modal-notice', 'error', 'Champs obligatoires manquants.');
+      return;
     }
-  });
-}
 
-  closeSessionModal();
-  await loadSessions(state.activeTeam.id);
-  renderDashboard();
+    const scheduled_at = new Date(`${date}T${time}`).toISOString();
+
+    if (id) {
+      const { error: updateError } = await supabase
+        .from('sessions')
+        .update({
+          title,
+          type,
+          scheduled_at,
+          duration_minutes: duration,
+          location,
+          notes
+        })
+        .eq('id', id);
+
+      if (updateError) {
+        throw updateError;
+      }
+    } else {
+      const { error: insertSessionError } = await supabase
+        .from('sessions')
+        .insert({
+          team_id: state.activeTeam.id,
+          created_by: state.sessionUser.id,
+          title,
+          type,
+          scheduled_at,
+          duration_minutes: duration,
+          location,
+          notes
+        });
+
+      if (insertSessionError) {
+        throw insertSessionError;
+      }
+
+      const { data: membersForNotif, error: membersForNotifError } = await supabase
+        .from('team_members')
+        .select('player_profile_id')
+        .eq('team_id', state.activeTeam.id)
+        .not('player_profile_id', 'is', null);
+
+      if (membersForNotifError) {
+        throw membersForNotifError;
+      }
+
+      const playerIds = [
+        ...new Set(
+          (membersForNotif || [])
+            .map(member => member.player_profile_id)
+            .filter(Boolean)
+        )
+      ];
+
+      await createNotificationsForProfiles(playerIds, {
+        team_id: state.activeTeam.id,
+        type: 'session_created',
+        title: 'Nouvelle session',
+        content: `${title} • ${translateSessionType(type)} • ${formatDateTime(scheduled_at)}`,
+        metadata: {
+          session_title: title,
+          session_type: type,
+          scheduled_at
+        }
+      });
+    }
+
+    closeSessionModal();
+    await loadSessions(state.activeTeam.id);
+    renderDashboard();
+
+  } catch (error) {
+    console.error(error);
+    showNotice(
+      'session-modal-notice',
+      'error',
+      error.message || 'Impossible d’enregistrer la session.'
+    );
+  }
 }
 async function deleteSession(id) {
 
